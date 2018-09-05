@@ -22,7 +22,6 @@ from PyQt4 import QtCore, QtGui, uic
 from . import getUIFile
 
 
-
 class iintTrackedDataChoice(QtGui.QWidget):
     trackedData = QtCore.pyqtSignal(list)
 
@@ -37,8 +36,6 @@ class iintTrackedDataChoice(QtGui.QWidget):
         self._fillLists(namelist)
         self.okButton.clicked.connect(self._emitTrackedData)
         self.cancelButton.clicked.connect(self.close)
-        #~ self.okButton.clicked.connect(self.reset)
-        #~ self.cancelButton.clicked.connect(self.reset)
         self.addToListColumns.setDisabled(True)
         self.addToListHeaders.setDisabled(True)
         self.addToListColumns.clicked.connect(self._moveButtonToSelectedColumns)
@@ -55,10 +52,10 @@ class iintTrackedDataChoice(QtGui.QWidget):
         self.listAllHeaders.itemDoubleClicked.connect(self._moveToSelectedHeaders)
         self.listSelectedHeaders.itemClicked.connect(self._pickedSelectedItemHeaders)
         self.listSelectedHeaders.itemDoubleClicked.connect(self._moveToUnselectedHeaders)
-        self._currentUnSelectedItemColumns  = 0
-        self._currentSelectedItemColumns  = 0
-        self._currentUnSelectedItemHeaders  = 0
-        self._currentSelectedItemHeaders  = 0
+        self._currentUnSelectedItemColumns = 0
+        self._currentSelectedItemColumns = 0
+        self._currentUnSelectedItemHeaders = 0
+        self._currentSelectedItemHeaders = 0
         self.listAllColumns.setToolTip("A list of available column data that has not yet been selected for tracking.\n Select by double-clicking or by selecting via single mouse click and then using the button '>>'.")
         self.listSelectedColumns.setToolTip("The list of already selected column data to be included in the output file.\n De-select by double-clicking or by selecting via single mouse click and then using the button '<<'.")
         self.listAllHeaders.setToolTip("A list of available header data that has not yet been selected for tracking.\n Select by double-clicking or by selecting via single mouse click and then using the button '>>'.")
@@ -76,7 +73,7 @@ class iintTrackedDataChoice(QtGui.QWidget):
         self._untrackedDataHeaders = sorted(self._initialNamesHeaders[:])
         self._trackedDataColumns = []
         self._trackedDataHeaders = []
-        if namelist != None:
+        if namelist is not None:
             for elem in namelist:
                 try:
                     self._untrackedDataColumns.remove(elem)

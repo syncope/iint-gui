@@ -22,7 +22,6 @@ from PyQt4 import QtCore, QtGui, uic
 from . import getUIFile
 
 
-
 class SelectResultOutput(QtGui.QDialog):
     accept = QtCore.pyqtSignal(str)
 

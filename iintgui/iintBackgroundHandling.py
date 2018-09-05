@@ -22,7 +22,6 @@ from PyQt4 import QtCore, QtGui, uic
 from . import getUIFile
 
 
-
 class iintBackgroundHandling(QtGui.QWidget):
     bkgDicts = QtCore.pyqtSignal(dict, dict, dict, dict)
     bkgmodel = QtCore.pyqtSignal(str)
@@ -39,7 +38,6 @@ class iintBackgroundHandling(QtGui.QWidget):
         self._calcParDict = {}
         self._subtractParDict = {}
         # if there are just two options, only one toggle needs to be connected
-        #~ self.linearBkg.toggled.connect(self._setModel)
         self.constBkg.toggled.connect(self._setModel)
         self.fitBkg.clicked.connect(self.emittem)
         self._noBKG = True
@@ -100,5 +98,4 @@ class iintBackgroundHandling(QtGui.QWidget):
     def emittem(self):
         self._selectParDict["startpointnumber"] = self.bkgStartPointsSB.value()
         self._selectParDict["endpointnumber"] = self.bkgEndPointsSB.value()
-        self.bkgDicts.emit(  self._selectParDict, self._fitParDict, self._calcParDict, self._subtractParDict )
-
+        self.bkgDicts.emit(self._selectParDict, self._fitParDict, self._calcParDict, self._subtractParDict)

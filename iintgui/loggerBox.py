@@ -22,7 +22,6 @@ from PyQt4 import QtCore, QtGui, uic
 from . import getUIFile
 
 
-
 class LoggerBox(QtGui.QWidget):
 
     def __init__(self, parent=None):
@@ -30,12 +29,10 @@ class LoggerBox(QtGui.QWidget):
         uic.loadUi(getUIFile.getUIFile("logBOX.ui"), self)
         self.messageWindow.setToolTip("Contains the logging output of iint-gui.")
 
-    def addText(self,text):
+    def addText(self, text):
         self.messageWindow.append(text)
-        #~ self.messageWindow.insertPlainText(text)
 
     def addRedText(self, text):
         self.messageWindow.setTextColor(QtGui.QColor(255, 0, 0))
         self.messageWindow.append(text)
         self.messageWindow.setTextColor(QtGui.QColor(0, 0, 0))
-

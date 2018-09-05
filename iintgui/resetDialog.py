@@ -22,7 +22,6 @@ from PyQt4 import QtCore, QtGui, uic
 from . import getUIFile
 
 
-
 class ResetDialog(QtGui.QDialog):
     resetOK = QtCore.pyqtSignal(int)
 

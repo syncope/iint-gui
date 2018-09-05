@@ -53,7 +53,7 @@ class iintObservableDefinition(QtGui.QWidget):
         self.observableAttFaccheck.setToolTip("Chose the correct entry from the scan file information for an attenuation factor.")
         self.observableAttFacCB.setToolTip("Check the box to enable the choice of an attenuation factor entry.")
         self.despikeCheckBox.setToolTip("Check the box to run a despiking/filtering algorithm on the scan data to dampen spikes/noise fluctuation.")
-        self.obsNextBtn.setToolTip("Once everything is set, click this button to perform the calculaion of the observable data and open a display." )
+        self.obsNextBtn.setToolTip("Once everything is set, click this button to perform the calculaion of the observable data and open a display.")
 
     def _defaultSettings(self):
         self._obsDict = {}
@@ -73,7 +73,7 @@ class iintObservableDefinition(QtGui.QWidget):
         self._notEnabled(False)
 
     def passInfo(self, dataobject):
-        if dataobject == None:
+        if dataobject is None:
             self._notEnabled(True)
             return
         else:
@@ -93,7 +93,7 @@ class iintObservableDefinition(QtGui.QWidget):
         self.observableMonitorCB.addItems(self._currentdataLabels)
         self.observableTimeCB.addItems(self._currentdataLabels)
         self.observableAttFacCB.addItems(self._currentdataLabels)
-    
+
     def _notEnabled(self, state):
         self.observableMotorLabel.setDisabled(state)
         self.observableDetectorCB.setDisabled(state)
@@ -148,24 +148,24 @@ class iintObservableDefinition(QtGui.QWidget):
         self._trapintDict["motor"] = self._motorname
         self._trapintDict["observable"] = "signalObservable"
         self._trapintDict["output"] = "trapezoidIntegral"
-        
+
         self.observableDicts.emit(self._obsDict, self._despikeDict, self._trapintDict)
 
     def setParameterDicts(self, obsDict, despDict):
         self.observableMotorLabel.setStyleSheet("color: blue;")
         self.observableMotorLabel.setText(obsDict["motor_column"])
         # first get index of element
-        index = self.observableDetectorCB.findText(obsDict["detector_column"], QtCore.Qt.MatchExactly) 
+        index = self.observableDetectorCB.findText(obsDict["detector_column"], QtCore.Qt.MatchExactly)
         if index >= 0:
             self.observableDetectorCB.setCurrentIndex(index)
 
-        index = self.observableMonitorCB.findText(obsDict["monitor_column"], QtCore.Qt.MatchExactly) 
+        index = self.observableMonitorCB.findText(obsDict["monitor_column"], QtCore.Qt.MatchExactly)
         if index >= 0:
             self.observableMonitorCB.setCurrentIndex(index)
 
-        index = self.observableTimeCB.findText(obsDict["exposureTime_column"], QtCore.Qt.MatchExactly) 
+        index = self.observableTimeCB.findText(obsDict["exposureTime_column"], QtCore.Qt.MatchExactly)
         if index >= 0:
             self.observableTimeCB.setCurrentIndex(index)
 
-        if ( despDict != {} ):
+        if (despDict != {}):
             self.despikeCheckBox.setChecked(True)

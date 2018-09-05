@@ -19,7 +19,6 @@
 # Boston, MA  02110-1301, USA.
 
 
-
 def getUIFile(uifile):
     import os
     import iintgui.ui as ui

@@ -23,9 +23,7 @@ import numpy as np
 from . import getUIFile
 
 
-
 class iintDataPlot(QtGui.QDialog):
-    #~ mouseposition = QtCore.pyqtSignal(float,float)
     currentIndex = QtCore.pyqtSignal(int)
     blacklist = QtCore.pyqtSignal(list)
 
@@ -59,7 +57,7 @@ class iintDataPlot(QtGui.QDialog):
         self._tmpFit = None
         self._logScale = False
         self._showsigfit = False
-        self.setGeometry(640,1,840,840)
+        self.setGeometry(640, 1, 840, 840)
         self.showID.setToolTip("Shows the number of the currently displayed scan.")
         self.blacklistButton.setToolTip("Click here to toggle between showing or hiding the current scan. This affects ONLY the display of the data, not the processing.")
         self.showPreviousBtn.setToolTip("Show the previous scan of the chosen list. If the first scan is shown, this will show the last entry.")
@@ -148,65 +146,65 @@ class iintDataPlot(QtGui.QDialog):
 
     def plot(self):
         datum = self._dataList[self._currentIndex]
-        if( self._currentIndex in self._blacklist):
+        if(self._currentIndex in self._blacklist):
             self._setBLB2Rm()
         else:
             self._setBLB2Add()
-        
+
         self.showID.setText(str(datum.getData("scannumber")))
         xdata = datum.getData(self._motorName)
         ydata = datum.getData(self._observableName)
-        if ( self._logScale ):
+        if (self._logScale):
             ydata = np.log10(np.clip(ydata, 10e-3, np.inf))
         self.viewPart.clear()
-        if( self._showraw):
+        if(self._showraw):
             self._theDrawItem = self.viewPart.plot(xdata, ydata, pen=None, symbolPen='w', symbolBrush='w', symbol='+')
-        if( self._showdespike ):
+        if(self._showdespike):
             despikeData = datum.getData(self._despObservableName)
-            if ( self._logScale ):
+            if (self._logScale):
                 despikeData = np.log10(np.clip(despikeData, 10e-3, np.inf))
             self.viewPart.plot(xdata, despikeData, pen=None, symbolPen='y', symbolBrush='y', symbol='o')
-        if( self._showbkg ):
+        if(self._showbkg):
             bkg = datum.getData(self._backgroundPointsName)
-            if ( self._logScale ):
+            if (self._logScale):
                 bkg = np.log10(np.clip(bkg, 10e-3, np.inf))
             self.viewPart.plot(xdata, bkg, pen=None, symbolPen='r', symbolBrush='r', symbol='+')
-        if( self._showbkgsubtracted ):
+        if(self._showbkgsubtracted):
             signal = datum.getData(self._signalName)
-            if ( self._logScale ):
+            if (self._logScale):
                 signal = np.log10(np.clip(signal, 10e-3, np.inf))
             self.viewPart.plot(xdata, signal, pen=None, symbolPen='b', symbolBrush='b', symbol='o')
-        if( self._showsigfit ):
+        if(self._showsigfit):
             fitdata = datum.getData(self._fittedSignalName)
-            if ( self._logScale ):
+            if (self._logScale):
                 fitdata = np.log10(np.clip(fitdata, 10e-3, np.inf))
             self.viewPart.plot(xdata, fitdata, pen='r')
 
     def plotFit(self, ydata):
         datum = self._dataList[self._currentIndex]
         xdata = datum.getData(self._motorName)
-        if self._tmpFit != None:
+        if self._tmpFit is not None:
             self._tmpFit.clear()
         self.viewPart.disableAutoRange()
-        if ( self._logScale ):
+        if (self._logScale):
             ydata = np.log10(np.clip(ydata, 10e-3, np.inf))
-        self._tmpFit = self.viewPart.plot(xdata, ydata, pen='g') #, symbol='+')
+        self._tmpFit = self.viewPart.plot(xdata, ydata, pen='g')
 
     def removeGuess(self):
         self._tmpFit.clear()
         self.viewPart.enableAutoRange()
 
     def _toggleRAW(self):
-        self._showraw = not self._showraw 
+        self._showraw = not self._showraw
 
     def _toggleDES(self):
-        self._showdespike = not self._showdespike 
+        self._showdespike = not self._showdespike
 
     def _toggleBKG(self):
         self._showbkg = not self._showbkg
 
     def _toggleSIG(self):
-        self._showbkgsubtracted = not self._showbkgsubtracted 
+        self._showbkgsubtracted = not self._showbkgsubtracted
 
     def _toggleFIT(self):
         self._showsigfit = not self._showsigfit
@@ -216,14 +214,14 @@ class iintDataPlot(QtGui.QDialog):
 
     def incrementCurrentScanID(self):
         self._currentIndex += 1
-        if ( self._currentIndex >= len(self._dataList) ):
+        if (self._currentIndex >= len(self._dataList)):
             self._currentIndex -= len(self._dataList)
         self.currentIndex.emit(self._currentIndex)
         self.plot()
 
     def decrementCurrentScanID(self):
         self._currentIndex -= 1
-        if ( self._currentIndex < 0  ):
+        if (self._currentIndex < 0):
             self._currentIndex += len(self._dataList)
         self.currentIndex.emit(self._currentIndex)
         self.plot()
@@ -232,7 +230,6 @@ class iintDataPlot(QtGui.QDialog):
         position = self._theDrawItem.mapFromScene(event.pos())
         self.xPosition.setText("%.3f" % position.x())
         self.yPosition.setText("%.3f" % position.y())
-        #~ self.mouseposition.emit(x, y)
 
     def getCurrentIndex(self):
         return self._currentIndex
@@ -267,4 +264,3 @@ class iintDataPlot(QtGui.QDialog):
     def _setBLB2Rm(self):
         self.blacklistButton.setStyleSheet("color: yellow;background-color: red;")
         self.blacklistButton.setText("Add to display again")
-

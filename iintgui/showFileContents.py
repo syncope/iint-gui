@@ -22,7 +22,6 @@ from PyQt4 import QtCore, QtGui, uic
 from . import getUIFile
 
 
-
 class ShowFileContents(QtGui.QDialog):
     
     def __init__(self, text, parent=None):

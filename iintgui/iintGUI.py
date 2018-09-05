@@ -43,9 +43,8 @@ from . import iintInspectAnalyze
 from . import selectResultOutput
 
 
-
 class iintGUI(QtGui.QMainWindow):
-    
+
     def __init__(self, parent=None):
         super(iintGUI, self).__init__(parent)
         uic.loadUi(getUIFile.getUIFile("iintMain.ui"), self)
@@ -118,8 +117,8 @@ class iintGUI(QtGui.QMainWindow):
         self._sfrGUI.valuesSet.connect(self.runFileReader)
         self._obsDef.observableDicts.connect(self.runObservable)
         self._bkgHandling.bkgDicts.connect(self.runBkgProcessing)
-        
-        self.setGeometry(0,0,600,840)
+
+        self.setGeometry(0, 0, 600, 840)
         self._widgetList = []
         self._trackedDataDict = {}
         self._resultFileName = None
@@ -208,7 +207,7 @@ class iintGUI(QtGui.QMainWindow):
         self._quit.show()
 
     def _saveConfig(self, num=None):
-        savename, timesuffix  = self._control.proposeSaveFileName('')
+        savename, timesuffix = self._control.proposeSaveFileName('')
         self._control.saveConfig(savename+".icfg")
         self._control.saveConfig(savename+timesuffix+".icfg")
         self._file = savename+timesuffix+".icfg"
@@ -216,7 +215,7 @@ class iintGUI(QtGui.QMainWindow):
         return
 
     def _askReset(self):
-        if self._control.getSFRDict()["filename"] == None:
+        if self._control.getSFRDict()["filename"] is None:
             self._resetAll()
         else:
             self._resetQuestion.show()
@@ -231,7 +230,7 @@ class iintGUI(QtGui.QMainWindow):
             prev = None
         self._file = QtGui.QFileDialog.getOpenFileName(self, 'Choose iint config file', '.', "iint cfg files (*.icfg)")
         if self._file != "":
-            if prev != None:
+            if prev is not None:
                 self._resetAll()
             from adapt import configurationHandler
             handler = configurationHandler.ConfigurationHandler()
@@ -265,9 +264,9 @@ class iintGUI(QtGui.QMainWindow):
 
         filereaderdict = self._sfrGUI.getParameterDict()
         self._fileInfo.setNames(filereaderdict["filename"], filereaderdict["scanlist"])
-        self._control.setSpecFile(filereaderdict["filename"],filereaderdict["scanlist"])
+        self._control.setSpecFile(filereaderdict["filename"], filereaderdict["scanlist"])
         self.message("Reading spec file: " + str(filereaderdict["filename"]))
-       
+
         sfr = self._control.createAndInitialize(filereaderdict)
         self._control.createDataList(sfr.getData(), self._control.getRawDataName())
 
@@ -304,7 +303,7 @@ class iintGUI(QtGui.QMainWindow):
         if despDict != {}:
             self._control.useDespike(True)
             self._control.createAndBulkExecute(despDict)
-            if( self._simpleImageView != None):
+            if(self._simpleImageView is not None):
                 self._simpleImageView.update("des")
         self._bkgHandling.activate()
         self._signalHandling.activateConfiguration()
@@ -332,22 +331,22 @@ class iintGUI(QtGui.QMainWindow):
         self._control.createAndBulkExecute(fitDict)
         self._control.createAndBulkExecute(calcDict)
         self._control.createAndBulkExecute(subtractDict)
-        if( self._simpleImageView != None):
+        if(self._simpleImageView is not None):
             self._simpleImageView.update("bkg")
         self.message(" ... done.\n")
 
     def plotit(self):
         # pyqt helper stuff
-        self._simpleImageView.passData( self._control.getDataList(), 
-                                        self._control.getMotorName(),
-                                        self._control.getObservableName(),
-                                        self._control.getDespikedObservableName(),
-                                        self._control.getBackgroundName(),
-                                        self._control.getSignalName(),
-                                        self._control.getFittedSignalName(),
-                                        )
+        self._simpleImageView.passData(self._control.getDataList(),
+                                       self._control.getMotorName(),
+                                       self._control.getObservableName(),
+                                       self._control.getDespikedObservableName(),
+                                       self._control.getBackgroundName(),
+                                       self._control.getSignalName(),
+                                       self._control.getFittedSignalName(),
+                                       )
         self._simpleImageView.plot()
-        self.imageTabs.addTab(self._simpleImageView,"Scan display")
+        self.imageTabs.addTab(self._simpleImageView, "Scan display")
         self.imageTabs.show()
         self._simpleImageView.show()
 
@@ -360,7 +359,7 @@ class iintGUI(QtGui.QMainWindow):
         self._keepFitList(self._fitWidget)
 
     def _prepareSignalFitting(self):
-        fitDict =  {}
+        fitDict = {}
         for fit in self._fitList:
             fitDict.update(fit.getCurrentParameterDict())
         self.runSignalProcessing(fitDict)
@@ -376,18 +375,18 @@ class iintGUI(QtGui.QMainWindow):
         self._inspectAnalyze.reset()
         self._control.resetTrackedData()
         self.resetTabs(keepSpectra=True)
-        
+
         self.message("Fitting the signal, this can take a while ...")
         rundict = self._control.getSIGDict()
         rundict['model'] = fitDict
         self._control.createAndBulkExecute(rundict)
         self._control.createAndBulkExecute(self._control.getSignalFitDict())
-        if( self._simpleImageView != None):
+        if(self._simpleImageView is not None):
             self._simpleImageView.update("plotfit")
         trackinfo = self._control.getDefaultTrackInformation()
         tdv = iintMultiTrackedDataView.iintMultiTrackedDataView(trackinfo)
         self._trackedDataDict[trackinfo.getName()] = trackinfo
-        self.imageTabs.addTab(tdv, ("Fit vs." +  trackinfo.getName()))
+        self.imageTabs.addTab(tdv, ("Fit vs." + trackinfo.getName()))
         tdv.pickedTrackedDataPoint.connect(self._setFocusToSpectrum)
         self.message(" ... done.\n")
         self._inspectAnalyze.activate()
@@ -437,18 +436,16 @@ class iintGUI(QtGui.QMainWindow):
         try:
             self._trackedDataChoice.show()
         except AttributeError:
-            self._trackedDataChoice = iintTrackedDataChoice.iintTrackedDataChoice(rawScanData,self._control.getTrackedData() )
+            self._trackedDataChoice = iintTrackedDataChoice.iintTrackedDataChoice(rawScanData, self._control.getTrackedData())
         self._trackedDataChoice.trackedData.connect(self._control.setTrackedData)
         self._trackedDataChoice.trackedData.connect(self._showTracked)
 
     def _showTracked(self):
-        #~ print("tracked data is: " + str(self._trackedDataDict))
-        #~ print("there are " + str(self.imageTabs.__len__()) + " tabs in total")
         # prepare the tabs and dict of tracked data for re-display
         for name in list(self._trackedDataDict.keys()):
             if name != "ScanNumber":
                 del self._trackedDataDict[name]
-        for index in range(self.imageTabs.__len__(),1,-1):
+        for index in range(self.imageTabs.__len__(), 1, -1):
             self.imageTabs.removeTab(index)
 
         namelist = self._control.getTrackedData()
@@ -483,7 +480,7 @@ class iintGUI(QtGui.QMainWindow):
                     self.imageTabs.removeTab(tab)
                     continue
 
-        for k,v  in self._trackedDataDict.items():
+        for k, v in self._trackedDataDict.items():
             tdv = iintMultiTrackedDataView.iintMultiTrackedDataView(v, blacklist)
             tdv.pickedTrackedDataPoint.connect(self._setFocusToSpectrum)
             self.imageTabs.addTab(tdv, k)

@@ -22,7 +22,6 @@ from PyQt4 import QtCore, QtGui, uic
 from . import getUIFile
 
 
-
 class iintSignalHandling(QtGui.QWidget):
     modelcfg = QtCore.pyqtSignal(str, int)
 
@@ -34,7 +33,7 @@ class iintSignalHandling(QtGui.QWidget):
         self.configureSecond.clicked.connect(self.emitsecondmodelconfig)
         self.configureThird.clicked.connect(self.emitthirdmodelconfig)
         self.configureFourth.clicked.connect(self.emitfourthmodelconfig)
-        self._inactive = [ True, True, True, True ]
+        self._inactive = [True, True, True, True]
         self._firstModelDict = {}
         self._secondModelDict = {}
         self._thirdModelDict = {}

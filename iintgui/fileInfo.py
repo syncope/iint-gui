@@ -22,7 +22,6 @@ from PyQt4 import QtCore, QtGui, uic
 from . import getUIFile
 
 
-
 class FileInfo(QtGui.QWidget):
     newspecfile = QtCore.pyqtSignal()
 

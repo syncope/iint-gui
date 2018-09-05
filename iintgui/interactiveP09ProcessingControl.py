@@ -42,7 +42,6 @@ import numpy as np
 import datetime
 
 
-
 class InteractiveP09ProcessingControl():
     '''The central control object for interactive processing.
        It holds the elements to build processes from their description,
@@ -65,19 +64,19 @@ class InteractiveP09ProcessingControl():
         self._fittedSignalName = "signalcurvefitresult"
         self._fitSignalPointsName = "signalFitPoints"
         self._trapintName = "trapezoidIntegral"
-        self._processNames = [ "read", 
-                               "observabledef",
-                               "despike",
-                               "bkgselect",
-                               "bkgfit",
-                               "calcbkgpoints",
-                               "bkgsubtract",
-                               "signalcurvefit",
-                               "calcfitpoints",
-                               "trapint",
-                               "finalize",
-                               "polana",
-                               "inspection"]
+        self._processNames = ["read",
+                              "observabledef",
+                              "despike",
+                              "bkgselect",
+                              "bkgfit",
+                              "calcbkgpoints",
+                              "bkgsubtract",
+                              "signalcurvefit",
+                              "calcfitpoints",
+                              "trapint",
+                              "finalize",
+                              "polana",
+                              "inspection"]
         self._procRunList = []
         self._processParameters = {}
         self._setupProcessParameters()
@@ -90,8 +89,6 @@ class InteractiveP09ProcessingControl():
         self._dataList = []
         del self._processList[:]
         self._processList = []
-        #~ self._nodespike = True
-        #~ self._nobkg = True
         self._motorName = ""
         self._rawName = "rawdata"
         self._observableName = "observable"
@@ -157,62 +154,62 @@ class InteractiveP09ProcessingControl():
         self._processParameters["bkgselect"] = subsequenceselection.subsequenceselection().getProcessDictionary()
         self._processParameters["bkgfit"] = curvefitting.curvefitting().getProcessDictionary()
         self._processParameters["calcbkgpoints"] = gendatafromfunction.gendatafromfunction().getProcessDictionary()
-        self._processParameters["bkgsubtract"] =backgroundsubtraction.backgroundsubtraction().getProcessDictionary()
-        self._processParameters["signalcurvefit"] =  curvefitting.curvefitting().getProcessDictionary()
+        self._processParameters["bkgsubtract"] = backgroundsubtraction.backgroundsubtraction().getProcessDictionary()
+        self._processParameters["signalcurvefit"] = curvefitting.curvefitting().getProcessDictionary()
         self._processParameters["calcfitpoints"] = gendatafromfunction.gendatafromfunction().getProcessDictionary()
         self._processParameters["trapint"] = trapezoidintegration.trapezoidintegration().getProcessDictionary()
         self._processParameters["finalize"] = iintfinalization.iintfinalization().getProcessDictionary()
         self._processParameters["polana"] = iintpolarization.iintpolarization().getProcessDictionary()
         self._processParameters["inspection"] = iintcontrolplots.iintcontrolplots().getProcessDictionary()
-        
+
         self._fitmodels = curvefitting.curvefitting().getFitModels()
 
     def _setupDefaultNames(self):
         self._processParameters["read"]["output"] = self._rawName
         # from out to in:
         self._processParameters["observabledef"]["input"] = self._rawName
-        self._processParameters["observabledef"]["output"] =  self._observableName
-        self._processParameters["observabledef"]["detector_column"] =  "exp_c01"
+        self._processParameters["observabledef"]["output"] = self._observableName
+        self._processParameters["observabledef"]["detector_column"] = "exp_c01"
         self._processParameters["observabledef"]["monitor_column"] = "sumvfcs_counts"
         self._processParameters["observabledef"]["exposureTime_column"] = "exp_t01"
         self._processParameters["observabledef"]["id"] = self._id
-        
+
         # from out to in:
-        self._processParameters["despike"]["input"] =  self._observableName
+        self._processParameters["despike"]["input"] = self._observableName
         self._processParameters["despike"]["method"] = "p09despiking"
-        self._processParameters["despike"]["output"] =  self._despObservableName
+        self._processParameters["despike"]["output"] = self._despObservableName
         # from out to in
-        self._processParameters["bkgselect"]["input"] = [ self._despObservableName, self._motorName]
-        self._processParameters["bkgselect"]["output"] =  ["bkgY" ,"bkgX"]
-        self._processParameters["bkgselect"]["selectors"] =  ["selectfromstart" ,"selectfromend"]
-        self._processParameters["bkgselect"]["startpointnumber"] =  3
-        self._processParameters["bkgselect"]["endpointnumber"] =  3
+        self._processParameters["bkgselect"]["input"] = [self._despObservableName, self._motorName]
+        self._processParameters["bkgselect"]["output"] = ["bkgY", "bkgX"]
+        self._processParameters["bkgselect"]["selectors"] = ["selectfromstart", "selectfromend"]
+        self._processParameters["bkgselect"]["startpointnumber"] = 3
+        self._processParameters["bkgselect"]["endpointnumber"] = 3
         # fit bkg
         self._processParameters["bkgfit"]["xdata"] = "bkgX"
         self._processParameters["bkgfit"]["ydata"] = "bkgY"
         self._processParameters["bkgfit"]["error"] = "None"
         self._processParameters["bkgfit"]["result"] = "bkgfitresult"
         self._processParameters["bkgfit"]["usepreviousresult"] = 0
-        self._processParameters["bkgfit"]["model"] = { "lin_" : {"modeltype" : "linearModel"}}
+        self._processParameters["bkgfit"]["model"] = {"lin_": {"modeltype": "linearModel"}}
         # calc bkg points
         self._processParameters["calcbkgpoints"]["fitresult"] = "bkgfitresult"
         self._processParameters["calcbkgpoints"]["xdata"] = self._motorName
-        self._processParameters["calcbkgpoints"]["output"] =  self._backgroundPointsName
+        self._processParameters["calcbkgpoints"]["output"] = self._backgroundPointsName
         # subtract bkg
-        self._processParameters["bkgsubtract"]["input"] =  self._despObservableName
-        self._processParameters["bkgsubtract"]["output"] =  self._signalName
-        self._processParameters["bkgsubtract"]["background"] =  self._backgroundPointsName
+        self._processParameters["bkgsubtract"]["input"] = self._despObservableName
+        self._processParameters["bkgsubtract"]["output"] = self._signalName
+        self._processParameters["bkgsubtract"]["background"] = self._backgroundPointsName
         # signal fitting
         self._processParameters["signalcurvefit"]["xdata"] = self._motorName
         self._processParameters["signalcurvefit"]["ydata"] = self._signalName
         self._processParameters["signalcurvefit"]["error"] = "None"
         self._processParameters["signalcurvefit"]["usepreviousresult"] = 1
         self._processParameters["signalcurvefit"]["result"] = self._fittedSignalName
-        self._processParameters["signalcurvefit"]["model"] = { "m0_" : { "modeltype": "gaussianModel"}}
+        self._processParameters["signalcurvefit"]["model"] = {"m0_": {"modeltype": "gaussianModel"}}
         # calc fitted signal points
         self._processParameters["calcfitpoints"]["fitresult"] = self._fittedSignalName
         self._processParameters["calcfitpoints"]["xdata"] = self._motorName
-        self._processParameters["calcfitpoints"]["output"] =  self._fitSignalPointsName
+        self._processParameters["calcfitpoints"]["output"] = self._fitSignalPointsName
         # trapezoidal integration
         self._processParameters["trapint"]["motor"] = self._motorName
         self._processParameters["trapint"]["observable"] = self._signalName
@@ -237,9 +234,9 @@ class InteractiveP09ProcessingControl():
         return self._motorName
 
     def setMotorName(self, motor):
-        self._motorName= motor
-        self._processParameters["bkgselect"]["input"] = [ self._despObservableName, self._motorName]
-        self._processParameters["calcbkgpoints"]["xdata"] =  self._motorName
+        self._motorName = motor
+        self._processParameters["bkgselect"]["input"] = [self._despObservableName, self._motorName]
+        self._processParameters["calcbkgpoints"]["xdata"] = self._motorName
         self._processParameters["signalcurvefit"]["xdata"] = self._motorName
         self._processParameters["calcfitpoints"]["xdata"] = self._motorName
         self._processParameters["trapint"]["motor"] = self._motorName
@@ -256,14 +253,14 @@ class InteractiveP09ProcessingControl():
             self._processParameters["signalcurvefit"]["ydata"] = self._despObservableName
             self._processParameters["finalize"]["observable"] = self._despObservableName
         if self._nodespike and not self._nobkg:
-            self._processParameters["bkgselect"]["input"] = [ self._observableName, self._motorName]
-            self._processParameters["bkgsubtract"]["input"] =  self._observableName
+            self._processParameters["bkgselect"]["input"] = [self._observableName, self._motorName]
+            self._processParameters["bkgsubtract"]["input"] = self._observableName
             self._processParameters["trapint"]["observable"] = self._signalName
             self._processParameters["signalcurvefit"]["ydata"] = self._signalName
             self._processParameters["finalize"]["observable"] = self._signalName
         if not self._nodespike and not self._nobkg:
-            self._processParameters["bkgselect"]["input"] = [ self._despObservableName, self._motorName]
-            self._processParameters["bkgsubtract"]["input"] =  self._despObservableName
+            self._processParameters["bkgselect"]["input"] = [self._despObservableName, self._motorName]
+            self._processParameters["bkgsubtract"]["input"] = self._despObservableName
             self._processParameters["trapint"]["observable"] = self._signalName
             self._processParameters["signalcurvefit"]["ydata"] = self._signalName
             self._processParameters["finalize"]["observable"] = self._signalName
@@ -334,7 +331,7 @@ class InteractiveP09ProcessingControl():
             if proc in self._processNames:
                 self._procRunList.append(proc)
                 for k, v in pDefs[proc].items():
-                    self._processParameters[proc][k]=v
+                    self._processParameters[proc][k] = v
             else:
                 print("Wrong configuration file, unrecognized process name/type: " + str(proc))
         if "despike" in execOrder:
@@ -344,15 +341,16 @@ class InteractiveP09ProcessingControl():
             self._nobkg = False
 
     def saveConfig(self, filename):
-        execlist =  [ "read", "observabledef"]
+        execlist = ["read", "observabledef"]
         processDict = {}
         processDict["read"] = self.getSFRDict()
         processDict["observabledef"] = self.getOBSDict()
         try:
-            if processDict["observabledef"]["attenuationFactor_column"] == None:
+            if processDict["observabledef"]["attenuationFactor_column"] is None:
                 del processDict["observabledef"]["attenuationFactor_column"]
         except KeyError:
-            pass ## key is not present -- don't worry
+            # key is not present -- don't worry
+            pass
         if not self._nodespike:
             execlist.append("despike")
             processDict["despike"] = self.getDESDict()
@@ -413,11 +411,11 @@ class InteractiveP09ProcessingControl():
         retlist.sort()
         startnumber = retlist[0]
         endnumber = retlist[-1]
-        if stride != None:
+        if stride is not None:
             stridesuffix = "-s" + str(stride)
         else:
             stridesuffix = ''
-        return basename + "_S" + str(startnumber) + "E" + str(endnumber) + stridesuffix + suffix, datetime.datetime.now().strftime ("_%Y%m%d-%Hh%M")
+        return basename + "_S" + str(startnumber) + "E" + str(endnumber) + stridesuffix + suffix, datetime.datetime.now().strftime("_%Y%m%d-%Hh%M")
 
     def getSFRDict(self):
         return self._processParameters["read"]
@@ -445,19 +443,18 @@ class InteractiveP09ProcessingControl():
 
     def setBkgModel(self, modelname):
         if modelname == "linearModel":
-            self._processParameters["bkgfit"]["model"] = { "linbkg_" : {"modeltype" : modelname}}
+            self._processParameters["bkgfit"]["model"] = {"linbkg_": {"modeltype": modelname}}
         elif modelname == "constantModel":
-            self._processParameters["bkgfit"]["model"] = { "constbkg_" : {"modeltype" : modelname}}
+            self._processParameters["bkgfit"]["model"] = {"constbkg_": {"modeltype": modelname}}
         else:
             print("Unknown model for background. Check.")
-
 
     def getBKGDicts(self):
         try:
             return (self._processParameters["bkgselect"],
                     self._processParameters["bkgfit"],
                     self._processParameters["calcbkgpoints"],
-                    self._processParameters["bkgsubtract"] )            
+                    self._processParameters["bkgsubtract"])
         except KeyError:
             return ({}, {}, {}, {})
 
@@ -482,7 +479,7 @@ class InteractiveP09ProcessingControl():
             return self._processParameters["inspection"]
         except KeyError:
             return {}
-    
+
     def getFitModels(self):
         return curvefitting.curvefitting().getFitModels()
 
@@ -522,7 +519,7 @@ class InteractiveP09ProcessingControl():
 
     def getTrackInformation(self, name):
         '''Collect the tracked data given by name.
-           Returns the name, value and error of the tracked parameter, 
+           Returns the name, value and error of the tracked parameter,
            plus a dictionary of the fitted parameters including their error.'''
         value, error = [], []
         infoholder = {}
@@ -536,7 +533,7 @@ class InteractiveP09ProcessingControl():
                 try:
                     infoholder[params[param].name].append((params[param].value, params[param].stderr))
                 except KeyError:
-                    infoholder[params[param].name] =[]
+                    infoholder[params[param].name] = []
                     infoholder[params[param].name].append((params[param].value, params[param].stderr))
             try:
                 array = datum.getData(self._rawName).getArray(name)
@@ -556,7 +553,7 @@ class InteractiveP09ProcessingControl():
         try:
             for datum in self._dataList:
                 scannumber = datum.getData(self.getRawDataName()).getScanNumber()
-                resultlist.append(80 *"*" + '\n' + "Scan number : " + str(scannumber) + '\n') 
+                resultlist.append(80 * "*" + '\n' + "Scan number : " + str(scannumber) + '\n')
                 resultlist.append(datum.getData(self._fittedSignalName).fit_report())
         except:
             pass
@@ -576,12 +573,12 @@ class InteractiveP09ProcessingControl():
                 try:
                     infoholder[params[param].name].append((params[param].value, params[param].stderr))
                 except KeyError:
-                    infoholder[params[param].name] =[]
+                    infoholder[params[param].name] = []
                     infoholder[params[param].name].append((params[param].value, params[param].stderr))
 
             value.append(datum.getData(self._rawName).getScanNumber())
             error.append(0.)
-        
+
         return trackedInformation(name, value, error, infoholder)
 
     def setResultFilename(self, filename):
@@ -589,9 +586,8 @@ class InteractiveP09ProcessingControl():
         self._processParameters["finalize"]["pdffilename"] = filename
 
 
-
 class trackedInformation():
-    
+
     def __init__(self, name, value, error, info):
         self.name = name
         self.value = value
