@@ -8,11 +8,11 @@ with open(path.join('.', 'README.rst'), encoding='utf-8') as f:
 
 name='iint-gui'
 version='0'
-release='0.3.5'
+release='0.3.6'
 
 setup(
     name='iintgui',
-    version='0.3.5',
+    version='0.3.6',
 
     description='iintgui: ', 
     long_description=long_description,
@@ -44,13 +44,5 @@ setup(
     include_package_data=True,
 
     scripts = ['iintgui/bin/iint-gui'],
-    
-    
-    cmdclass={'build_sphinx': BuildDoc,},
-    command_options={
-        'build_sphinx': {
-            'project': ('setup.py', name),
-            'version': ('setup.py', version),
-            'release': ('setup.py', release)}},
 )
 
