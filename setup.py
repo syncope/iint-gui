@@ -11,13 +11,13 @@ version='0'
 release='0.3.5'
 
 setup(
-    name='iint-gui',
+    name='iintgui',
     version='0.3.5',
 
-    description='iint-gui: ', 
+    description='iintgui: ', 
     long_description=long_description,
 
-    url='https://github.com/syncope/adapt',
+    url='https://github.com/syncope/iintgui',
 
     author='Ch.Rosemann',
     author_email='christoph.rosemann@desy.de',
@@ -36,14 +36,14 @@ setup(
         'Programming Language :: Python :: 3.5',
     ],
 
-    keywords='photon science data processing analysis',
+    keywords='photon science data processing analysis gui interactive',
     
-    packages=['iint-gui',],
+    packages=['iintgui',],
     
-    package_dir = { 'iint-gui':'iint-gui',},
+    package_dir = { 'iintgui':'iintgui',},
     include_package_data=True,
 
-    scripts = ['iint-gui/bin/iint-gui'],
+    scripts = ['iintgui/bin/iint-gui'],
     
     
     cmdclass={'build_sphinx': BuildDoc,},
