@@ -1,6 +1,8 @@
 # Copyright (C) 2018 Christoph Rosemann, DESY, Notkestr. 85, D-22607 Hamburg
 # email contact: christoph.rosemann@desy.de
 #
+# iintgui is an application for the ADAPT framework
+#
 # This program is free software; you can redistribute it and/or
 # modify it under the terms of the GNU General Public License
 # as published by the Free Software Foundation in  version 2

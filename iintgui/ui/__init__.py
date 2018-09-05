@@ -1,7 +1,7 @@
 # Copyright (C) 2018  Christoph Rosemann, DESY, Notkestr. 85, D-22607 Hamburg
 # email contact: christoph.rosemann@desy.de
 #
-# iint-gui is an application for the data processing toolkit ADAPT
+# iintgui is an application for the data processing toolkit ADAPT
 #
 # This program is free software; you can redistribute it and/or
 # modify it under the terms of the GNU General Public License
