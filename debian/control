@@ -1,0 +1,25 @@
+Source: iintgui
+Maintainer: Christoph Rosemann <christoph.rosemann@desy.de>
+Uploaders: J. Blume <johannes.blume@desy.de>
+Section: science
+Priority: extra
+Build-Depends: debhelper (>= 9), dh-python, python3-dev, python3-all-dev, python3-setuptools, python3-sphinx
+Standards-Version: 3.9.8
+
+Package: python3-iintgui
+Architecture: any
+Section: python
+Depends: ${misc:Depends},
+         ${python3:Depends},
+         python3-numpy,
+         python3-pyqt4,
+         python3-pyqtgraph,
+         python3-adapt
+Description: graphical user interface to iint
+    intgui is an application within the data analysis framework ADAPT, written by Ch. Rosemann, DESY.
+    All iint parts are by Sonia Francoual, beamline P09, DESY
+    .
+    It is a graphical tool for the specific workflow of P09 resonant scattering and polarization analysis.
+    It guides through the typical steps of data processing and analysis.
+    .
+    It is written completely in Python3.
