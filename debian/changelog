@@ -1,5 +1,12 @@
+iintgui (0.3.8-1+deb9u5~fsec) stretch; urgency=low
+
+  * Remove wrongly included files.
+
+ -- Christoph Rosemann <christoph.rosemann@desy.de>  Fri, 07 Sep 2018 16:28:00 +0200
+
 iintgui (0.3.7-1+deb9u5~fsec) stretch; urgency=low
 
   * First release
 
  -- Christoph Rosemann <christoph.rosemann@desy.de>  Wed, 05 Sep 2018 17:18:00 +0200
+
