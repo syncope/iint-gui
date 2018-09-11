@@ -46,14 +46,14 @@ class iintObservableDefinition(QtGui.QWidget):
         self.obsNextBtn.clicked.connect(self.emittit)
         self._observableName = 'observable'
         self.observableMotorLabel.setToolTip("The motor taken from the scan command for the chosen series of scans.")
-        self.label.setToolTip("The shorthand notation for the used formula to calculate the number of counts at the given motor position.")
-        self.observableDetectorCB.setToolTip("Chose the correct detector entry from the scan file information.")
-        self.observableMonitorCB.setToolTip("Chose the correct monitor name from the scan file information.")
-        self.observableTimeCB.setToolTip("Chose the correct time entry from the scan file information.")
-        self.observableAttFaccheck.setToolTip("Chose the correct entry from the scan file information for an attenuation factor.")
+        self.label.setToolTip("The shorthand notation for the used formula to calculate\nthe number of counts at the given motor position.")
+        self.observableDetectorCB.setToolTip("Chose the detector entry from the scan file information.")
+        self.observableMonitorCB.setToolTip("Chose the monitor name from the scan file information.")
+        self.observableTimeCB.setToolTip("Chose the time entry from the scan file information.")
+        self.observableAttFaccheck.setToolTip("Chose the entry from the scan file information for an attenuation factor.")
         self.observableAttFacCB.setToolTip("Check the box to enable the choice of an attenuation factor entry.")
-        self.despikeCheckBox.setToolTip("Check the box to run a despiking/filtering algorithm on the scan data to dampen spikes/noise fluctuation.")
-        self.obsNextBtn.setToolTip("Once everything is set, click this button to perform the calculaion of the observable data and open a display.")
+        self.despikeCheckBox.setToolTip("Check the box to run a despiking/filtering algorithm\non the scan data to dampen spikes/noise fluctuation.")
+        self.obsNextBtn.setToolTip("Once everything is set, click this button to perform\nthe calculaion of the observable data and open a display.")
 
     def _defaultSettings(self):
         self._obsDict = {}

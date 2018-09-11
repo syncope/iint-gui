@@ -45,11 +45,11 @@ class iintBackgroundHandling(QtGui.QWidget):
         self.setParameterDicts(pDicts)
         self.fitBkg.setDisabled(True)
         self._noBKG = False
-        self.useBkg.setToolTip("If data is available, check this box to enable the setting and execution of background calculation.")
+        self.useBkg.setToolTip("If data is available, check this box to enable the\nsetting and execution of background calculation.")
         self.linearBkg.setToolTip("Active to chose a linear background model.")
         self.constBkg.setToolTip("Activate to select a constant background model.")
-        self.bkgStartPointsSB.setToolTip("Select the number of points at the low end of the motor positions to be included in the background estimation.")
-        self.bkgEndPointsSB.setToolTip("Select the number of points at the upper end of the motor positions to be included in the background estimation.")
+        self.bkgStartPointsSB.setToolTip("Select the number of points at the low end\nof the motor positions to be included in the background estimation.")
+        self.bkgEndPointsSB.setToolTip("Select the number of points at the upper end\nof the motor positions to be included in the background estimation.")
         self.fitBkg.setToolTip("Perform the background fitting procedure.")
 
     def reset(self):

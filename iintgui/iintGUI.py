@@ -173,20 +173,20 @@ class iintGUI(QtGui.QMainWindow):
             else:
                 return
         except AttributeError:
-            self.message("Can't show config file, since none is present.\n")
+            self.message("Can't show config file, since none is present (yet).\nSave the config file first (see File Menu).\n")
 
     def _showSpecFile(self):
         try:
             self._widgetList.append(showFileContents.ShowFileContents(open(self._sfrGUI.getParameterDict()["filename"]).read()))
         except TypeError:
-            self.message("Can't show spec file, since none has been selected yet.\n")
+            self.message("Can't show spec file, since none has been selected yet.\nOpen a spec file file first (see File Menu).\n")
         return
 
     def _showResultsFile(self):
         try:
             self._widgetList.append(showFileContents.ShowFileContents(open(self._resultFileName).read()))
         except TypeError:
-            self.message("Can't show results file, there is none yet.\n")
+            self.message("Can't show results file, there is none yet.\nFirst save a result file (see Analysis section).\n")
 
     def _showFitResults(self):
         self._widgetList.append(showFileContents.ShowFileContents(''.join(self._control.getSignalFitResults())))
