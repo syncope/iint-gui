@@ -89,6 +89,7 @@ class iintGUI(QtGui.QMainWindow):
         self._obsDef.doDespike.connect(self._control.useDespike)
         self._bkgHandling = iintBackgroundHandling.iintBackgroundHandling(self._control.getBKGDicts())
         self._bkgHandling.bkgmodel.connect(self._control.setBkgModel)
+        self._bkgHandling.useBkg.stateChanged.connect(self._checkBkgState)
         self._signalHandling = iintSignalHandling.iintSignalHandling(self._control.getSIGDict())
         self._signalHandling.passModels(self._control.getFitModels())
         self._signalHandling.modelcfg.connect(self.openFitDialog)
@@ -247,6 +248,7 @@ class iintGUI(QtGui.QMainWindow):
         self._bkgHandling.emittem()
         if self._control.getDESDict() != {}:
             self._obsDef.activateDespikingBox()
+        # put the init stuff for signal fitting here
 
     def runFileReader(self):
         self._resetInternals()
@@ -306,10 +308,7 @@ class iintGUI(QtGui.QMainWindow):
             if(self._simpleImageView is not None):
                 self._simpleImageView.update("des")
         self._bkgHandling.activate()
-        self._signalHandling.activateConfiguration()
         self.message(" done.\n")
-        self._bkgHandling.activate()
-        self._signalHandling.activateConfiguration()
 
     def runBkgProcessing(self, selDict, fitDict, calcDict, subtractDict):
         self._inspectAnalyze.reset()
@@ -334,6 +333,15 @@ class iintGUI(QtGui.QMainWindow):
         if(self._simpleImageView is not None):
             self._simpleImageView.update("bkg")
         self.message(" ... done.\n")
+        self._signalHandling.activateConfiguration()
+
+
+    def _checkBkgState(self, i):
+        self._control.useBKG(i)
+        if i is 0:
+            self._signalHandling.activateConfiguration()
+        elif i is 2:
+            self._signalHandling.deactivateConfiguration()
 
     def plotit(self):
         # pyqt helper stuff

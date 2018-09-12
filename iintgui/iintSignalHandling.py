@@ -68,6 +68,10 @@ class iintSignalHandling(QtGui.QWidget):
         self.firstModelCB.setDisabled(False)
         self.configureFirst.setDisabled(False)
 
+    def deactivateConfiguration(self):
+        self.firstModelCB.setDisabled(True)
+        self.configureFirst.setDisabled(True)
+
     def activateFitting(self):
         self.performFitPushBtn.setDisabled(False)
 

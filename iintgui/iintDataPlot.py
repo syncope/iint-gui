@@ -240,7 +240,15 @@ class iintDataPlot(QtGui.QDialog):
 
     def getCurrentSignal(self):
         datum = self._dataList[self._currentIndex]
-        return datum.getData(self._motorName), datum.getData(self._signalName)
+        # what to do if there is "signal" ?
+        # first try despiked data, then try raw .. then bail out
+        try:
+            return datum.getData(self._motorName), datum.getData(self._signalName)
+        except KeyError:
+            try:
+                return datum.getData(self._motorName), datum.getData(self._despObservableName)
+            except KeyError:
+                return datum.getData(self._motorName), datum.getData(self._observableName)
 
     def _blacklisting(self):
         ci = self._currentIndex
