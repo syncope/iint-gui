@@ -1,16 +1,16 @@
-iintgui (0.4.0-1+deb8u10~fsec) stretch; urgency=low
+iintgui (0.4.0-1+deb8u10~fsec) jessie; urgency=low
 
   * Initial release for testing at P09.
 
  -- Christoph Rosemann <christoph.rosemann@desy.de>  Thu, 13 Sep 2018 11:51:00 +0200
 
-iintgui (0.3.8-1+deb8u10~fsec) stretch; urgency=low
+iintgui (0.3.8-1+deb8u10~fsec) jessie; urgency=low
 
   * Remove wrongly included files.
 
  -- Christoph Rosemann <christoph.rosemann@desy.de>  Fri, 07 Sep 2018 16:28:00 +0200
 
-iintgui (0.3.7-1+deb8u10~fsec) stretch; urgency=low
+iintgui (0.3.7-1+deb8u10~fsec) jessie; urgency=low
 
   * First release
 
