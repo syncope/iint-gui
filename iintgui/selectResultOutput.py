@@ -32,7 +32,7 @@ class SelectResultOutput(QtGui.QDialog):
         self.ok.clicked.connect(self._returnOK)
         self.filename.setToolTip("The proposed file name; type here to change it.")
         self.ok.setToolTip("Click here to accept the file name.")
-        self.cancel.setToolTip("Clilck here to cancel the save procedure.")
+        self.cancel.setToolTip("Click here to cancel the save procedure.")
 
     def _returnOK(self):
         self.accept.emit(self.filename.text())

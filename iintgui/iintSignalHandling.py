@@ -34,6 +34,8 @@ class iintSignalHandling(QtGui.QWidget):
         self.configureThird.clicked.connect(self.emitthirdmodelconfig)
         self.configureFourth.clicked.connect(self.emitfourthmodelconfig)
         self._inactive = [True, True, True, True]
+        self._hiddencblist = [self.firstModelCB, self.secondModelCB, self.thirdModelCB, self.fourthModelCB]
+        self._hiddenuselist = [self.useFirst, self.useSecond, self.useThird, self.useFourth]
         self._firstModelDict = {}
         self._secondModelDict = {}
         self._thirdModelDict = {}
@@ -43,18 +45,18 @@ class iintSignalHandling(QtGui.QWidget):
         self.useThird.stateChanged.connect(self._toggleThird)
         self.useFourth.stateChanged.connect(self._toggleFourth)
         self.useFirst.setToolTip("Always checked, since there needs to be at least one model to fit.")
-        self.useSecond.setToolTip("Check to activate the options on the line, enabling the choice of a model and its configuration.")
-        self.useThird.setToolTip("Check to activate the options on the line, enabling the choice of a model and its configuration.")
-        self.useFourth.setToolTip("Check to activate the options on the line, enabling the choice of a model and its configuration.")
+        self.useSecond.setToolTip("Check to activate the options on the line,\nenabling the choice of a model and its configuration.")
+        self.useThird.setToolTip("Check to activate the options on the line,\nenabling the choice of a model and its configuration.")
+        self.useFourth.setToolTip("Check to activate the options on the line,\nenabling the choice of a model and its configuration.")
         self.firstModelCB.setToolTip("Select a model from the drop down list.")
         self.secondModelCB.setToolTip("Select a model from the drop down list.")
         self.thirdModelCB.setToolTip("Select a model from the drop down list.")
         self.fourthModelCB.setToolTip("Select a model from the drop down list.")
-        self.configureFirst.setToolTip("Click here to set the initial values for the chosen model from the drop down list.")
-        self.configureSecond.setToolTip("Click here to set the initial values for the chosen model from the drop down list.")
-        self.configureThird.setToolTip("Click here to set the initial values for the chosen model from the drop down list.")
-        self.configureFourth.setToolTip("Click here to set the initial values for the chosen model from the drop down list.")
-        self.performFitPushBtn.setToolTip("Press to run the fitting procedure. All chosen models must be configured first, otherwise fitting is not possible.")
+        self.configureFirst.setToolTip("Click here to set the initial values for\nthe chosen model from the drop down list.")
+        self.configureSecond.setToolTip("Click here to set the initial values for\nthe chosen model from the drop down list.")
+        self.configureThird.setToolTip("Click here to set the initial values for\nthe chosen model from the drop down list.")
+        self.configureFourth.setToolTip("Click here to set the initial values for\nthe chosen model from the drop down list.")
+        self.performFitPushBtn.setToolTip("Press to run the fitting procedure. All chosen models\nmust be configured first, otherwise fitting is not possible.")
 
     def reset(self):
         self._firstModelDict = {}
@@ -67,6 +69,10 @@ class iintSignalHandling(QtGui.QWidget):
     def activateConfiguration(self):
         self.firstModelCB.setDisabled(False)
         self.configureFirst.setDisabled(False)
+
+    def deactivateConfiguration(self):
+        self.firstModelCB.setDisabled(True)
+        self.configureFirst.setDisabled(True)
 
     def activateFitting(self):
         self.performFitPushBtn.setDisabled(False)
@@ -117,3 +123,11 @@ class iintSignalHandling(QtGui.QWidget):
     def emitfourthmodelconfig(self):
         index = self.fourthModelCB.currentIndex()
         self.modelcfg.emit(self._modelnames[index], 3)
+
+    def setModelNames(self, names):
+        for i in range(len(names)):
+            name = names[i]
+            self._hiddencblist[i].setCurrentIndex(self._hiddencblist[i].findText(name))
+            self._hiddenuselist[i].setDisabled(False)
+            self._hiddenuselist[i].setCheckState(2)
+        self.performFitPushBtn.setDisabled(False)

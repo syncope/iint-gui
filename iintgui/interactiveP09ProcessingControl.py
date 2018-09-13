@@ -334,11 +334,24 @@ class InteractiveP09ProcessingControl():
                     self._processParameters[proc][k] = v
             else:
                 print("Wrong configuration file, unrecognized process name/type: " + str(proc))
+        if "observabledef" not in execOrder:
+            self._noobs = True
+        else:
+            self._noobs = False
+
         if "despike" in execOrder:
             self._nodespike = False
+        else:
+            self._nodespike = True
 
         if "bkgsubtract" in execOrder:
-            self._nobkg = False
+            self.useBKG(True)
+        else:
+            self.useBKG(False)
+        if "signalcurvefit" not in execOrder:
+            self._nofit = True
+        else:
+            self._nofit = False
 
     def saveConfig(self, filename):
         execlist = ["read", "observabledef"]

@@ -89,6 +89,7 @@ class iintGUI(QtGui.QMainWindow):
         self._obsDef.doDespike.connect(self._control.useDespike)
         self._bkgHandling = iintBackgroundHandling.iintBackgroundHandling(self._control.getBKGDicts())
         self._bkgHandling.bkgmodel.connect(self._control.setBkgModel)
+        self._bkgHandling.useBkg.stateChanged.connect(self._checkBkgState)
         self._signalHandling = iintSignalHandling.iintSignalHandling(self._control.getSIGDict())
         self._signalHandling.passModels(self._control.getFitModels())
         self._signalHandling.modelcfg.connect(self.openFitDialog)
@@ -173,20 +174,20 @@ class iintGUI(QtGui.QMainWindow):
             else:
                 return
         except AttributeError:
-            self.message("Can't show config file, since none is present.\n")
+            self.message("Can't show config file, since none is present (yet).\nSave the config file first (see File Menu).\n")
 
     def _showSpecFile(self):
         try:
             self._widgetList.append(showFileContents.ShowFileContents(open(self._sfrGUI.getParameterDict()["filename"]).read()))
         except TypeError:
-            self.message("Can't show spec file, since none has been selected yet.\n")
+            self.message("Can't show spec file, since none has been selected yet.\nOpen a spec file file first (see File Menu).\n")
         return
 
     def _showResultsFile(self):
         try:
             self._widgetList.append(showFileContents.ShowFileContents(open(self._resultFileName).read()))
         except TypeError:
-            self.message("Can't show results file, there is none yet.\n")
+            self.message("Can't show results file, there is none yet.\nFirst save a result file (see Analysis section).\n")
 
     def _showFitResults(self):
         self._widgetList.append(showFileContents.ShowFileContents(''.join(self._control.getSignalFitResults())))
@@ -238,15 +239,26 @@ class iintGUI(QtGui.QMainWindow):
             self._initializeFromConfig()
 
     def _initializeFromConfig(self):
+        # needs much more work
         self._control.loadConfig(self._procconf)
         self._sfrGUI.setParameterDict(self._control.getSFRDict())
+        if not self._control._nofit:
+            self._setupFitFromConfig()
         self.runFileReader()
-        self._obsDef.setParameterDicts(self._control.getOBSDict(), self._control.getDESDict())
-        self._obsDef.emittit()
+        self._obsDef.setParameterDicts(self._control.getOBSDict(), self._control.getDESDict()) # this has side effects !!!???
+        if not self._control._noobs:
+            self._obsDef.emittit()
+        
         self._bkgHandling.setParameterDicts(self._control.getBKGDicts())
-        self._bkgHandling.emittem()
+        if self._control._nobkg is True:
+            self._bkgHandling.useBkg.setCheckState(0)
+        else:
+            self._bkgHandling.useBkg.setCheckState(2)
+            self._bkgHandling.emittem()
         if self._control.getDESDict() != {}:
             self._obsDef.activateDespikingBox()
+        #~ if not self._control._nofit:
+            #~ self._signalHandling.activateFitting()
 
     def runFileReader(self):
         self._resetInternals()
@@ -306,10 +318,7 @@ class iintGUI(QtGui.QMainWindow):
             if(self._simpleImageView is not None):
                 self._simpleImageView.update("des")
         self._bkgHandling.activate()
-        self._signalHandling.activateConfiguration()
         self.message(" done.\n")
-        self._bkgHandling.activate()
-        self._signalHandling.activateConfiguration()
 
     def runBkgProcessing(self, selDict, fitDict, calcDict, subtractDict):
         self._inspectAnalyze.reset()
@@ -334,6 +343,15 @@ class iintGUI(QtGui.QMainWindow):
         if(self._simpleImageView is not None):
             self._simpleImageView.update("bkg")
         self.message(" ... done.\n")
+        self._signalHandling.activateConfiguration()
+
+
+    def _checkBkgState(self, i):
+        self._control.useBKG(i)
+        if i is 0:
+            self._signalHandling.activateConfiguration()
+        elif i is 2:
+            self._signalHandling.deactivateConfiguration()
 
     def plotit(self):
         # pyqt helper stuff
@@ -390,6 +408,14 @@ class iintGUI(QtGui.QMainWindow):
         tdv.pickedTrackedDataPoint.connect(self._setFocusToSpectrum)
         self.message(" ... done.\n")
         self._inspectAnalyze.activate()
+
+    def _setupFitFromConfig(self):
+        fitdict = self._control.getSIGDict()
+        names = []
+        model = fitdict["model"]
+        for name in sorted(model.keys()):
+            names.append(model[name]['modeltype'])
+        self._signalHandling.setModelNames(names)
 
     def _runPolarizationAnalysis(self):
         self.message("Running the polarization analysis ...")
