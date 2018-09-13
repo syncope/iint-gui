@@ -239,16 +239,26 @@ class iintGUI(QtGui.QMainWindow):
             self._initializeFromConfig()
 
     def _initializeFromConfig(self):
+        # needs much more work
         self._control.loadConfig(self._procconf)
         self._sfrGUI.setParameterDict(self._control.getSFRDict())
+        if not self._control._nofit:
+            self._setupFitFromConfig()
         self.runFileReader()
-        self._obsDef.setParameterDicts(self._control.getOBSDict(), self._control.getDESDict())
-        self._obsDef.emittit()
+        self._obsDef.setParameterDicts(self._control.getOBSDict(), self._control.getDESDict()) # this has side effects !!!???
+        if not self._control._noobs:
+            self._obsDef.emittit()
+        
         self._bkgHandling.setParameterDicts(self._control.getBKGDicts())
-        self._bkgHandling.emittem()
+        if self._control._nobkg is True:
+            self._bkgHandling.useBkg.setCheckState(0)
+        else:
+            self._bkgHandling.useBkg.setCheckState(2)
+            self._bkgHandling.emittem()
         if self._control.getDESDict() != {}:
             self._obsDef.activateDespikingBox()
-        # put the init stuff for signal fitting here
+        #~ if not self._control._nofit:
+            #~ self._signalHandling.activateFitting()
 
     def runFileReader(self):
         self._resetInternals()
@@ -398,6 +408,14 @@ class iintGUI(QtGui.QMainWindow):
         tdv.pickedTrackedDataPoint.connect(self._setFocusToSpectrum)
         self.message(" ... done.\n")
         self._inspectAnalyze.activate()
+
+    def _setupFitFromConfig(self):
+        fitdict = self._control.getSIGDict()
+        names = []
+        model = fitdict["model"]
+        for name in sorted(model.keys()):
+            names.append(model[name]['modeltype'])
+        self._signalHandling.setModelNames(names)
 
     def _runPolarizationAnalysis(self):
         self.message("Running the polarization analysis ...")

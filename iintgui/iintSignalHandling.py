@@ -34,6 +34,8 @@ class iintSignalHandling(QtGui.QWidget):
         self.configureThird.clicked.connect(self.emitthirdmodelconfig)
         self.configureFourth.clicked.connect(self.emitfourthmodelconfig)
         self._inactive = [True, True, True, True]
+        self._hiddencblist = [self.firstModelCB, self.secondModelCB, self.thirdModelCB, self.fourthModelCB]
+        self._hiddenuselist = [self.useFirst, self.useSecond, self.useThird, self.useFourth]
         self._firstModelDict = {}
         self._secondModelDict = {}
         self._thirdModelDict = {}
@@ -121,3 +123,11 @@ class iintSignalHandling(QtGui.QWidget):
     def emitfourthmodelconfig(self):
         index = self.fourthModelCB.currentIndex()
         self.modelcfg.emit(self._modelnames[index], 3)
+
+    def setModelNames(self, names):
+        for i in range(len(names)):
+            name = names[i]
+            self._hiddencblist[i].setCurrentIndex(self._hiddencblist[i].findText(name))
+            self._hiddenuselist[i].setDisabled(False)
+            self._hiddenuselist[i].setCheckState(2)
+        self.performFitPushBtn.setDisabled(False)
