@@ -23,7 +23,7 @@ import sys
 from PyQt4 import QtCore, QtGui, uic
 import pyqtgraph as pg
 
-from . import interactiveP09ProcessingControl
+from . import iintGUIProcessingControl
 from adapt.processes import specfilereader
 from . import getUIFile
 
@@ -61,7 +61,7 @@ class iintGUI(QtGui.QMainWindow):
         self.action_About.triggered.connect(self._showIintGuiInfo)
 
         # the steering helper object
-        self._control = interactiveP09ProcessingControl.InteractiveP09ProcessingControl()
+        self._control = iintGUIProcessingControl.IintGUIProcessingControl()
 
         # the quit dialog
         self._quit = quitDialog.QuitDialog()

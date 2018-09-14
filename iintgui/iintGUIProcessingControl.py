@@ -42,7 +42,7 @@ import numpy as np
 import datetime
 
 
-class InteractiveP09ProcessingControl():
+class IintGUIProcessingControl():
     '''The central control object for interactive processing.
        It holds the elements to build processes from their description,
        the list of processes to be run and the central data exchange object.'''
