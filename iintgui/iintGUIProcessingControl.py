@@ -235,6 +235,7 @@ class IintGUIProcessingControl():
 
     def setMotorName(self, motor):
         self._motorName = motor
+        self._processParameters["observabledef"]["motor_column"] = self._motorName
         self._processParameters["bkgselect"]["input"] = [self._despObservableName, self._motorName]
         self._processParameters["calcbkgpoints"]["xdata"] = self._motorName
         self._processParameters["signalcurvefit"]["xdata"] = self._motorName
@@ -334,24 +335,19 @@ class IintGUIProcessingControl():
                     self._processParameters[proc][k] = v
             else:
                 print("Wrong configuration file, unrecognized process name/type: " + str(proc))
-        if "observabledef" not in execOrder:
-            self._noobs = True
-        else:
-            self._noobs = False
-
         if "despike" in execOrder:
             self._nodespike = False
-        else:
-            self._nodespike = True
-
         if "bkgsubtract" in execOrder:
-            self.useBKG(True)
-        else:
-            self.useBKG(False)
-        if "signalcurvefit" not in execOrder:
-            self._nofit = True
-        else:
-            self._nofit = False
+            self._nobkg = False
+        self._loadedProcessList = execOrder
+
+    def runLoadedConfig(self):
+        for proc in self._loadedProcessList:
+            if proc != "read" and proc != "finalize":
+                if proc == "observabledef" and self._processParameters["observabledef"]["attenuationFactor_column"] is None:
+                    del self._processParameters["observabledef"]["attenuationFactor_column"]
+                print("executing: " + str(proc) +  " with " + str(self._processParameters[proc]))
+                self.createAndBulkExecute(self._processParameters[proc])
 
     def saveConfig(self, filename):
         execlist = ["read", "observabledef"]

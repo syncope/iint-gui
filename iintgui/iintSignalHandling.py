@@ -28,14 +28,14 @@ class iintSignalHandling(QtGui.QWidget):
     def __init__(self, pDict, parent=None):
         super(iintSignalHandling, self).__init__(parent)
         uic.loadUi(getUIFile.getUIFile("fitpanel.ui"), self)
+        self._hiddencblist = [self.firstModelCB, self.secondModelCB, self.thirdModelCB, self.fourthModelCB]
+        self._hiddenuselist = [self.useFirst, self.useSecond, self.useThird, self.useFourth]
         self.setParameterDict(pDict)
         self.configureFirst.clicked.connect(self.emitfirstmodelconfig)
         self.configureSecond.clicked.connect(self.emitsecondmodelconfig)
         self.configureThird.clicked.connect(self.emitthirdmodelconfig)
         self.configureFourth.clicked.connect(self.emitfourthmodelconfig)
         self._inactive = [True, True, True, True]
-        self._hiddencblist = [self.firstModelCB, self.secondModelCB, self.thirdModelCB, self.fourthModelCB]
-        self._hiddenuselist = [self.useFirst, self.useSecond, self.useThird, self.useFourth]
         self._firstModelDict = {}
         self._secondModelDict = {}
         self._thirdModelDict = {}
@@ -100,6 +100,19 @@ class iintSignalHandling(QtGui.QWidget):
     def setParameterDict(self, pDict):
         self._parDict = pDict
 
+        # set the different scenarios
+        names = []
+        model = pDict["model"]
+        for name in sorted(model.keys()):
+            names.append(model[name]['modeltype'])
+
+        for i in range(len(names)):
+            name = names[i]
+            self._hiddencblist[i].setCurrentIndex(self._hiddencblist[i].findText(name))
+            self._hiddenuselist[i].setDisabled(False)
+            self._hiddenuselist[i].setCheckState(2)
+        self.performFitPushBtn.setDisabled(False)
+
     def passModels(self, modelDict):
         self._modelnames = sorted([key for key in modelDict.keys()])
         self.firstModelCB.addItems(self._modelnames)
@@ -123,11 +136,3 @@ class iintSignalHandling(QtGui.QWidget):
     def emitfourthmodelconfig(self):
         index = self.fourthModelCB.currentIndex()
         self.modelcfg.emit(self._modelnames[index], 3)
-
-    def setModelNames(self, names):
-        for i in range(len(names)):
-            name = names[i]
-            self._hiddencblist[i].setCurrentIndex(self._hiddencblist[i].findText(name))
-            self._hiddenuselist[i].setDisabled(False)
-            self._hiddenuselist[i].setCheckState(2)
-        self.performFitPushBtn.setDisabled(False)
