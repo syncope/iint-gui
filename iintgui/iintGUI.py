@@ -51,7 +51,7 @@ class iintGUI(QtGui.QMainWindow):
 
         self.actionNew.triggered.connect(self._askReset)
         self.action_Open_SPEC_file.triggered.connect(self.showSFRGUI)
-        self.actionOpen_file.triggered.connect(self.choosefile)
+        self.actionOpen_file.triggered.connect(self.chooseAndLoadConfig)
         self.actionSave_file.triggered.connect(self._saveConfig)
         self.actionExit.triggered.connect(self._closeApp)
         self.action_Config_File.triggered.connect(self._showConfig)
@@ -115,6 +115,7 @@ class iintGUI(QtGui.QMainWindow):
         self.verticalLayout.addWidget(self._inspectAnalyze)
         self.verticalLayout.addWidget(self._loggingBox)
 
+        self._sfrGUI.valuesSet.connect(self._resetForSFR)
         self._sfrGUI.valuesSet.connect(self.runFileReader)
         self._obsDef.observableDicts.connect(self.runObservable)
         self._bkgHandling.bkgDicts.connect(self.runBkgProcessing)
@@ -144,6 +145,19 @@ class iintGUI(QtGui.QMainWindow):
         self._signalHandling.setParameterDict(self._control.getSIGDict())
         self._control.resetAll()
         self._sfrGUI.reset()
+        self.resetTabs()
+        self._inspectAnalyze.reset()
+        self.message("Cleared all data and processing configuration.")
+
+    def _resetForSFR(self):
+        self._resetInternals()
+        self._simpleImageView.reset()
+        self._obsDef.reset()
+        self._bkgHandling.reset()
+        self._bkgHandling.setParameterDicts(self._control.getBKGDicts())
+        self._signalHandling.reset()
+        self._signalHandling.setParameterDict(self._control.getSIGDict())
+        self._control.resetAll()
         self.resetTabs()
         self._inspectAnalyze.reset()
         self.message("Cleared all data and processing configuration.")
@@ -224,7 +238,7 @@ class iintGUI(QtGui.QMainWindow):
     def showSFRGUI(self):
         self._sfrGUI.show()
 
-    def choosefile(self):
+    def chooseAndLoadConfig(self):
         try:
             prev = self._file
         except:
@@ -239,8 +253,11 @@ class iintGUI(QtGui.QMainWindow):
             self._initializeFromConfig()
 
     def _initializeFromConfig(self):
-        # needs much more work
+        # reset logic is screwed up
+        # first load the config into the actual description
         self._control.loadConfig(self._procconf)
+
+        # the next step is to decide what to do!
         self._sfrGUI.setParameterDict(self._control.getSFRDict())
         if not self._control._nofit:
             self._setupFitFromConfig()
@@ -261,19 +278,6 @@ class iintGUI(QtGui.QMainWindow):
             #~ self._signalHandling.activateFitting()
 
     def runFileReader(self):
-        self._resetInternals()
-        self._obsDef.reset()
-        self._simpleImageView.reset()
-        self._fileInfo.reset()
-        self._bkgHandling.reset()
-        self._bkgHandling.setParameterDicts(self._control.getBKGDicts())
-        self._control.resetSIGdata()
-        self._signalHandling.reset()
-        self._signalHandling.setParameterDict(self._control.getSIGDict())
-        self.resetTabs()
-        self._inspectAnalyze.reset()
-        self._control.resetAll()
-
         filereaderdict = self._sfrGUI.getParameterDict()
         self._fileInfo.setNames(filereaderdict["filename"], filereaderdict["scanlist"])
         self._control.setSpecFile(filereaderdict["filename"], filereaderdict["scanlist"])
