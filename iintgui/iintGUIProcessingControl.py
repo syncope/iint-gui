@@ -339,15 +339,10 @@ class IintGUIProcessingControl():
             self._nodespike = False
         if "bkgsubtract" in execOrder:
             self._nobkg = False
-        self._loadedProcessList = execOrder
-
-    def runLoadedConfig(self):
-        for proc in self._loadedProcessList:
-            if proc != "read" and proc != "finalize":
-                if proc == "observabledef" and self._processParameters["observabledef"]["attenuationFactor_column"] is None:
-                    del self._processParameters["observabledef"]["attenuationFactor_column"]
-                print("executing: " + str(proc) +  " with " + str(self._processParameters[proc]))
-                self.createAndBulkExecute(self._processParameters[proc])
+        # cleaning up, improper handling of save value -- how to really fix?
+        if self._processParameters["observabledef"]["attenuationFactor_column"] is None:
+            del self._processParameters["observabledef"]["attenuationFactor_column"]   
+        return execOrder
 
     def saveConfig(self, filename):
         execlist = ["read", "observabledef"]

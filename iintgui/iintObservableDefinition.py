@@ -152,7 +152,6 @@ class iintObservableDefinition(QtGui.QWidget):
         self.observableDicts.emit(self._obsDict, self._despikeDict, self._trapintDict)
 
     def setParameterDicts(self, obsDict, despDict):
-        print("setting obs paramdicts. despDict is : " + str(despDict))
         self.observableMotorLabel.setStyleSheet("color: blue;")
         self.observableMotorLabel.setText(obsDict["motor_column"])
         # first get index of element

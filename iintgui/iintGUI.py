@@ -255,15 +255,36 @@ class iintGUI(QtGui.QMainWindow):
     def _initializeFromConfig(self):
         # reset logic is screwed up
         # first load the config into the actual description
-        self._control.loadConfig(self._procconf)
+        runlist = self._control.loadConfig(self._procconf)
 
         # the next step is to set the gui up to reflect all the new values
-        self._sfrGUI.setParameterDict(self._control.getSFRDict())
-        self.runFileReader()
-        self._obsDef.setParameterDicts(self._control.getOBSDict(), self._control.getDESDict())
-        self._bkgHandling.setParameterDicts(self._control.getBKGDicts())
-        self._signalHandling.setParameterDict(self._control.getSIGDict())
-        self._control.runLoadedConfig()        
+        if "read" in runlist:
+            self._sfrGUI.setParameterDict(self._control.getSFRDict())
+            self.runFileReader()
+        else:
+            return
+        if "observabledef" in runlist:
+            self._obsDef.setParameterDicts(self._control.getOBSDict(), self._control.getDESDict())
+            self.runObservable(self._control.getOBSDict(), self._control.getDESDict(), self._control.getTrapIntDict())
+        else:
+            return
+        if "bkgsubtract" in runlist:
+            self._bkgHandling.setParameterDicts(self._control.getBKGDicts())
+            self.runBkgProcessing(self._control.getBKGDicts()[0], self._control.getBKGDicts()[1], self._control.getBKGDicts()[2], self._control.getBKGDicts()[3])
+        else:
+            return
+        if "signalcurvefit"  in runlist:
+            self.runSignalProcessing(self._control.getSIGDict()['model'])
+        else:
+            return
+
+    def _updateDisplay(self):
+        self.plotit()
+        #~ if(self._simpleImageView is not None):
+            #~ self._simpleImageView.update("des")
+        self._bkgHandling.activate()
+        self._signalHandling.activateConfiguration()
+        self._inspectAnalyze.activate()
 
     def runFileReader(self):
         filereaderdict = self._sfrGUI.getParameterDict()
@@ -336,7 +357,6 @@ class iintGUI(QtGui.QMainWindow):
             self._simpleImageView.update("bkg")
         self.message(" ... done.\n")
         self._signalHandling.activateConfiguration()
-
 
     def _checkBkgState(self, i):
         self._control.useBKG(i)
