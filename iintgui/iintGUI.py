@@ -87,7 +87,7 @@ class iintGUI(QtGui.QMainWindow):
         self._sfrGUI = specfilereader.specfilereaderGUI()
         self._obsDef = iintObservableDefinition.iintObservableDefinition()
         self._obsDef.doDespike.connect(self._control.useDespike)
-        self._obsDef.showScanProfile.clicked.connect(print)
+        self._obsDef.showScanProfile.clicked.connect(self._runScanProfiles)
         self._bkgHandling = iintBackgroundHandling.iintBackgroundHandling(self._control.getBKGDicts())
         self._bkgHandling.bkgmodel.connect(self._control.setBkgModel)
         self._bkgHandling.useBkg.stateChanged.connect(self._checkBkgState)
@@ -335,6 +335,15 @@ class iintGUI(QtGui.QMainWindow):
                 self._simpleImageView.update("des")
         self._bkgHandling.activate()
         self.message(" done.\n")
+
+    def _runScanProfiles(self):
+        name, timesuffix = self._control.proposeSaveFileName()
+        filename = name + "_scanProfiles.pdf"
+        self.message("Creating the scan profile plot ...")
+        self._control.processScanProfiles(filename)
+        self.message(" ... done.\n")
+        from subprocess import Popen
+        Popen(["evince", filename])
 
     def runBkgProcessing(self, selDict, fitDict, calcDict, subtractDict):
         self._inspectAnalyze.reset()

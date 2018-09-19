@@ -37,6 +37,7 @@ from adapt.processes import trapezoidintegration
 from adapt.processes import iintfinalization
 from adapt.processes import iintpolarization
 from adapt.processes import iintcontrolplots
+from adapt.processes import iintscanprofileplot
 
 import numpy as np
 import datetime
@@ -76,7 +77,8 @@ class IintGUIProcessingControl():
                               "trapint",
                               "finalize",
                               "polana",
-                              "inspection"]
+                              "inspection",
+                              "scanprofileplot"]
         self._procRunList = []
         self._processParameters = {}
         self._setupProcessParameters()
@@ -161,6 +163,7 @@ class IintGUIProcessingControl():
         self._processParameters["finalize"] = iintfinalization.iintfinalization().getProcessDictionary()
         self._processParameters["polana"] = iintpolarization.iintpolarization().getProcessDictionary()
         self._processParameters["inspection"] = iintcontrolplots.iintcontrolplots().getProcessDictionary()
+        self._processParameters["scanprofileplot"] = iintscanprofileplot.iintscanprofileplot().getProcessDictionary()
 
         self._fitmodels = curvefitting.curvefitting().getFitModels()
 
@@ -174,6 +177,9 @@ class IintGUIProcessingControl():
         self._processParameters["observabledef"]["exposureTime_column"] = "exp_t01"
         self._processParameters["observabledef"]["id"] = self._id
 
+        self._processParameters["scanprofileplot"]["outfilename"] = None
+        self._processParameters["scanprofileplot"]["observable"] = self._observableName
+        self._processParameters["scanprofileplot"]["motor"] = None
         # from out to in:
         self._processParameters["despike"]["input"] = self._observableName
         self._processParameters["despike"]["method"] = "p09despiking"
@@ -236,6 +242,7 @@ class IintGUIProcessingControl():
     def setMotorName(self, motor):
         self._motorName = motor
         self._processParameters["observabledef"]["motor_column"] = self._motorName
+        self._processParameters["scanprofileplot"]["motor"] = self._motorName
         self._processParameters["bkgselect"]["input"] = [self._despObservableName, self._motorName]
         self._processParameters["calcbkgpoints"]["xdata"] = self._motorName
         self._processParameters["signalcurvefit"]["xdata"] = self._motorName
@@ -323,6 +330,10 @@ class IintGUIProcessingControl():
         proc.initialize()
         proc.loopExecute(self._dataList, emitProgress=True)
         proc.finalize(data=None)
+
+    def processScanProfiles(self, name):
+        self._processParameters["scanprofileplot"]["outfilename"] = name
+        self.processAll(self._processParameters["scanprofileplot"])
 
     def loadConfig(self, processConfig):
         self._procRunList.clear()
