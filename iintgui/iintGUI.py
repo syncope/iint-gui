@@ -93,6 +93,7 @@ class iintGUI(QtGui.QMainWindow):
         self._signalHandling = iintSignalHandling.iintSignalHandling(self._control.getSIGDict())
         self._signalHandling.passModels(self._control.getFitModels())
         self._signalHandling.modelcfg.connect(self.openFitDialog)
+        self._signalHandling.removeIndex.connect(self._removeFitFromListByIndex)
         self._signalHandling.performFitPushBtn.clicked.connect(self._prepareSignalFitting)
         self._fitList = []
 
@@ -460,6 +461,12 @@ class iintGUI(QtGui.QMainWindow):
             if fitwidget.getIndex() == fit.getIndex():
                 self._fitList.remove(fit)
         self._fitList.append(fitwidget)
+
+    def _removeFitFromListByIndex(self, index):
+        # update the list of fits by removing the entry
+        for fit in self._fitList:
+            if fit.getIndex() == index:
+                self._fitList.remove(fit)
 
     def _dataToTrack(self):
         rawScanData = self._control.getDataList()[0].getData(self._control.getRawDataName())

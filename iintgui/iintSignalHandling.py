@@ -24,6 +24,7 @@ from . import getUIFile
 
 class iintSignalHandling(QtGui.QWidget):
     modelcfg = QtCore.pyqtSignal(str, int)
+    removeIndex = QtCore.pyqtSignal(int)
 
     def __init__(self, pDict, parent=None):
         super(iintSignalHandling, self).__init__(parent)
@@ -86,16 +87,22 @@ class iintSignalHandling(QtGui.QWidget):
         self._inactive[1] = not self._inactive[1]
         self.secondModelCB.setDisabled(self._inactive[1])
         self.configureSecond.setDisabled(self._inactive[1])
+        if(self._inactive[1]):
+            self.removeIndex.emit(1)
 
     def _toggleThird(self):
         self._inactive[2] = not self._inactive[2]
         self.thirdModelCB.setDisabled(self._inactive[2])
         self.configureThird.setDisabled(self._inactive[2])
+        if(self._inactive[2]):
+            self.removeIndex.emit(2)
 
     def _toggleFourth(self):
         self._inactive[3] = not self._inactive[3]
         self.fourthModelCB.setDisabled(self._inactive[3])
         self.configureFourth.setDisabled(self._inactive[3])
+        if(self._inactive[3]):
+            self.removeIndex.emit(3)
 
     def setParameterDict(self, pDict):
         self._parDict = pDict
