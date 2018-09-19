@@ -87,6 +87,7 @@ class iintGUI(QtGui.QMainWindow):
         self._sfrGUI = specfilereader.specfilereaderGUI()
         self._obsDef = iintObservableDefinition.iintObservableDefinition()
         self._obsDef.doDespike.connect(self._control.useDespike)
+        self._obsDef.showScanProfile.clicked.connect(print)
         self._bkgHandling = iintBackgroundHandling.iintBackgroundHandling(self._control.getBKGDicts())
         self._bkgHandling.bkgmodel.connect(self._control.setBkgModel)
         self._bkgHandling.useBkg.stateChanged.connect(self._checkBkgState)
@@ -99,9 +100,10 @@ class iintGUI(QtGui.QMainWindow):
 
         self._inspectAnalyze = iintInspectAnalyze.iintInspectAnalyze()
         self._inspectAnalyze.trackData.clicked.connect(self._dataToTrack)
+        self._inspectAnalyze.trackedColumnsPlot.clicked.connect(print)
+        self._inspectAnalyze.showScanFits.clicked.connect(print)
         self._inspectAnalyze.polAnalysis.clicked.connect(self._runPolarizationAnalysis)
         self._inspectAnalyze.saveResults.clicked.connect(self._saveResultsFile)
-        self._inspectAnalyze.inspectionPlots.clicked.connect(self._showInspectionPlots)
 
         self._saveResultsDialog = selectResultOutput.SelectResultOutput()
         self._saveResultsDialog.accept.connect(self._control.setResultFilename)
