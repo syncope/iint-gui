@@ -43,7 +43,7 @@ class iintObservableDefinition(QtGui.QWidget):
         self.despikeCheckBox.stateChanged.connect(self.toggleDespiking)
         self._despike = False
         self._notEnabled(True)
-        self.obsNextBtn.clicked.connect(self.emittit)
+        self.obsDisplayBtn.clicked.connect(self.emittit)
         self._observableName = 'observable'
         self.observableMotorLabel.setToolTip("The motor taken from the scan command for the chosen series of scans.")
         self.label.setToolTip("The shorthand notation for the used formula to calculate\nthe number of counts at the given motor position.")
@@ -53,7 +53,8 @@ class iintObservableDefinition(QtGui.QWidget):
         self.observableAttFaccheck.setToolTip("Chose the entry from the scan file information for an attenuation factor.")
         self.observableAttFacCB.setToolTip("Check the box to enable the choice of an attenuation factor entry.")
         self.despikeCheckBox.setToolTip("Check the box to run a despiking/filtering algorithm\non the scan data to dampen spikes/noise fluctuation.")
-        self.obsNextBtn.setToolTip("Once everything is set, click this button to perform\nthe calculaion of the observable data and open a display.")
+        self.obsDisplayBtn.setToolTip("Once everything is set, click this button to perform\nthe calculaion of the observable data and open a display.")
+        self.showScanProfile.setToolTip("Creates a stack of all scans as matrix, creating an image.\nThe result is stored in a file, which is shown in an external viewer.")
 
     def _defaultSettings(self):
         self._obsDict = {}
@@ -101,7 +102,8 @@ class iintObservableDefinition(QtGui.QWidget):
         self.observableTimeCB.setDisabled(state)
         self.observableAttFaccheck.setDisabled(state)
         self.despikeCheckBox.setDisabled(state)
-        self.obsNextBtn.setDisabled(state)
+        self.obsDisplayBtn.setDisabled(state)
+        self.showScanProfile.setDisabled(state)
 
     def toggleAttFac(self):
         self.observableAttFacCB.setDisabled(self._useAttenuationFactor)
