@@ -23,7 +23,6 @@ from . import getUIFile
 
 
 class ShowFileContents(QtGui.QDialog):
-    
     def __init__(self, text, parent=None):
         super(ShowFileContents, self).__init__(parent)
         uic.loadUi(getUIFile.getUIFile("fileDisplay.ui"), self)

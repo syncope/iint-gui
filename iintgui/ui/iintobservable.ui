@@ -578,6 +578,29 @@
         <item>
          <layout class="QHBoxLayout" name="horizontalLayout">
           <item>
+           <spacer name="horizontalSpacer">
+            <property name="orientation">
+             <enum>Qt::Horizontal</enum>
+            </property>
+            <property name="sizeHint" stdset="0">
+             <size>
+              <width>40</width>
+              <height>20</height>
+             </size>
+            </property>
+           </spacer>
+          </item>
+          <item>
+           <widget class="QPushButton" name="showScanProfile">
+            <property name="enabled">
+             <bool>false</bool>
+            </property>
+            <property name="text">
+             <string>Show profile of scans</string>
+            </property>
+           </widget>
+          </item>
+          <item>
            <spacer name="horizontalSpacer_4">
             <property name="orientation">
              <enum>Qt::Horizontal</enum>
@@ -591,7 +614,7 @@
            </spacer>
           </item>
           <item>
-           <widget class="QPushButton" name="obsNextBtn">
+           <widget class="QPushButton" name="obsDisplayBtn">
             <property name="text">
              <string>Display</string>
             </property>

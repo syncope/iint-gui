@@ -8,11 +8,11 @@ with open(path.join('.', 'README.rst'), encoding='utf-8') as f:
 
 name='iint-gui'
 version='0'
-release='0.4.0'
+release='0.5.0'
 
 setup(
     name='iintgui',
-    version='0.4.0',
+    version=release,
 
     description='iintgui: ', 
     long_description=long_description,

@@ -6,7 +6,7 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>335</width>
+    <width>477</width>
     <height>125</height>
    </rect>
   </property>
@@ -25,22 +25,35 @@
         <item>
          <layout class="QHBoxLayout" name="horizontalLayout">
           <item>
-           <widget class="QPushButton" name="inspectionPlots">
+           <widget class="QPushButton" name="trackData">
             <property name="enabled">
              <bool>false</bool>
             </property>
             <property name="text">
-             <string>Show T/B dependence</string>
+             <string>Choose data to track</string>
+            </property>
+            <property name="default">
+             <bool>true</bool>
             </property>
            </widget>
           </item>
           <item>
-           <widget class="QPushButton" name="polAnalysis">
+           <widget class="QPushButton" name="trackedColumnsPlot">
             <property name="enabled">
              <bool>false</bool>
             </property>
             <property name="text">
-             <string>Polarization analysis</string>
+             <string>Show Inspection Plots</string>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <widget class="QPushButton" name="showScanFits">
+            <property name="enabled">
+             <bool>false</bool>
+            </property>
+            <property name="text">
+             <string>Show Fitted Scans</string>
             </property>
            </widget>
           </item>
@@ -56,15 +69,12 @@
         <item>
          <layout class="QHBoxLayout" name="horizontalLayout_2">
           <item>
-           <widget class="QPushButton" name="trackData">
+           <widget class="QPushButton" name="polAnalysis">
             <property name="enabled">
              <bool>false</bool>
             </property>
             <property name="text">
-             <string>Choose data to track</string>
-            </property>
-            <property name="default">
-             <bool>true</bool>
+             <string>Polarization analysis</string>
             </property>
            </widget>
           </item>

@@ -23,7 +23,7 @@ import sys
 from PyQt4 import QtCore, QtGui, uic
 import pyqtgraph as pg
 
-from . import interactiveP09ProcessingControl
+from . import iintGUIProcessingControl
 from adapt.processes import specfilereader
 from . import getUIFile
 
@@ -51,7 +51,7 @@ class iintGUI(QtGui.QMainWindow):
 
         self.actionNew.triggered.connect(self._askReset)
         self.action_Open_SPEC_file.triggered.connect(self.showSFRGUI)
-        self.actionOpen_file.triggered.connect(self.choosefile)
+        self.actionOpen_file.triggered.connect(self.chooseAndLoadConfig)
         self.actionSave_file.triggered.connect(self._saveConfig)
         self.actionExit.triggered.connect(self._closeApp)
         self.action_Config_File.triggered.connect(self._showConfig)
@@ -61,7 +61,7 @@ class iintGUI(QtGui.QMainWindow):
         self.action_About.triggered.connect(self._showIintGuiInfo)
 
         # the steering helper object
-        self._control = interactiveP09ProcessingControl.InteractiveP09ProcessingControl()
+        self._control = iintGUIProcessingControl.IintGUIProcessingControl()
 
         # the quit dialog
         self._quit = quitDialog.QuitDialog()
@@ -87,20 +87,23 @@ class iintGUI(QtGui.QMainWindow):
         self._sfrGUI = specfilereader.specfilereaderGUI()
         self._obsDef = iintObservableDefinition.iintObservableDefinition()
         self._obsDef.doDespike.connect(self._control.useDespike)
+        self._obsDef.showScanProfile.clicked.connect(self._runScanProfiles)
         self._bkgHandling = iintBackgroundHandling.iintBackgroundHandling(self._control.getBKGDicts())
         self._bkgHandling.bkgmodel.connect(self._control.setBkgModel)
         self._bkgHandling.useBkg.stateChanged.connect(self._checkBkgState)
         self._signalHandling = iintSignalHandling.iintSignalHandling(self._control.getSIGDict())
         self._signalHandling.passModels(self._control.getFitModels())
         self._signalHandling.modelcfg.connect(self.openFitDialog)
+        self._signalHandling.removeIndex.connect(self._removeFitFromListByIndex)
         self._signalHandling.performFitPushBtn.clicked.connect(self._prepareSignalFitting)
         self._fitList = []
 
         self._inspectAnalyze = iintInspectAnalyze.iintInspectAnalyze()
         self._inspectAnalyze.trackData.clicked.connect(self._dataToTrack)
+        self._inspectAnalyze.trackedColumnsPlot.clicked.connect(self._runTrackedControlPlots)
+        self._inspectAnalyze.showScanFits.clicked.connect(self._runScanControlPlots)
         self._inspectAnalyze.polAnalysis.clicked.connect(self._runPolarizationAnalysis)
         self._inspectAnalyze.saveResults.clicked.connect(self._saveResultsFile)
-        self._inspectAnalyze.inspectionPlots.clicked.connect(self._showInspectionPlots)
 
         self._saveResultsDialog = selectResultOutput.SelectResultOutput()
         self._saveResultsDialog.accept.connect(self._control.setResultFilename)
@@ -115,6 +118,7 @@ class iintGUI(QtGui.QMainWindow):
         self.verticalLayout.addWidget(self._inspectAnalyze)
         self.verticalLayout.addWidget(self._loggingBox)
 
+        self._sfrGUI.valuesSet.connect(self._resetForSFR)
         self._sfrGUI.valuesSet.connect(self.runFileReader)
         self._obsDef.observableDicts.connect(self.runObservable)
         self._bkgHandling.bkgDicts.connect(self.runBkgProcessing)
@@ -144,6 +148,19 @@ class iintGUI(QtGui.QMainWindow):
         self._signalHandling.setParameterDict(self._control.getSIGDict())
         self._control.resetAll()
         self._sfrGUI.reset()
+        self.resetTabs()
+        self._inspectAnalyze.reset()
+        self.message("Cleared all data and processing configuration.")
+
+    def _resetForSFR(self):
+        self._resetInternals()
+        self._simpleImageView.reset()
+        self._obsDef.reset()
+        self._bkgHandling.reset()
+        self._bkgHandling.setParameterDicts(self._control.getBKGDicts())
+        self._signalHandling.reset()
+        self._signalHandling.setParameterDict(self._control.getSIGDict())
+        self._control.resetAll()
         self.resetTabs()
         self._inspectAnalyze.reset()
         self.message("Cleared all data and processing configuration.")
@@ -224,7 +241,7 @@ class iintGUI(QtGui.QMainWindow):
     def showSFRGUI(self):
         self._sfrGUI.show()
 
-    def choosefile(self):
+    def chooseAndLoadConfig(self):
         try:
             prev = self._file
         except:
@@ -239,41 +256,38 @@ class iintGUI(QtGui.QMainWindow):
             self._initializeFromConfig()
 
     def _initializeFromConfig(self):
-        # needs much more work
-        self._control.loadConfig(self._procconf)
-        self._sfrGUI.setParameterDict(self._control.getSFRDict())
-        if not self._control._nofit:
-            self._setupFitFromConfig()
-        self.runFileReader()
-        self._obsDef.setParameterDicts(self._control.getOBSDict(), self._control.getDESDict()) # this has side effects !!!???
-        if not self._control._noobs:
-            self._obsDef.emittit()
-        
-        self._bkgHandling.setParameterDicts(self._control.getBKGDicts())
-        if self._control._nobkg is True:
-            self._bkgHandling.useBkg.setCheckState(0)
+        # reset logic is screwed up
+        # first load the config into the actual description
+        runlist = self._control.loadConfig(self._procconf)
+
+        # the next step is to set the gui up to reflect all the new values
+        if "read" in runlist:
+            self._sfrGUI.setParameterDict(self._control.getSFRDict())
+            self.runFileReader()
         else:
-            self._bkgHandling.useBkg.setCheckState(2)
-            self._bkgHandling.emittem()
-        if self._control.getDESDict() != {}:
-            self._obsDef.activateDespikingBox()
-        #~ if not self._control._nofit:
-            #~ self._signalHandling.activateFitting()
+            return
+        if "observabledef" in runlist:
+            self._obsDef.setParameterDicts(self._control.getOBSDict(), self._control.getDESDict())
+            self.runObservable(self._control.getOBSDict(), self._control.getDESDict(), reset=False)
+        else:
+            return
+        if "bkgsubtract" in runlist:
+            self._bkgHandling.setParameterDicts(self._control.getBKGDicts())
+            self.runBkgProcessing(self._control.getBKGDicts()[0], self._control.getBKGDicts()[1], self._control.getBKGDicts()[2], self._control.getBKGDicts()[3], reset=False)
+        else:
+            return
+        if "signalcurvefit" in runlist:
+            self.runSignalProcessing(self._control.getSIGDict()['model'], reset=False)
+        else:
+            return
+
+    def _updateDisplay(self):
+        self.plotit()
+        self._bkgHandling.activate()
+        self._signalHandling.activateConfiguration()
+        self._inspectAnalyze.activate()
 
     def runFileReader(self):
-        self._resetInternals()
-        self._obsDef.reset()
-        self._simpleImageView.reset()
-        self._fileInfo.reset()
-        self._bkgHandling.reset()
-        self._bkgHandling.setParameterDicts(self._control.getBKGDicts())
-        self._control.resetSIGdata()
-        self._signalHandling.reset()
-        self._signalHandling.setParameterDict(self._control.getSIGDict())
-        self.resetTabs()
-        self._inspectAnalyze.reset()
-        self._control.resetAll()
-
         filereaderdict = self._sfrGUI.getParameterDict()
         self._fileInfo.setNames(filereaderdict["filename"], filereaderdict["scanlist"])
         self._control.setSpecFile(filereaderdict["filename"], filereaderdict["scanlist"])
@@ -295,16 +309,19 @@ class iintGUI(QtGui.QMainWindow):
         self._obsDef.passInfo(self._rawdataobject)
         self.message("... done.\n")
 
-    def runObservable(self, obsDict, despDict, trapIntDict):
-        self._simpleImageView.reset()
-        self.resetTabs(keepSpectra=True)
-        self._inspectAnalyze.reset()
-        self._control.resetBKGdata()
-        self._bkgHandling.setParameterDicts(self._control.getBKGDicts())
-        self._control.resetSIGdata()
-        self._signalHandling.setParameterDict(self._control.getSIGDict())
-        self._control.resetFITdata()
-        self._control.resetTrackedData()
+    def runObservable(self, obsDict, despDict, reset=True):
+        if obsDict != self._control.getOBSDict():
+            self._control.setOBSDict(obsDict)
+        if reset:
+            self._simpleImageView.reset()
+            self.resetTabs(keepSpectra=True)
+            self._inspectAnalyze.reset()
+            self._control.resetBKGdata()
+            self._bkgHandling.setParameterDicts(self._control.getBKGDicts())
+            self._control.resetSIGdata()
+            self._signalHandling.setParameterDict(self._control.getSIGDict())
+            self._control.resetFITdata()
+            self._control.resetTrackedData()
 
         self.message("Computing the observable...")
         self._control.createAndBulkExecute(obsDict)
@@ -313,6 +330,8 @@ class iintGUI(QtGui.QMainWindow):
 
         # check whether despiking is activated, otherwise unset names
         if despDict != {}:
+            if despDict != self._control.getDESDict():
+                self._control.setDESDict(despDict)
             self._control.useDespike(True)
             self._control.createAndBulkExecute(despDict)
             if(self._simpleImageView is not None):
@@ -320,16 +339,25 @@ class iintGUI(QtGui.QMainWindow):
         self._bkgHandling.activate()
         self.message(" done.\n")
 
-    def runBkgProcessing(self, selDict, fitDict, calcDict, subtractDict):
-        self._inspectAnalyze.reset()
-        self._control.resetSIGdata()
-        self._signalHandling.setParameterDict(self._control.getSIGDict())
-        self._control.resetFITdata()
-        self._control.resetBKGdata()
-        self._bkgHandling.setParameterDicts(self._control.getBKGDicts())
+    def _runScanProfiles(self):
+        name, timesuffix = self._control.proposeSaveFileName()
+        filename = name + "_scanProfiles.pdf"
+        self.message("Creating the scan profile plot ...")
+        self._control.processScanProfiles(filename)
+        self.message(" ... done.\n")
+        from subprocess import Popen
+        Popen(["evince", filename])
 
-        self._control.resetTrackedData()
-        self.resetTabs(keepSpectra=True)
+    def runBkgProcessing(self, selDict, fitDict, calcDict, subtractDict, reset=True):
+        if reset:
+            self._inspectAnalyze.reset()
+            self._control.resetSIGdata()
+            self._signalHandling.setParameterDict(self._control.getSIGDict())
+            self._control.resetFITdata()
+            self._control.resetBKGdata()
+            self._bkgHandling.setParameterDicts(self._control.getBKGDicts())
+            self._control.resetTrackedData()
+            self.resetTabs(keepSpectra=True)
         self.message("Fitting background ...")
         if selDict == {}:
             self._control.useBKG(False)
@@ -344,7 +372,6 @@ class iintGUI(QtGui.QMainWindow):
             self._simpleImageView.update("bkg")
         self.message(" ... done.\n")
         self._signalHandling.activateConfiguration()
-
 
     def _checkBkgState(self, i):
         self._control.useBKG(i)
@@ -380,19 +407,20 @@ class iintGUI(QtGui.QMainWindow):
         fitDict = {}
         for fit in self._fitList:
             fitDict.update(fit.getCurrentParameterDict())
-        self.runSignalProcessing(fitDict)
+        self.runSignalProcessing(fitDict, reset=True)
 
-    def runSignalProcessing(self, fitDict):
+    def runSignalProcessing(self, fitDict, reset=True):
         self.message("Signal processing: first trapezoidal integration ...")
         self._control.resetTRAPINTdata()
         self._control.createAndBulkExecute(self._control.getTrapIntDict())
         self.message(" ... done.")
-        self.runSignalFitting(fitDict)
+        self.runSignalFitting(fitDict, reset)
 
-    def runSignalFitting(self, fitDict):
-        self._inspectAnalyze.reset()
-        self._control.resetTrackedData()
-        self.resetTabs(keepSpectra=True)
+    def runSignalFitting(self, fitDict, reset):
+        if reset:
+            self._inspectAnalyze.reset()
+            self._control.resetTrackedData()
+            self.resetTabs(keepSpectra=True)
 
         self.message("Fitting the signal, this can take a while ...")
         rundict = self._control.getSIGDict()
@@ -409,13 +437,23 @@ class iintGUI(QtGui.QMainWindow):
         self.message(" ... done.\n")
         self._inspectAnalyze.activate()
 
-    def _setupFitFromConfig(self):
-        fitdict = self._control.getSIGDict()
-        names = []
-        model = fitdict["model"]
-        for name in sorted(model.keys()):
-            names.append(model[name]['modeltype'])
-        self._signalHandling.setModelNames(names)
+    def _runScanControlPlots(self):
+        name, timesuffix = self._control.proposeSaveFileName()
+        filename = name + "_" + str(timesuffix) + "_scanControlPlots.pdf"
+        self.message("Creating the scan control plots of the fits ...")
+        self._control.processScanControlPlots(filename)
+        self.message(" ... done.\n")
+        from subprocess import Popen
+        Popen(["evince", filename])
+
+    def _runTrackedControlPlots(self):
+        name, timesuffix = self._control.proposeSaveFileName()
+        filename = name + "_" + str(timesuffix) + "_scanControlPlots.pdf"
+        self.message("Creating the control plots of the tracked columns ...")
+        self._control.processTrackedColumnsControlPlots(filename)
+        self.message(" ... done.\n")
+        from subprocess import Popen
+        Popen(["evince", filename])
 
     def _runPolarizationAnalysis(self):
         self.message("Running the polarization analysis ...")
@@ -456,6 +494,12 @@ class iintGUI(QtGui.QMainWindow):
             if fitwidget.getIndex() == fit.getIndex():
                 self._fitList.remove(fit)
         self._fitList.append(fitwidget)
+
+    def _removeFitFromListByIndex(self, index):
+        # update the list of fits by removing the entry
+        for fit in self._fitList:
+            if fit.getIndex() == index:
+                self._fitList.remove(fit)
 
     def _dataToTrack(self):
         rawScanData = self._control.getDataList()[0].getData(self._control.getRawDataName())

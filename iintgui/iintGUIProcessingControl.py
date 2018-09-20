@@ -37,12 +37,14 @@ from adapt.processes import trapezoidintegration
 from adapt.processes import iintfinalization
 from adapt.processes import iintpolarization
 from adapt.processes import iintcontrolplots
+from adapt.processes import iintscanprofileplot
+from adapt.processes import iintscanplot
 
 import numpy as np
 import datetime
 
 
-class InteractiveP09ProcessingControl():
+class IintGUIProcessingControl():
     '''The central control object for interactive processing.
        It holds the elements to build processes from their description,
        the list of processes to be run and the central data exchange object.'''
@@ -76,7 +78,9 @@ class InteractiveP09ProcessingControl():
                               "trapint",
                               "finalize",
                               "polana",
-                              "inspection"]
+                              "inspection",
+                              "scanprofileplot",
+                              "scanplot"]
         self._procRunList = []
         self._processParameters = {}
         self._setupProcessParameters()
@@ -161,6 +165,8 @@ class InteractiveP09ProcessingControl():
         self._processParameters["finalize"] = iintfinalization.iintfinalization().getProcessDictionary()
         self._processParameters["polana"] = iintpolarization.iintpolarization().getProcessDictionary()
         self._processParameters["inspection"] = iintcontrolplots.iintcontrolplots().getProcessDictionary()
+        self._processParameters["scanprofileplot"] = iintscanprofileplot.iintscanprofileplot().getProcessDictionary()
+        self._processParameters["scanplot"] = iintscanplot.iintscanplot().getProcessDictionary()
 
         self._fitmodels = curvefitting.curvefitting().getFitModels()
 
@@ -174,6 +180,9 @@ class InteractiveP09ProcessingControl():
         self._processParameters["observabledef"]["exposureTime_column"] = "exp_t01"
         self._processParameters["observabledef"]["id"] = self._id
 
+        self._processParameters["scanprofileplot"]["outfilename"] = None
+        self._processParameters["scanprofileplot"]["observable"] = self._observableName
+        self._processParameters["scanprofileplot"]["motor"] = None
         # from out to in:
         self._processParameters["despike"]["input"] = self._observableName
         self._processParameters["despike"]["method"] = "p09despiking"
@@ -226,6 +235,20 @@ class InteractiveP09ProcessingControl():
         self._processParameters["inspection"]["specdataname"] = self._rawName
         self._processParameters["inspection"]["fitresult"] = self._fittedSignalName
         self._processParameters["inspection"]["trapintname"] = self._trapintName
+        self._processParameters["inspection"]["trackedColumns"] = []
+        # finalization: saving files
+        self._processParameters["scanplot"]["specdataname"] = self._rawName
+        self._processParameters["scanplot"]["fitresult"] = self._fittedSignalName
+        self._processParameters["scanplot"]["trapintname"] = self._trapintName
+
+    def _cleanUpTrackedData(self):
+        removeNames = ['scannumber', 'signalcurvefitresult', 'trapezoidIntegral', 'trapezoidIntegral_stderr']
+        for name in removeNames:
+            try:
+                self._processParameters["finalize"]["trackedData"].remove(name)
+            except:
+                continue
+        self._processParameters["inspection"]["trackedColumns"] = self._processParameters["finalize"]["trackedData"]
 
     def getRawDataName(self):
         return self._rawName
@@ -235,35 +258,47 @@ class InteractiveP09ProcessingControl():
 
     def setMotorName(self, motor):
         self._motorName = motor
+        self._processParameters["observabledef"]["motor_column"] = self._motorName
+        self._processParameters["scanprofileplot"]["motor"] = self._motorName
         self._processParameters["bkgselect"]["input"] = [self._despObservableName, self._motorName]
         self._processParameters["calcbkgpoints"]["xdata"] = self._motorName
         self._processParameters["signalcurvefit"]["xdata"] = self._motorName
         self._processParameters["calcfitpoints"]["xdata"] = self._motorName
         self._processParameters["trapint"]["motor"] = self._motorName
+        self._processParameters["inspection"]["motor"] = self._motorName
         self._processParameters["finalize"]["motor"] = self._motorName
+        self._processParameters["scanplot"]["motor"] = self._motorName
 
     def settingChoiceDesBkg(self):
         # four cases des-bkg: no-no yes-no no-yes and yes-yes
         if self._nodespike and self._nobkg:
             self._processParameters["trapint"]["observable"] = self._observableName
             self._processParameters["signalcurvefit"]["ydata"] = self._observableName
+            self._processParameters["inspection"]["observable"] = self._observableName
             self._processParameters["finalize"]["observable"] = self._observableName
+            self._processParameters["scanplot"]["observable"] = self._observableName
         if not self._nodespike and self._nobkg:
             self._processParameters["trapint"]["observable"] = self._despObservableName
             self._processParameters["signalcurvefit"]["ydata"] = self._despObservableName
+            self._processParameters["inspection"]["observable"] = self._despObservableName
             self._processParameters["finalize"]["observable"] = self._despObservableName
+            self._processParameters["scanplot"]["observable"] = self._despObservableName
         if self._nodespike and not self._nobkg:
             self._processParameters["bkgselect"]["input"] = [self._observableName, self._motorName]
             self._processParameters["bkgsubtract"]["input"] = self._observableName
             self._processParameters["trapint"]["observable"] = self._signalName
             self._processParameters["signalcurvefit"]["ydata"] = self._signalName
+            self._processParameters["inspection"]["observable"] = self._signalName
             self._processParameters["finalize"]["observable"] = self._signalName
+            self._processParameters["scanplot"]["observable"] = self._signalName
         if not self._nodespike and not self._nobkg:
             self._processParameters["bkgselect"]["input"] = [self._despObservableName, self._motorName]
             self._processParameters["bkgsubtract"]["input"] = self._despObservableName
             self._processParameters["trapint"]["observable"] = self._signalName
             self._processParameters["signalcurvefit"]["ydata"] = self._signalName
+            self._processParameters["inspection"]["observable"] = self._signalName
             self._processParameters["finalize"]["observable"] = self._signalName
+            self._processParameters["scanplot"]["observable"] = self._signalName
 
     def getObservableName(self):
         return self._observableName
@@ -323,6 +358,18 @@ class InteractiveP09ProcessingControl():
         proc.loopExecute(self._dataList, emitProgress=True)
         proc.finalize(data=None)
 
+    def processScanProfiles(self, name):
+        self._processParameters["scanprofileplot"]["outfilename"] = name
+        self.processAll(self._processParameters["scanprofileplot"])
+
+    def processScanControlPlots(self, name):
+        self._processParameters["scanplot"]["outfilename"] = name
+        self.processAll(self._processParameters["scanplot"])
+
+    def processTrackedColumnsControlPlots(self, name):
+        self._processParameters["inspection"]["outfilename"] = name
+        self.processAll(self._processParameters["inspection"])
+
     def loadConfig(self, processConfig):
         self._procRunList.clear()
         execOrder = processConfig.getOrderOfExecution()
@@ -334,24 +381,16 @@ class InteractiveP09ProcessingControl():
                     self._processParameters[proc][k] = v
             else:
                 print("Wrong configuration file, unrecognized process name/type: " + str(proc))
-        if "observabledef" not in execOrder:
-            self._noobs = True
-        else:
-            self._noobs = False
-
         if "despike" in execOrder:
             self._nodespike = False
-        else:
-            self._nodespike = True
-
         if "bkgsubtract" in execOrder:
-            self.useBKG(True)
-        else:
-            self.useBKG(False)
-        if "signalcurvefit" not in execOrder:
-            self._nofit = True
-        else:
-            self._nofit = False
+            self._nobkg = False
+        # cleaning up, improper handling of save value -- how to really fix?
+        if self._processParameters["observabledef"]["attenuationFactor_column"] is None:
+            del self._processParameters["observabledef"]["attenuationFactor_column"]
+        if "finalize" in execOrder:
+            self._cleanUpTrackedData()
+        return execOrder
 
     def saveConfig(self, filename):
         execlist = ["read", "observabledef"]
@@ -436,6 +475,10 @@ class InteractiveP09ProcessingControl():
     def getOBSDict(self):
         return self._processParameters["observabledef"]
 
+    def setOBSDict(self, obsdic):
+        for k, v in obsdic.items():
+            self._processParameters["observabledef"][k] = v
+
     def getDESDict(self):
         if self._nodespike:
             return {}
@@ -443,6 +486,10 @@ class InteractiveP09ProcessingControl():
             return self._processParameters["despike"]
         except KeyError:
             return {}
+
+    def setDESDict(self, desdic):
+        for k, v in desdic.items():
+            self._processParameters["despike"][k] = v
 
     def getTrapIntDict(self):
         try:
@@ -513,7 +560,7 @@ class InteractiveP09ProcessingControl():
         return self._processParameters["finalize"]
 
     def setTrackedData(self, namelist):
-        # where to put this, it always needs to be recorded !?
+        self._processParameters["inspection"]["trackedColumns"] = namelist
         self._processParameters["finalize"]["trackedData"] = namelist
 
     def getTrackedData(self):
@@ -596,7 +643,6 @@ class InteractiveP09ProcessingControl():
 
     def setResultFilename(self, filename):
         self._processParameters["finalize"]["outfilename"] = filename + ".iint"
-        self._processParameters["finalize"]["pdffilename"] = filename
 
 
 class trackedInformation():
