@@ -23,7 +23,7 @@ from . import getUIFile
 
 
 class iintObservableDefinition(QtGui.QWidget):
-    observableDicts = QtCore.pyqtSignal(dict, dict, dict)
+    observableDicts = QtCore.pyqtSignal(dict, dict)
     doDespike = QtCore.pyqtSignal(int)
 
     def __init__(self, parent=None):
@@ -151,7 +151,7 @@ class iintObservableDefinition(QtGui.QWidget):
         self._trapintDict["observable"] = "signalObservable"
         self._trapintDict["output"] = "trapezoidIntegral"
 
-        self.observableDicts.emit(self._obsDict, self._despikeDict, self._trapintDict)
+        self.observableDicts.emit(self._obsDict, self._despikeDict)
 
     def setParameterDicts(self, obsDict, despDict):
         self.observableMotorLabel.setStyleSheet("color: blue;")
