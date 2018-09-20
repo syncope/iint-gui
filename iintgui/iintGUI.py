@@ -100,7 +100,7 @@ class iintGUI(QtGui.QMainWindow):
 
         self._inspectAnalyze = iintInspectAnalyze.iintInspectAnalyze()
         self._inspectAnalyze.trackData.clicked.connect(self._dataToTrack)
-        self._inspectAnalyze.trackedColumnsPlot.clicked.connect(print)
+        self._inspectAnalyze.trackedColumnsPlot.clicked.connect(self._runTrackedControlPlots)
         self._inspectAnalyze.showScanFits.clicked.connect(self._runScanControlPlots)
         self._inspectAnalyze.polAnalysis.clicked.connect(self._runPolarizationAnalysis)
         self._inspectAnalyze.saveResults.clicked.connect(self._saveResultsFile)
@@ -268,16 +268,16 @@ class iintGUI(QtGui.QMainWindow):
             return
         if "observabledef" in runlist:
             self._obsDef.setParameterDicts(self._control.getOBSDict(), self._control.getDESDict())
-            self.runObservable(self._control.getOBSDict(), self._control.getDESDict(), self._control.getTrapIntDict())
+            self.runObservable(self._control.getOBSDict(), self._control.getDESDict(), reset=False)
         else:
             return
         if "bkgsubtract" in runlist:
             self._bkgHandling.setParameterDicts(self._control.getBKGDicts())
-            self.runBkgProcessing(self._control.getBKGDicts()[0], self._control.getBKGDicts()[1], self._control.getBKGDicts()[2], self._control.getBKGDicts()[3])
+            self.runBkgProcessing(self._control.getBKGDicts()[0], self._control.getBKGDicts()[1], self._control.getBKGDicts()[2], self._control.getBKGDicts()[3], reset=False)
         else:
             return
         if "signalcurvefit"  in runlist:
-            self.runSignalProcessing(self._control.getSIGDict()['model'])
+            self.runSignalProcessing(self._control.getSIGDict()['model'], reset=False)
         else:
             return
 
@@ -311,16 +311,17 @@ class iintGUI(QtGui.QMainWindow):
         self._obsDef.passInfo(self._rawdataobject)
         self.message("... done.\n")
 
-    def runObservable(self, obsDict, despDict, trapIntDict):
-        self._simpleImageView.reset()
-        self.resetTabs(keepSpectra=True)
-        self._inspectAnalyze.reset()
-        self._control.resetBKGdata()
-        self._bkgHandling.setParameterDicts(self._control.getBKGDicts())
-        self._control.resetSIGdata()
-        self._signalHandling.setParameterDict(self._control.getSIGDict())
-        self._control.resetFITdata()
-        self._control.resetTrackedData()
+    def runObservable(self, obsDict, despDict, reset=True):
+        if reset:
+            self._simpleImageView.reset()
+            self.resetTabs(keepSpectra=True)
+            self._inspectAnalyze.reset()
+            self._control.resetBKGdata()
+            self._bkgHandling.setParameterDicts(self._control.getBKGDicts())
+            self._control.resetSIGdata()
+            self._signalHandling.setParameterDict(self._control.getSIGDict())
+            self._control.resetFITdata()
+            self._control.resetTrackedData()
 
         self.message("Computing the observable...")
         self._control.createAndBulkExecute(obsDict)
@@ -345,16 +346,16 @@ class iintGUI(QtGui.QMainWindow):
         from subprocess import Popen
         Popen(["evince", filename])
 
-    def runBkgProcessing(self, selDict, fitDict, calcDict, subtractDict):
-        self._inspectAnalyze.reset()
-        self._control.resetSIGdata()
-        self._signalHandling.setParameterDict(self._control.getSIGDict())
-        self._control.resetFITdata()
-        self._control.resetBKGdata()
-        self._bkgHandling.setParameterDicts(self._control.getBKGDicts())
-
-        self._control.resetTrackedData()
-        self.resetTabs(keepSpectra=True)
+    def runBkgProcessing(self, selDict, fitDict, calcDict, subtractDict, reset=True):
+        if reset:
+            self._inspectAnalyze.reset()
+            self._control.resetSIGdata()
+            self._signalHandling.setParameterDict(self._control.getSIGDict())
+            self._control.resetFITdata()
+            self._control.resetBKGdata()
+            self._bkgHandling.setParameterDicts(self._control.getBKGDicts())
+            self._control.resetTrackedData()
+            self.resetTabs(keepSpectra=True)
         self.message("Fitting background ...")
         if selDict == {}:
             self._control.useBKG(False)
@@ -404,19 +405,20 @@ class iintGUI(QtGui.QMainWindow):
         fitDict = {}
         for fit in self._fitList:
             fitDict.update(fit.getCurrentParameterDict())
-        self.runSignalProcessing(fitDict)
+        self.runSignalProcessing(fitDict, reset=True)
 
-    def runSignalProcessing(self, fitDict):
+    def runSignalProcessing(self, fitDict, reset=True):
         self.message("Signal processing: first trapezoidal integration ...")
         self._control.resetTRAPINTdata()
         self._control.createAndBulkExecute(self._control.getTrapIntDict())
         self.message(" ... done.")
-        self.runSignalFitting(fitDict)
+        self.runSignalFitting(fitDict, reset)
 
-    def runSignalFitting(self, fitDict):
-        self._inspectAnalyze.reset()
-        self._control.resetTrackedData()
-        self.resetTabs(keepSpectra=True)
+    def runSignalFitting(self, fitDict, reset):
+        if reset:
+            self._inspectAnalyze.reset()
+            self._control.resetTrackedData()
+            self.resetTabs(keepSpectra=True)
 
         self.message("Fitting the signal, this can take a while ...")
         rundict = self._control.getSIGDict()
@@ -435,13 +437,21 @@ class iintGUI(QtGui.QMainWindow):
 
     def _runScanControlPlots(self):
         name, timesuffix = self._control.proposeSaveFileName()
-        filename = name + "_scanControlPlots.pdf"
+        filename = name + "_" + str(timesuffix) +"_scanControlPlots.pdf"
         self.message("Creating the scan control plots of the fits ...")
         self._control.processScanControlPlots(filename)
         self.message(" ... done.\n")
         from subprocess import Popen
         Popen(["evince", filename])
 
+    def _runTrackedControlPlots(self):
+        name, timesuffix = self._control.proposeSaveFileName()
+        filename = name + "_" + str(timesuffix) + "_scanControlPlots.pdf"
+        self.message("Creating the control plots of the tracked columns ...")
+        self._control.processTrackedColumnsControlPlots(filename)
+        self.message(" ... done.\n")
+        from subprocess import Popen
+        Popen(["evince", filename])
 
     def _runPolarizationAnalysis(self):
         self.message("Running the polarization analysis ...")
