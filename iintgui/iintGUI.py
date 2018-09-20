@@ -312,6 +312,8 @@ class iintGUI(QtGui.QMainWindow):
         self.message("... done.\n")
 
     def runObservable(self, obsDict, despDict, reset=True):
+        if obsDict != self._control.getOBSDict():
+            self._control.setOBSDict(obsDict)
         if reset:
             self._simpleImageView.reset()
             self.resetTabs(keepSpectra=True)
@@ -330,6 +332,8 @@ class iintGUI(QtGui.QMainWindow):
 
         # check whether despiking is activated, otherwise unset names
         if despDict != {}:
+            if despDict != self._control.getDESDict():
+                self._control.setDESDict(despDict)
             self._control.useDespike(True)
             self._control.createAndBulkExecute(despDict)
             if(self._simpleImageView is not None):
