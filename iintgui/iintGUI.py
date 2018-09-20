@@ -101,7 +101,7 @@ class iintGUI(QtGui.QMainWindow):
         self._inspectAnalyze = iintInspectAnalyze.iintInspectAnalyze()
         self._inspectAnalyze.trackData.clicked.connect(self._dataToTrack)
         self._inspectAnalyze.trackedColumnsPlot.clicked.connect(print)
-        self._inspectAnalyze.showScanFits.clicked.connect(print)
+        self._inspectAnalyze.showScanFits.clicked.connect(self._runScanControlPlots)
         self._inspectAnalyze.polAnalysis.clicked.connect(self._runPolarizationAnalysis)
         self._inspectAnalyze.saveResults.clicked.connect(self._saveResultsFile)
 
@@ -432,6 +432,16 @@ class iintGUI(QtGui.QMainWindow):
         tdv.pickedTrackedDataPoint.connect(self._setFocusToSpectrum)
         self.message(" ... done.\n")
         self._inspectAnalyze.activate()
+
+    def _runScanControlPlots(self):
+        name, timesuffix = self._control.proposeSaveFileName()
+        filename = name + "_scanControlPlots.pdf"
+        self.message("Creating the scan control plots of the fits ...")
+        self._control.processScanControlPlots(filename)
+        self.message(" ... done.\n")
+        from subprocess import Popen
+        Popen(["evince", filename])
+
 
     def _runPolarizationAnalysis(self):
         self.message("Running the polarization analysis ...")

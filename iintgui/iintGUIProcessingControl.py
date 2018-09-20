@@ -38,6 +38,7 @@ from adapt.processes import iintfinalization
 from adapt.processes import iintpolarization
 from adapt.processes import iintcontrolplots
 from adapt.processes import iintscanprofileplot
+from adapt.processes import iintscanplot
 
 import numpy as np
 import datetime
@@ -78,7 +79,8 @@ class IintGUIProcessingControl():
                               "finalize",
                               "polana",
                               "inspection",
-                              "scanprofileplot"]
+                              "scanprofileplot",
+                              "scanplot"]
         self._procRunList = []
         self._processParameters = {}
         self._setupProcessParameters()
@@ -164,6 +166,7 @@ class IintGUIProcessingControl():
         self._processParameters["polana"] = iintpolarization.iintpolarization().getProcessDictionary()
         self._processParameters["inspection"] = iintcontrolplots.iintcontrolplots().getProcessDictionary()
         self._processParameters["scanprofileplot"] = iintscanprofileplot.iintscanprofileplot().getProcessDictionary()
+        self._processParameters["scanplot"] = iintscanplot.iintscanplot().getProcessDictionary()
 
         self._fitmodels = curvefitting.curvefitting().getFitModels()
 
@@ -232,6 +235,10 @@ class IintGUIProcessingControl():
         self._processParameters["inspection"]["specdataname"] = self._rawName
         self._processParameters["inspection"]["fitresult"] = self._fittedSignalName
         self._processParameters["inspection"]["trapintname"] = self._trapintName
+        # finalization: saving files
+        self._processParameters["scanplot"]["specdataname"] = self._rawName
+        self._processParameters["scanplot"]["fitresult"] = self._fittedSignalName
+        self._processParameters["scanplot"]["trapintname"] = self._trapintName
 
     def getRawDataName(self):
         return self._rawName
@@ -249,6 +256,7 @@ class IintGUIProcessingControl():
         self._processParameters["calcfitpoints"]["xdata"] = self._motorName
         self._processParameters["trapint"]["motor"] = self._motorName
         self._processParameters["finalize"]["motor"] = self._motorName
+        self._processParameters["scanplot"]["motor"] = self._motorName
 
     def settingChoiceDesBkg(self):
         # four cases des-bkg: no-no yes-no no-yes and yes-yes
@@ -256,22 +264,26 @@ class IintGUIProcessingControl():
             self._processParameters["trapint"]["observable"] = self._observableName
             self._processParameters["signalcurvefit"]["ydata"] = self._observableName
             self._processParameters["finalize"]["observable"] = self._observableName
+            self._processParameters["scanplot"]["observable"] = self._observableName
         if not self._nodespike and self._nobkg:
             self._processParameters["trapint"]["observable"] = self._despObservableName
             self._processParameters["signalcurvefit"]["ydata"] = self._despObservableName
             self._processParameters["finalize"]["observable"] = self._despObservableName
+            self._processParameters["scanplot"]["observable"] = self._despObservableName
         if self._nodespike and not self._nobkg:
             self._processParameters["bkgselect"]["input"] = [self._observableName, self._motorName]
             self._processParameters["bkgsubtract"]["input"] = self._observableName
             self._processParameters["trapint"]["observable"] = self._signalName
             self._processParameters["signalcurvefit"]["ydata"] = self._signalName
             self._processParameters["finalize"]["observable"] = self._signalName
+            self._processParameters["scanplot"]["observable"] = self._signalName
         if not self._nodespike and not self._nobkg:
             self._processParameters["bkgselect"]["input"] = [self._despObservableName, self._motorName]
             self._processParameters["bkgsubtract"]["input"] = self._despObservableName
             self._processParameters["trapint"]["observable"] = self._signalName
             self._processParameters["signalcurvefit"]["ydata"] = self._signalName
             self._processParameters["finalize"]["observable"] = self._signalName
+            self._processParameters["scanplot"]["observable"] = self._signalName
 
     def getObservableName(self):
         return self._observableName
@@ -334,6 +346,10 @@ class IintGUIProcessingControl():
     def processScanProfiles(self, name):
         self._processParameters["scanprofileplot"]["outfilename"] = name
         self.processAll(self._processParameters["scanprofileplot"])
+
+    def processScanControlPlots(self, name):
+        self._processParameters["scanplot"]["outfilename"] = name
+        self.processAll(self._processParameters["scanplot"])
 
     def loadConfig(self, processConfig):
         self._procRunList.clear()
