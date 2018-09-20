@@ -240,6 +240,14 @@ class IintGUIProcessingControl():
         self._processParameters["scanplot"]["fitresult"] = self._fittedSignalName
         self._processParameters["scanplot"]["trapintname"] = self._trapintName
 
+    def _cleanUpTrackedData(self):
+        removeNames = ['scannumber', 'signalcurvefitresult', 'trapezoidIntegral', 'trapezoidIntegral_stderr']
+        for name in removeNames:
+            try:
+                self._processParameters["finalize"]["trackedData"].remove(name)
+            except:
+                continue
+
     def getRawDataName(self):
         return self._rawName
 
@@ -255,6 +263,7 @@ class IintGUIProcessingControl():
         self._processParameters["signalcurvefit"]["xdata"] = self._motorName
         self._processParameters["calcfitpoints"]["xdata"] = self._motorName
         self._processParameters["trapint"]["motor"] = self._motorName
+        self._processParameters["inspection"]["motor"] = self._motorName
         self._processParameters["finalize"]["motor"] = self._motorName
         self._processParameters["scanplot"]["motor"] = self._motorName
 
@@ -263,11 +272,13 @@ class IintGUIProcessingControl():
         if self._nodespike and self._nobkg:
             self._processParameters["trapint"]["observable"] = self._observableName
             self._processParameters["signalcurvefit"]["ydata"] = self._observableName
+            self._processParameters["inspection"]["observable"] = self._observableName
             self._processParameters["finalize"]["observable"] = self._observableName
             self._processParameters["scanplot"]["observable"] = self._observableName
         if not self._nodespike and self._nobkg:
             self._processParameters["trapint"]["observable"] = self._despObservableName
             self._processParameters["signalcurvefit"]["ydata"] = self._despObservableName
+            self._processParameters["inspection"]["observable"] = self._despObservableName
             self._processParameters["finalize"]["observable"] = self._despObservableName
             self._processParameters["scanplot"]["observable"] = self._despObservableName
         if self._nodespike and not self._nobkg:
@@ -275,6 +286,7 @@ class IintGUIProcessingControl():
             self._processParameters["bkgsubtract"]["input"] = self._observableName
             self._processParameters["trapint"]["observable"] = self._signalName
             self._processParameters["signalcurvefit"]["ydata"] = self._signalName
+            self._processParameters["inspection"]["observable"] = self._signalName
             self._processParameters["finalize"]["observable"] = self._signalName
             self._processParameters["scanplot"]["observable"] = self._signalName
         if not self._nodespike and not self._nobkg:
@@ -282,6 +294,7 @@ class IintGUIProcessingControl():
             self._processParameters["bkgsubtract"]["input"] = self._despObservableName
             self._processParameters["trapint"]["observable"] = self._signalName
             self._processParameters["signalcurvefit"]["ydata"] = self._signalName
+            self._processParameters["inspection"]["observable"] = self._signalName
             self._processParameters["finalize"]["observable"] = self._signalName
             self._processParameters["scanplot"]["observable"] = self._signalName
 
@@ -351,6 +364,10 @@ class IintGUIProcessingControl():
         self._processParameters["scanplot"]["outfilename"] = name
         self.processAll(self._processParameters["scanplot"])
 
+    def processTrackedColumnsControlPlots(self, name):
+        self._processParameters["inspection"]["outfilename"] = name
+        self.processAll(self._processParameters["inspection"])
+
     def loadConfig(self, processConfig):
         self._procRunList.clear()
         execOrder = processConfig.getOrderOfExecution()
@@ -368,7 +385,9 @@ class IintGUIProcessingControl():
             self._nobkg = False
         # cleaning up, improper handling of save value -- how to really fix?
         if self._processParameters["observabledef"]["attenuationFactor_column"] is None:
-            del self._processParameters["observabledef"]["attenuationFactor_column"]   
+            del self._processParameters["observabledef"]["attenuationFactor_column"]
+        if "finalize" in execOrder:
+            self._cleanUpTrackedData()
         return execOrder
 
     def saveConfig(self, filename):
@@ -532,6 +551,7 @@ class IintGUIProcessingControl():
 
     def setTrackedData(self, namelist):
         # where to put this, it always needs to be recorded !?
+        self._processParameters["inspection"]["trackedData"] = namelist
         self._processParameters["finalize"]["trackedData"] = namelist
 
     def getTrackedData(self):
