@@ -235,6 +235,7 @@ class IintGUIProcessingControl():
         self._processParameters["inspection"]["specdataname"] = self._rawName
         self._processParameters["inspection"]["fitresult"] = self._fittedSignalName
         self._processParameters["inspection"]["trapintname"] = self._trapintName
+        self._processParameters["inspection"]["trackedColumns"] = []
         # finalization: saving files
         self._processParameters["scanplot"]["specdataname"] = self._rawName
         self._processParameters["scanplot"]["fitresult"] = self._fittedSignalName
@@ -559,8 +560,7 @@ class IintGUIProcessingControl():
         return self._processParameters["finalize"]
 
     def setTrackedData(self, namelist):
-        # where to put this, it always needs to be recorded !?
-        self._processParameters["inspection"]["trackedData"] = namelist
+        self._processParameters["inspection"]["trackedColumns"] = namelist
         self._processParameters["finalize"]["trackedData"] = namelist
 
     def getTrackedData(self):
