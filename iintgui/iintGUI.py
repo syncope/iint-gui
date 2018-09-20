@@ -276,15 +276,13 @@ class iintGUI(QtGui.QMainWindow):
             self.runBkgProcessing(self._control.getBKGDicts()[0], self._control.getBKGDicts()[1], self._control.getBKGDicts()[2], self._control.getBKGDicts()[3], reset=False)
         else:
             return
-        if "signalcurvefit"  in runlist:
+        if "signalcurvefit" in runlist:
             self.runSignalProcessing(self._control.getSIGDict()['model'], reset=False)
         else:
             return
 
     def _updateDisplay(self):
         self.plotit()
-        #~ if(self._simpleImageView is not None):
-            #~ self._simpleImageView.update("des")
         self._bkgHandling.activate()
         self._signalHandling.activateConfiguration()
         self._inspectAnalyze.activate()
@@ -441,7 +439,7 @@ class iintGUI(QtGui.QMainWindow):
 
     def _runScanControlPlots(self):
         name, timesuffix = self._control.proposeSaveFileName()
-        filename = name + "_" + str(timesuffix) +"_scanControlPlots.pdf"
+        filename = name + "_" + str(timesuffix) + "_scanControlPlots.pdf"
         self.message("Creating the scan control plots of the fits ...")
         self._control.processScanControlPlots(filename)
         self.message(" ... done.\n")

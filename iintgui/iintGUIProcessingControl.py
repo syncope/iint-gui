@@ -476,7 +476,7 @@ class IintGUIProcessingControl():
         return self._processParameters["observabledef"]
 
     def setOBSDict(self, obsdic):
-        for k,v  in obsdic.items():
+        for k, v in obsdic.items():
             self._processParameters["observabledef"][k] = v
 
     def getDESDict(self):
@@ -488,7 +488,7 @@ class IintGUIProcessingControl():
             return {}
 
     def setDESDict(self, desdic):
-        for k,v  in desdic.items():
+        for k, v in desdic.items():
             self._processParameters["despike"][k] = v
 
     def getTrapIntDict(self):
