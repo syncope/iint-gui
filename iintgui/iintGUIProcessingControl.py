@@ -614,7 +614,6 @@ class IintGUIProcessingControl():
 
     def setResultFilename(self, filename):
         self._processParameters["finalize"]["outfilename"] = filename + ".iint"
-        self._processParameters["finalize"]["pdffilename"] = filename
 
 
 class trackedInformation():
