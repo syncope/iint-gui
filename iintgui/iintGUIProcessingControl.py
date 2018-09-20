@@ -247,6 +247,7 @@ class IintGUIProcessingControl():
                 self._processParameters["finalize"]["trackedData"].remove(name)
             except:
                 continue
+        self._processParameters["inspection"]["trackedColumns"] = self._processParameters["finalize"]["trackedData"]
 
     def getRawDataName(self):
         return self._rawName
