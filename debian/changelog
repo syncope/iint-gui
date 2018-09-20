@@ -1,3 +1,9 @@
+iintgui (0.5.0-1+deb8u10~fsec) jessie; urgency=low
+
+  * First official release for P09.
+
+ -- Christoph Rosemann <christoph.rosemann@desy.de>  Thu, 20 Sep 2018 18:44:00 +0200
+
 iintgui (0.4.0-1+deb8u10~fsec) jessie; urgency=low
 
   * Initial release for testing at P09.
