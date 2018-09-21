@@ -540,6 +540,9 @@ class IintGUIProcessingControl():
         except KeyError:
             return {}
 
+    def getSignalFitModel(self):
+        return self._processParameters["signalcurvefit"]["model"]["m0_"]["modeltype"]
+
     def getFitModels(self):
         return curvefitting.curvefitting().getFitModels()
 
