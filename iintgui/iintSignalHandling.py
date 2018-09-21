@@ -32,6 +32,7 @@ class iintSignalHandling(QtGui.QWidget):
         self._hiddencblist = [self.firstModelCB, self.secondModelCB, self.thirdModelCB, self.fourthModelCB]
         self._hiddenuselist = [self.useFirst, self.useSecond, self.useThird, self.useFourth]
         self.setParameterDict(pDict)
+        self.performFitPushBtn.setDisabled(True)
         self.configureFirst.clicked.connect(self.emitfirstmodelconfig)
         self.configureSecond.clicked.connect(self.emitsecondmodelconfig)
         self.configureThird.clicked.connect(self.emitthirdmodelconfig)
