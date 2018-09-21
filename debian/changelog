@@ -1,3 +1,9 @@
+iintgui (0.5.1-1+deb8u10~fsec) jessie; urgency=low
+
+  * Fix activated button to being disabled at startup.
+
+ -- Christoph Rosemann <christoph.rosemann@desy.de>  Fri, 21 Sep 2018 11:48:00 +0200
+
 iintgui (0.5.0-1+deb8u10~fsec) jessie; urgency=low
 
   * First official release for P09.
