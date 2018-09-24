@@ -447,6 +447,13 @@ class iintGUI(QtGui.QMainWindow):
         Popen(["evince", filename])
 
     def _runTrackedControlPlots(self):
+        try:
+            modelname = self._control.getSignalFitModel()
+            if modelname is not "gaussianModel" and modelname is not "lorentzianModel":
+                self.warning("Can't create the wanted plots, the fit model has to be either gaussian or lorentzian.")
+                return
+        except:
+            pass
         name, timesuffix = self._control.proposeSaveFileName()
         filename = name + "_" + str(timesuffix) + "_scanControlPlots.pdf"
         self.message("Creating the control plots of the tracked columns ...")
