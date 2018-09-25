@@ -151,6 +151,12 @@ class iintGUI(QtGui.QMainWindow):
         self._control.resetAll()
         self._sfrGUI.reset()
         self.resetTabs()
+        try:
+            self._trackedDataChoice.reset()
+            self._trackedDataChoice.close()
+            self._trackedDataChoice = 0
+        except AttributeError:
+            pass
         self._inspectAnalyze.reset()
         self.message("Cleared all data and processing configuration.")
 
@@ -165,6 +171,12 @@ class iintGUI(QtGui.QMainWindow):
         self._control.resetAll()
         self.resetTabs()
         self._inspectAnalyze.reset()
+        try:
+            self._trackedDataChoice.reset()
+            self._trackedDataChoice.close()
+            self._trackedDataChoice = 0
+        except AttributeError:
+            pass
         self.message("Cleared all data and processing configuration.")
 
     def resetTabs(self, keepSpectra=False):
