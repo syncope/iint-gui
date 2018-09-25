@@ -1,3 +1,9 @@
+iintgui (0.5.3-1+deb8u10~fsec) jessie; urgency=low
+
+  * More bug fixes of remainders: button logic
+
+ -- Christoph Rosemann <christoph.rosemann@desy.de>  Tue, 25 Sep 2018 19:10:00 +0200
+
 iintgui (0.5.2-1+deb8u10~fsec) jessie; urgency=low
 
   * Change default colours of plot items, including the symbols.
