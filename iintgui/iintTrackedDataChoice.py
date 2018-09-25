@@ -79,8 +79,11 @@ class iintTrackedDataChoice(QtGui.QWidget):
                     self._untrackedDataColumns.remove(elem)
                     self._trackedDataColumns.append(elem)
                 except ValueError:
-                    self._untrackedDataHeaders.remove(elem)
-                    self._trackedDataHeaders.append(elem)
+                    try:
+                        self._untrackedDataHeaders.remove(elem)
+                        self._trackedDataHeaders.append(elem)
+                    except ValueError:
+                        pass
         self.listSelectedColumns.addItems(sorted(self._trackedDataColumns))
         self.listSelectedHeaders.addItems(sorted(self._trackedDataHeaders))
         self.listAllColumns.addItems(self._untrackedDataColumns)

@@ -71,6 +71,10 @@ class iintSignalHandling(QtGui.QWidget):
     def activateConfiguration(self):
         self.firstModelCB.setDisabled(False)
         self.configureFirst.setDisabled(False)
+        self.useFirst.setDisabled(False)
+        self.useSecond.setDisabled(False)
+        self.useThird.setDisabled(False)
+        self.useFourth.setDisabled(False)
 
     def deactivateConfiguration(self):
         self.firstModelCB.setDisabled(True)
@@ -78,6 +82,25 @@ class iintSignalHandling(QtGui.QWidget):
 
     def activateFitting(self):
         self.performFitPushBtn.setDisabled(False)
+        self.useFirst.setDisabled(False)
+        self.useSecond.setDisabled(False)
+        self.useThird.setDisabled(False)
+        self.useFourth.setDisabled(False)
+
+    def deactivateFitting(self):
+        self.performFitPushBtn.setDisabled(True)
+        self.firstModelCB.setDisabled(True)
+        self.configureFirst.setDisabled(True)
+        self.secondModelCB.setDisabled(True)
+        self.configureSecond.setDisabled(True)
+        self.thirdModelCB.setDisabled(True)
+        self.configureThird.setDisabled(True)
+        self.fourthModelCB.setDisabled(True)
+        self.configureFourth.setDisabled(True)
+        self.useFirst.setDisabled(True)
+        self.useSecond.setDisabled(True)
+        self.useThird.setDisabled(True)
+        self.useFourth.setDisabled(True)
 
     def _toggleFirst(self):
         self._inactive[0] = not self._inactive[0]

@@ -81,6 +81,7 @@ class iintGUI(QtGui.QMainWindow):
         self.imageTabs.tabCloseRequested.connect(self.imageTabs.removeTab)
         self._simpleImageView = iintDataPlot.iintDataPlot(parent=self)
         self._simpleImageView.blacklist.connect(self._retrackDataDisplay)
+        self._simpleImageView.hidden.connect(self._unresize)
         self._blacklist = []
 
         self._resetQuestion = resetDialog.ResetDialog()
@@ -125,10 +126,15 @@ class iintGUI(QtGui.QMainWindow):
         self._obsDef.observableDicts.connect(self.runObservable)
         self._bkgHandling.bkgDicts.connect(self.runBkgProcessing)
 
-        self.setGeometry(0, 0, 600, 840)
+        self._initialGeometry = self.geometry()
         self._widgetList = []
         self._trackedDataDict = {}
         self._resultFileName = None
+
+    def _unresize(self):
+        # this is the place any resizing code could/should go
+        # i can't seem to get it to work, though
+        self.showNormal()
 
     def _resetInternals(self):
         self._motorname = ""
@@ -148,9 +154,16 @@ class iintGUI(QtGui.QMainWindow):
         self._bkgHandling.setParameterDicts(self._control.getBKGDicts())
         self._signalHandling.reset()
         self._signalHandling.setParameterDict(self._control.getSIGDict())
+        self._signalHandling.deactivateFitting()
         self._control.resetAll()
         self._sfrGUI.reset()
         self.resetTabs()
+        try:
+            self._trackedDataChoice.reset()
+            self._trackedDataChoice.close()
+            self._trackedDataChoice = 0
+        except AttributeError:
+            pass
         self._inspectAnalyze.reset()
         self.message("Cleared all data and processing configuration.")
 
@@ -162,9 +175,16 @@ class iintGUI(QtGui.QMainWindow):
         self._bkgHandling.setParameterDicts(self._control.getBKGDicts())
         self._signalHandling.reset()
         self._signalHandling.setParameterDict(self._control.getSIGDict())
+        self._signalHandling.deactivateFitting()
         self._control.resetAll()
         self.resetTabs()
         self._inspectAnalyze.reset()
+        try:
+            self._trackedDataChoice.reset()
+            self._trackedDataChoice.close()
+            self._trackedDataChoice = 0
+        except AttributeError:
+            pass
         self.message("Cleared all data and processing configuration.")
 
     def resetTabs(self, keepSpectra=False):
