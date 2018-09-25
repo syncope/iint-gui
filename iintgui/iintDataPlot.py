@@ -26,6 +26,7 @@ from . import getUIFile
 class iintDataPlot(QtGui.QDialog):
     currentIndex = QtCore.pyqtSignal(int)
     blacklist = QtCore.pyqtSignal(list)
+    hidden = QtCore.pyqtSignal()
 
     def __init__(self, parent=None):
         super(iintDataPlot, self).__init__(parent)
@@ -88,6 +89,7 @@ class iintDataPlot(QtGui.QDialog):
         self._showsigfit = False
         self.viewPart.clear()
         self.hide()
+        self.hidden.emit()
 
     def update(self, action=None):
         self._checkDataAvailability()
