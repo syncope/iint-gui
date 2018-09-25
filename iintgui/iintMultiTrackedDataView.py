@@ -66,7 +66,7 @@ class iintMultiTrackedDataView(pg.GraphicsLayoutWidget):
             yvalues = np.array(trackinfo.getValues(paramname))
             if blacklist != []:
                 yvalues = yvalues[blackmask]
-            self._plots[paramname] = self.addPlot(title=paramname, x=trackedDataValues, y=yvalues, pen=None, symbolPen=None, symbolSize=10, symbolBrush=(255, 255, 255, 100))
+            self._plots[paramname] = self.addPlot(title=paramname, x=trackedDataValues, y=yvalues, pen=None, symbolPen=None, symbolSize=8, symbolBrush='k')
             plotcounter += 1
             if (plotcounter % plotsPerRow) == 0:
                 self.nextRow()
