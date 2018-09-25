@@ -66,10 +66,10 @@ class iintDataPlot(QtGui.QDialog):
         self.xPosition.setToolTip("Indicates the x position of a point if\nit is clicked somewhere in the scan display.")
         self.yPosition.setToolTip("Indicates the y position of a point if\nit is clicked somewhere in the scan display.")
         self.showRAW.setToolTip("If checked, the raw data is shown;as computed from\nthe application of the formula on the input.\nIt is shown as a '+' sign in black.")
-        self.showDES.setToolTip("If despiking is performed, the display of the\ndespiked data can be de-/activated with the check box.")
-        self.showBKG.setToolTip("If available, the display of the background of the\ndata can be de-/activated with the check box.\nIn case despiking has been applied this is taken as input; otherwise the raw data is taken.")
-        self.showSIG.setToolTip("If background is available, checking/unchecking\nthe box will display/hide the background subtracted data.")
-        self.showFIT.setToolTip("If fit data is available, checking/unchecking\nthe box will display/hide the fit result as curve.")
+        self.showDES.setToolTip("If despiking is performed, the display of the\ndespiked data can be de-/activated with the check box.\nIt is shown as dark green 'x' signs.")
+        self.showBKG.setToolTip("If available, the display of the background of the\ndata can be de-/activated with the check box.\nIn case despiking has been applied this is taken as input; otherwise the raw data is taken.\nIt is shown as red diamonds.")
+        self.showSIG.setToolTip("If background is available, checking/unchecking\nthe box will display/hide the background subtracted data.\nThis data is shown as blue circles.")
+        self.showFIT.setToolTip("If fit data is available, checking/unchecking\nthe box will display/hide the fit result as curve.\nThe curve is drawn as solid blue line.")
 
     def reset(self):
         self.showDES.setChecked(False)
@@ -168,7 +168,7 @@ class iintDataPlot(QtGui.QDialog):
             bkg = datum.getData(self._backgroundPointsName)
             if (self._logScale):
                 bkg = np.log10(np.clip(bkg, 10e-3, np.inf))
-            self.viewPart.plot(xdata, bkg, pen=None, symbolPen='r', symbolBrush='r', symbol='x')
+            self.viewPart.plot(xdata, bkg, pen=None, symbolPen='r', symbolBrush='r', symbol='d')
         if(self._showbkgsubtracted):
             signal = datum.getData(self._signalName)
             if (self._logScale):
