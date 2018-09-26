@@ -472,7 +472,7 @@ class iintGUI(QtGui.QMainWindow):
     def _runTrackedControlPlots(self):
         try:
             modelname = self._control.getSignalFitModel()
-            if modelname is not "gaussianModel" and modelname is not "lorentzianModel":
+            if modelname != "gaussianModel" and modelname != "lorentzianModel":
                 self.warning("Can't create the wanted plots, the fit model has to be either gaussian or lorentzian.")
                 return
         except:
