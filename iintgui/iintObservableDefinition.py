@@ -153,6 +153,8 @@ class iintObservableDefinition(QtGui.QWidget):
             self._despikeDict["method"] = "p09despiking"
             self._despikeDict["input"] = "observable"
             self._despikeDict["output"] = "despikedObservable"
+        else:
+            self._despikeDict = {}
         self._trapintDict["type"] = "trapezoidintegration"
         self._trapintDict["motor"] = self._motorname
         self._trapintDict["observable"] = "signalObservable"

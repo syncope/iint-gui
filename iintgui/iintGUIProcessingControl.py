@@ -117,6 +117,7 @@ class IintGUIProcessingControl():
         for elem in self._dataList:
             try:
                 elem.clearCurrent(self._observableName)
+                elem.clearCurrent(self._despObservableName)
             except KeyError:
                 pass
 

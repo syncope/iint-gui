@@ -281,6 +281,7 @@ class iintGUI(QtGui.QMainWindow):
         # reset logic is screwed up
         # first load the config into the actual description
         runlist = self._control.loadConfig(self._procconf)
+        print("the config is: " + str(runlist))
 
         # the next step is to set the gui up to reflect all the new values
         if "read" in runlist:
@@ -290,7 +291,7 @@ class iintGUI(QtGui.QMainWindow):
             return
         if "observabledef" in runlist:
             self._obsDef.setParameterDicts(self._control.getOBSDict(), self._control.getDESDict())
-            self.runObservable(self._control.getOBSDict(), self._control.getDESDict(), reset=False)
+            self.runObservable(self._control.getOBSDict(), self._control.getDESDict())
         else:
             return
         if "bkgsubtract" in runlist:
@@ -338,6 +339,7 @@ class iintGUI(QtGui.QMainWindow):
         if reset:
             self._simpleImageView.reset()
             self.resetTabs(keepSpectra=True)
+            self._control.resetOBSdata()
             self._inspectAnalyze.reset()
             self._control.resetBKGdata()
             self._bkgHandling.setParameterDicts(self._control.getBKGDicts())
