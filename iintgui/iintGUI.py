@@ -281,7 +281,6 @@ class iintGUI(QtGui.QMainWindow):
         # reset logic is screwed up
         # first load the config into the actual description
         runlist = self._control.loadConfig(self._procconf)
-        print("the config is: " + str(runlist))
 
         # the next step is to set the gui up to reflect all the new values
         if "read" in runlist:
@@ -461,6 +460,7 @@ class iintGUI(QtGui.QMainWindow):
         tdv.pickedTrackedDataPoint.connect(self._setFocusToSpectrum)
         self.message(" ... done.\n")
         self._inspectAnalyze.activate()
+        self._control.useSignalProcessing(True)
 
     def _runScanControlPlots(self):
         name, timesuffix = self._control.proposeSaveFileName()
@@ -564,6 +564,7 @@ class iintGUI(QtGui.QMainWindow):
         self._saveResultsDialog.show()
 
     def runOutputSaving(self):
+        self._control.useFinalizing(True)
         finalDict = self._control.getFinalizingDict()
 
         self.message("Saving results file ...")
