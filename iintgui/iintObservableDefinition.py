@@ -44,6 +44,7 @@ class iintObservableDefinition(QtGui.QWidget):
         self._despike = False
         self._notEnabled(True)
         self.obsDisplayBtn.clicked.connect(self.emittit)
+        self.obsDisplayBtn.clicked.connect(self.activateShowScanProfile)
         self._observableName = 'observable'
         self.observableMotorLabel.setToolTip("The motor taken from the scan command for the chosen series of scans.")
         self.label.setToolTip("The shorthand notation for the used formula to calculate\nthe number of counts at the given motor position.")
@@ -66,6 +67,7 @@ class iintObservableDefinition(QtGui.QWidget):
         self._despike = False
         self._notEnabled(True)
         self._observableName = 'observable'
+        self.deactivateShowScanProfile()
 
     def reset(self):
         self._defaultSettings()
@@ -103,7 +105,12 @@ class iintObservableDefinition(QtGui.QWidget):
         self.observableAttFaccheck.setDisabled(state)
         self.despikeCheckBox.setDisabled(state)
         self.obsDisplayBtn.setDisabled(state)
-        self.showScanProfile.setDisabled(state)
+
+    def activateShowScanProfile(self):
+        self.showScanProfile.setDisabled(False)
+
+    def deactivateShowScanProfile(self):
+        self.showScanProfile.setDisabled(True)
 
     def toggleAttFac(self):
         self.observableAttFacCB.setDisabled(self._useAttenuationFactor)
@@ -146,6 +153,8 @@ class iintObservableDefinition(QtGui.QWidget):
             self._despikeDict["method"] = "p09despiking"
             self._despikeDict["input"] = "observable"
             self._despikeDict["output"] = "despikedObservable"
+        else:
+            self._despikeDict = {}
         self._trapintDict["type"] = "trapezoidintegration"
         self._trapintDict["motor"] = self._motorname
         self._trapintDict["observable"] = "signalObservable"

@@ -30,23 +30,24 @@ class iintSignalHandling(QtGui.QWidget):
         super(iintSignalHandling, self).__init__(parent)
         uic.loadUi(getUIFile.getUIFile("fitpanel.ui"), self)
         self._hiddencblist = [self.firstModelCB, self.secondModelCB, self.thirdModelCB, self.fourthModelCB]
-        self._hiddenuselist = [self.useFirst, self.useSecond, self.useThird, self.useFourth]
+        self._dummy = True
+        self._hiddenuselist = [self._dummy, self.useSecond, self.useThird, self.useFourth]
         self.setParameterDict(pDict)
         self.performFitPushBtn.setDisabled(True)
         self.configureFirst.clicked.connect(self.emitfirstmodelconfig)
         self.configureSecond.clicked.connect(self.emitsecondmodelconfig)
         self.configureThird.clicked.connect(self.emitthirdmodelconfig)
         self.configureFourth.clicked.connect(self.emitfourthmodelconfig)
-        self._inactive = [True, True, True, True]
+        self._inactive = [False, True, True, True]
         self._firstModelDict = {}
         self._secondModelDict = {}
         self._thirdModelDict = {}
         self._fourthModelDict = {}
-        self.useFirst.stateChanged.connect(self._toggleFirst)
+        #~ self.useFirst.stateChanged.connect(self._toggleFirst)
         self.useSecond.stateChanged.connect(self._toggleSecond)
         self.useThird.stateChanged.connect(self._toggleThird)
         self.useFourth.stateChanged.connect(self._toggleFourth)
-        self.useFirst.setToolTip("Always checked, since there needs to be at least one model to fit.")
+        #~ self.useFirst.setToolTip("Always checked, since there needs to be at least one model to fit.")
         self.useSecond.setToolTip("Check to activate the options on the line,\nenabling the choice of a model and its configuration.")
         self.useThird.setToolTip("Check to activate the options on the line,\nenabling the choice of a model and its configuration.")
         self.useFourth.setToolTip("Check to activate the options on the line,\nenabling the choice of a model and its configuration.")
@@ -71,7 +72,7 @@ class iintSignalHandling(QtGui.QWidget):
     def activateConfiguration(self):
         self.firstModelCB.setDisabled(False)
         self.configureFirst.setDisabled(False)
-        self.useFirst.setDisabled(False)
+        #~ self.useFirst.setDisabled(False)
         self.useSecond.setDisabled(False)
         self.useThird.setDisabled(False)
         self.useFourth.setDisabled(False)
@@ -82,7 +83,7 @@ class iintSignalHandling(QtGui.QWidget):
 
     def activateFitting(self):
         self.performFitPushBtn.setDisabled(False)
-        self.useFirst.setDisabled(False)
+        #~ self.useFirst.setDisabled(False)
         self.useSecond.setDisabled(False)
         self.useThird.setDisabled(False)
         self.useFourth.setDisabled(False)
@@ -97,15 +98,15 @@ class iintSignalHandling(QtGui.QWidget):
         self.configureThird.setDisabled(True)
         self.fourthModelCB.setDisabled(True)
         self.configureFourth.setDisabled(True)
-        self.useFirst.setDisabled(True)
+        #~ self.useFirst.setDisabled(True)
         self.useSecond.setDisabled(True)
         self.useThird.setDisabled(True)
         self.useFourth.setDisabled(True)
 
-    def _toggleFirst(self):
-        self._inactive[0] = not self._inactive[0]
-        self.firstModelCB.setDisabled(self._inactive[0])
-        self.configureFirst.setDisabled(self._inactive[0])
+    #~ def _toggleFirst(self):
+        #~ self._inactive[0] = not self._inactive[0]
+        #~ self.firstModelCB.setDisabled(self._inactive[0])
+        #~ self.configureFirst.setDisabled(self._inactive[0])
 
     def _toggleSecond(self):
         self._inactive[1] = not self._inactive[1]
@@ -140,8 +141,11 @@ class iintSignalHandling(QtGui.QWidget):
         for i in range(len(names)):
             name = names[i]
             self._hiddencblist[i].setCurrentIndex(self._hiddencblist[i].findText(name))
-            self._hiddenuselist[i].setDisabled(False)
-            self._hiddenuselist[i].setCheckState(2)
+            try:
+                self._hiddenuselist[i].setDisabled(False)
+                self._hiddenuselist[i].setCheckState(2)
+            except AttributeError:
+                pass
         self.performFitPushBtn.setDisabled(False)
 
     def passModels(self, modelDict):

@@ -56,6 +56,8 @@ class IintGUIProcessingControl():
         self._processList = []
         self._nodespike = True
         self._nobkg = True
+        self._nosignalprocessing = True
+        self._nofinalizing = True
         self._motorName = ""
         self._rawName = "rawdata"
         self._id = "scannumber"
@@ -117,6 +119,7 @@ class IintGUIProcessingControl():
         for elem in self._dataList:
             try:
                 elem.clearCurrent(self._observableName)
+                elem.clearCurrent(self._despObservableName)
             except KeyError:
                 pass
 
@@ -128,6 +131,7 @@ class IintGUIProcessingControl():
                 pass
 
     def resetTRAPINTdata(self):
+        self.useSignalProcessing(False)
         for elem in self._dataList:
             try:
                 elem.clearCurrent(self._trapintName)
@@ -137,6 +141,7 @@ class IintGUIProcessingControl():
                 pass
 
     def resetSIGdata(self):
+        self.useSignalProcessing(False)
         for elem in self._dataList:
             try:
                 elem.clearCurrent(self._signalName)
@@ -144,6 +149,7 @@ class IintGUIProcessingControl():
                 pass
 
     def resetFITdata(self):
+        self.useSignalProcessing(False)
         for elem in self._dataList:
             try:
                 elem.clearCurrent(self._fittedSignalName)
@@ -416,12 +422,14 @@ class IintGUIProcessingControl():
             processDict["bkgfit"] = ds[1]
             processDict["calcbkgpoints"] = ds[2]
             processDict["bkgsubtract"] = ds[3]
-        execlist.append("trapint")
-        processDict["trapint"] = self.getTrapIntDict()
-        execlist.append("signalcurvefit")
-        processDict["signalcurvefit"] = self.getSIGDict()
-        execlist.append("finalize")
-        processDict["finalize"] = self.getFinalizingDict()
+        if not self._nosignalprocessing:
+            execlist.append("trapint")
+            processDict["trapint"] = self.getTrapIntDict()
+            execlist.append("signalcurvefit")
+            processDict["signalcurvefit"] = self.getSIGDict()
+        if not self._nofinalizing:
+            execlist.append("finalize")
+            processDict["finalize"] = self.getFinalizingDict()
         procconfig = processingConfiguration.ProcessingConfiguration()
         procconfig.addProcessDefinition(processDict)
         procconfig.setOrderOfExecution(execlist)
@@ -579,6 +587,12 @@ class IintGUIProcessingControl():
     def useDespike(self, value):
         self._nodespike = not value
         self.settingChoiceDesBkg()
+
+    def useSignalProcessing(self, value):
+        self._nosignalprocessing = not value
+
+    def useFinalizing(self, value):
+        self._nofinalizing = not value
 
     def getTrackInformation(self, name):
         '''Collect the tracked data given by name.

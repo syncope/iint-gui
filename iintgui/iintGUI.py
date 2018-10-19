@@ -290,7 +290,7 @@ class iintGUI(QtGui.QMainWindow):
             return
         if "observabledef" in runlist:
             self._obsDef.setParameterDicts(self._control.getOBSDict(), self._control.getDESDict())
-            self.runObservable(self._control.getOBSDict(), self._control.getDESDict(), reset=False)
+            self.runObservable(self._control.getOBSDict(), self._control.getDESDict())
         else:
             return
         if "bkgsubtract" in runlist:
@@ -338,6 +338,7 @@ class iintGUI(QtGui.QMainWindow):
         if reset:
             self._simpleImageView.reset()
             self.resetTabs(keepSpectra=True)
+            self._control.resetOBSdata()
             self._inspectAnalyze.reset()
             self._control.resetBKGdata()
             self._bkgHandling.setParameterDicts(self._control.getBKGDicts())
@@ -399,9 +400,9 @@ class iintGUI(QtGui.QMainWindow):
     def _checkBkgState(self, i):
         self._control.useBKG(i)
         if i is 0:
-            self._signalHandling.activateConfiguration()
-        elif i is 2:
             self._signalHandling.deactivateConfiguration()
+        elif i is 2:
+            self._signalHandling.activateConfiguration()
 
     def plotit(self):
         # pyqt helper stuff
@@ -459,6 +460,7 @@ class iintGUI(QtGui.QMainWindow):
         tdv.pickedTrackedDataPoint.connect(self._setFocusToSpectrum)
         self.message(" ... done.\n")
         self._inspectAnalyze.activate()
+        self._control.useSignalProcessing(True)
 
     def _runScanControlPlots(self):
         name, timesuffix = self._control.proposeSaveFileName()
@@ -562,6 +564,7 @@ class iintGUI(QtGui.QMainWindow):
         self._saveResultsDialog.show()
 
     def runOutputSaving(self):
+        self._control.useFinalizing(True)
         finalDict = self._control.getFinalizingDict()
 
         self.message("Saving results file ...")
