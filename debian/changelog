@@ -1,55 +1,5 @@
-iintgui (0.5.5-1+deb8u10~fsec) jessie; urgency=low
+iintgui (0.5.6-1+deb9u5~fsec) stretch; urgency=low
 
-  * Minro bug fix: wrong string comparison in python.
+  * Several bug fixes for functionality; first complete Debian9 release.
 
- -- Christoph Rosemann <christoph.rosemann@desy.de>  Tue, 26 Sep 2018 11:25:00 +0200
-
-iintgui (0.5.4-1+deb8u10~fsec) jessie; urgency=low
-
-  * More bug fixes: model name not loaded into display
-
- -- Christoph Rosemann <christoph.rosemann@desy.de>  Tue, 25 Sep 2018 19:24:00 +0200
-
-iintgui (0.5.3-1+deb8u10~fsec) jessie; urgency=low
-
-  * More bug fixes of remainders: button logic
-
- -- Christoph Rosemann <christoph.rosemann@desy.de>  Tue, 25 Sep 2018 19:10:00 +0200
-
-iintgui (0.5.2-1+deb8u10~fsec) jessie; urgency=low
-
-  * Change default colours of plot items, including the symbols.
-  * Default background colour of plots is now white.
-
- -- Christoph Rosemann <christoph.rosemann@desy.de>  Tue, 25 Sep 2018 17:28:00 +0200
-
-iintgui (0.5.1-1+deb8u10~fsec) jessie; urgency=low
-
-  * Fix activated button to being disabled at startup.
-
- -- Christoph Rosemann <christoph.rosemann@desy.de>  Fri, 21 Sep 2018 11:48:00 +0200
-
-iintgui (0.5.0-1+deb8u10~fsec) jessie; urgency=low
-
-  * First official release for P09.
-
- -- Christoph Rosemann <christoph.rosemann@desy.de>  Thu, 20 Sep 2018 18:44:00 +0200
-
-iintgui (0.4.0-1+deb8u10~fsec) jessie; urgency=low
-
-  * Initial release for testing at P09.
-
- -- Christoph Rosemann <christoph.rosemann@desy.de>  Thu, 13 Sep 2018 11:51:00 +0200
-
-iintgui (0.3.8-1+deb8u10~fsec) jessie; urgency=low
-
-  * Remove wrongly included files.
-
- -- Christoph Rosemann <christoph.rosemann@desy.de>  Fri, 07 Sep 2018 16:28:00 +0200
-
-iintgui (0.3.7-1+deb8u10~fsec) jessie; urgency=low
-
-  * First release
-
- -- Christoph Rosemann <christoph.rosemann@desy.de>  Wed, 05 Sep 2018 17:18:00 +0200
-
+ -- Christoph Rosemann <christoph.rosemann@desy.de>  Fri, 19 Oct 2018 11:42:00 +0200
