@@ -400,9 +400,9 @@ class iintGUI(QtGui.QMainWindow):
     def _checkBkgState(self, i):
         self._control.useBKG(i)
         if i is 0:
-            self._signalHandling.activateConfiguration()
-        elif i is 2:
             self._signalHandling.deactivateConfiguration()
+        elif i is 2:
+            self._signalHandling.activateConfiguration()
 
     def plotit(self):
         # pyqt helper stuff
