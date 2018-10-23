@@ -1,7 +1,7 @@
 FROM debian:stretch
 LABEL maintainer "Christoph Rosemann <christoph.rosemann@desy.de>"
 
-RUN apt-get update && apt-get install -y wget gnupg gnupg2 ca-certificates\
+RUN apt-get update && apt-get install -y wget gnupg gnupg2 ca-certificates evince\
     && wget http://nims.desy.de/extra/desy/DESY-Debian-key.asc \
     && wget http://nims.desy.de/extra/hasylab.debian/fsec.asc \
     && apt-key add DESY-Debian-key.asc \

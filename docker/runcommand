@@ -1,2 +1,1 @@
-docker run -ti --rm  -v /tmp/.X11-unix:/tmp/.X11-unix -e QT_X11_NO_MITSHM=1 -e DISPLAY=:1 8e81d504d698
-
+docker run -ti --rm  -v /tmp/.X11-unix:/tmp/.X11-unix -v /home/rosem/workspace/testdata:/data -e QT_X11_NO_MITSHM=1 -e DISPLAY=:1
