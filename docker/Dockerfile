@@ -16,6 +16,11 @@ RUN apt-get update && apt-get install -y wget gnupg gnupg2 ca-certificates evinc
         python3-pensant \ 
         python3-iintgui
 
+RUN useradd -ms /bin/bash iintuser
+
+USER iintuser
+WORKDIR /home/iintuser
+
 ENV LANG en-US
 
 ENTRYPOINT ["/usr/bin/iint-gui"]
