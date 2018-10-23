@@ -1,0 +1,1 @@
+docker run -ti --rm  -v /tmp/.X11-unix:/tmp/.X11-unix --user $(id -u):$(id -g) -v /home/rosem/workspace/:/whatever -e QT_X11_NO_MITSHM=1 -e DISPLAY=:1
