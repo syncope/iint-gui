@@ -21,6 +21,6 @@ RUN useradd -ms /bin/bash iintuser
 USER iintuser
 WORKDIR /home/iintuser
 
-ENV LANG en-US
+ENV LANG en_US.UTF-8
 
 ENTRYPOINT ["/usr/bin/iint-gui"]
