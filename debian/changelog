@@ -1,3 +1,11 @@
+iintgui (0.6.0-1+deb9u5~fsec) stretch; urgency=low
+
+  * Fix issue for small screens: main window now scrollable. 
+    Also fixed: dependency on evince as pdf viewer added.
+
+ -- Christoph Rosemann <christoph.rosemann@desy.de>  Thu, 25 Oct 2018 15:22:00 +0200
+
+
 iintgui (0.5.6-1+deb9u5~fsec) stretch; urgency=low
 
   * Several bug fixes for functionality; first complete Debian9 release.

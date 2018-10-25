@@ -14,7 +14,8 @@ Depends: ${misc:Depends},
          python3-numpy,
          python3-pyqt4,
          python3-pyqtgraph,
-         python3-adapt
+         python3-adapt,
+         evince
 Description: graphical user interface to iint
     intgui is an application within the data analysis framework ADAPT, written by Ch. Rosemann, DESY.
     All iint parts are by Sonia Francoual, beamline P09, DESY
