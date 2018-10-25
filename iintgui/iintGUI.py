@@ -114,6 +114,9 @@ class iintGUI(QtGui.QMainWindow):
 
         self._loggingBox = loggerBox.LoggerBox()
 
+        self.verticalLayout = QtGui.QVBoxLayout()
+        self.scrollAreaContents.setLayout(self.verticalLayout)
+
         self.verticalLayout.addWidget(self._fileInfo)
         self.verticalLayout.addWidget(self._obsDef)
         self.verticalLayout.addWidget(self._bkgHandling)
