@@ -18,6 +18,6 @@
 # Foundation, Inc., 51 Franklin Street, Fifth Floor,
 # Boston, MA  02110-1301, USA.
 
-__version__ = "0.6.1"
+__version__ = "0.6.2"
 
 from . import iintGUI
