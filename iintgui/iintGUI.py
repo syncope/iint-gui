@@ -74,6 +74,7 @@ class iintGUI(QtGui.QMainWindow):
         # the core independent variable in iint:
         self._motorname = ""
         self._rawdataobject = None
+        self.imageTabs = QtGui.QTabWidget()
 
         self.imageTabs.removeTab(1)
         self.imageTabs.removeTab(0)
@@ -116,6 +117,7 @@ class iintGUI(QtGui.QMainWindow):
 
         self.verticalLayout = QtGui.QVBoxLayout()
         self.scrollAreaContents.setLayout(self.verticalLayout)
+        self.scrollArea2.setWidget(self.imageTabs)
 
         self.verticalLayout.addWidget(self._fileInfo)
         self.verticalLayout.addWidget(self._obsDef)
