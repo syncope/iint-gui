@@ -1,3 +1,9 @@
+iintgui (0.6.2-1+deb9u5~fsec) stretch; urgency=low
+
+  * Fix issues with upstream dependent library for fitting.
+
+ -- Christoph Rosemann <christoph.rosemann@desy.de>  Thu, 15 Nov 2018 16:42:00 +0100
+
 iintgui (0.6.0-1+deb9u5~fsec) stretch; urgency=low
 
   * Fix issue for small screens: main window now scrollable. 
