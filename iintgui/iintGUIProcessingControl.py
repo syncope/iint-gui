@@ -556,8 +556,8 @@ class IintGUIProcessingControl():
 
     def getFitModel(self, modelname, data, index):
         # needs different approach // or extension: keep the widgets
-        self._signalfitter = self._fitmodels[modelname](prefix="m" + str(index) + "_")
-        return self._signalfitter.getWidget(data[0], data[1])
+        self._signalfitter = self._fitmodels[modelname]()
+        return self._signalfitter.getWidget(data[0], data[1], index=index)
 
     def getSignalFitDict(self):
         return self._processParameters["calcfitpoints"]
