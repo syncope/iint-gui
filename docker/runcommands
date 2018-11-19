@@ -1,0 +1,5 @@
+LINUX:
+docker run -ti --rm  -v /tmp/.X11-unix:/tmp/.X11-unix --user $(id -u):$(id -g) -v /home/rosem/workspace/:/home/iintuser -e QT_X11_NO_MITSHM=1 -e DISPLAY=:1 
+ 
+WINDOWS
+docker run -ti --rm  --v C:\:/home/iintuser -e QT_X11_NO_MITSHM=1 -e DISPLAY=$HOSTNAME:1
