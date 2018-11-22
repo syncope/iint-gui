@@ -83,6 +83,8 @@ class iintObservableDefinition(QtGui.QWidget):
             self._notEnabled(False)
 
         self._currentdataLabels = dataobject.getLabels()
+        self.scantype.setText(dataobject.getScanType())
+        self.scantype.setStyleSheet("color: red;")
         self.observableMotorLabel.setStyleSheet("color: blue;")
         self._motorname = dataobject.getMotorName()
 
