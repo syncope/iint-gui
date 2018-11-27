@@ -45,6 +45,7 @@ class iintObservableDefinition(QtGui.QWidget):
         self._notEnabled(True)
         self.obsDisplayBtn.clicked.connect(self.emittit)
         self.obsDisplayBtn.clicked.connect(self.activateShowScanProfile)
+        self.obsDisplayBtn.clicked.connect(self.activateMCA)
         self._observableName = 'observable'
         self.observableMotorLabel.setToolTip("The motor taken from the scan command for the chosen series of scans.")
         self.label.setToolTip("The shorthand notation for the used formula to calculate\nthe number of counts at the given motor position.")
@@ -56,6 +57,8 @@ class iintObservableDefinition(QtGui.QWidget):
         self.despikeCheckBox.setToolTip("Check the box to run a despiking/filtering algorithm\non the scan data to dampen spikes/noise fluctuation.")
         self.obsDisplayBtn.setToolTip("Once everything is set, click this button to perform\nthe calculation of the observable data and open a display.")
         self.showScanProfile.setToolTip("Creates a stack of all scans as matrix, creating an image.\nThe result is stored in a file, which is shown in an external viewer.")
+        #~ self.showMCA.hide()
+        self.showMCA.setDisabled(False)
 
     def _defaultSettings(self):
         self._obsDict = {}
@@ -74,6 +77,10 @@ class iintObservableDefinition(QtGui.QWidget):
 
     def activate(self):
         self._notEnabled(False)
+
+    def activateMCA(self):
+        self.showMCA.show()
+        self.showMCA.setDisabled(False)
 
     def passInfo(self, dataobject):
         if dataobject is None:
