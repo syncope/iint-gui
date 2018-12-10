@@ -42,6 +42,7 @@ from . import showFileContents
 from . import showAboutIintGUI
 from . import iintMultiTrackedDataView
 from . import iintInspectAnalyze
+from . import iintMCA
 from . import selectResultOutput
 
 
@@ -92,7 +93,9 @@ class iintGUI(QtGui.QMainWindow):
         self._obsDef = iintObservableDefinition.iintObservableDefinition()
         self._obsDef.doDespike.connect(self._control.useDespike)
         self._obsDef.showScanProfile.clicked.connect(self._runScanProfiles)
-        self._obsDef.showMCA.clicked.connect(self._runMCA)
+        self._mcaplot = iintMCA.iintMCA(parent=self)
+        self._mcaplot.hide()
+        self._obsDef.showMCA.clicked.connect(self._mcaplot.show)
         self._bkgHandling = iintBackgroundHandling.iintBackgroundHandling(self._control.getBKGDicts())
         self._bkgHandling.bkgmodel.connect(self._control.setBkgModel)
         self._bkgHandling.useBkg.stateChanged.connect(self._checkBkgState)

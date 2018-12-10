@@ -337,6 +337,9 @@ class IintGUIProcessingControl():
         for datum in data:
             pd = processData.ProcessData()
             pd.addData(name, datum)
+            if datum.getMCAName() != '':
+                pd.addData("MCAName", datum.getMCAName())
+                pd.addData("MCA", datum.getMCA())
             self._dataList.append(pd)
 
     def checkDataIntegrity(self, motor):
