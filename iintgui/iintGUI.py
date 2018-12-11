@@ -42,6 +42,7 @@ from . import showFileContents
 from . import showAboutIintGUI
 from . import iintMultiTrackedDataView
 from . import iintInspectAnalyze
+from . import iintMCA
 from . import selectResultOutput
 
 
@@ -92,6 +93,10 @@ class iintGUI(QtGui.QMainWindow):
         self._obsDef = iintObservableDefinition.iintObservableDefinition()
         self._obsDef.doDespike.connect(self._control.useDespike)
         self._obsDef.showScanProfile.clicked.connect(self._runScanProfiles)
+        self._mcaplot = iintMCA.iintMCA(parent=self)
+        self._mcaplot.hide()
+        self._obsDef.showMCA.hide()
+        #~ self._obsDef.showMCA.clicked.connect(self._mcaplot.show)
         self._bkgHandling = iintBackgroundHandling.iintBackgroundHandling(self._control.getBKGDicts())
         self._bkgHandling.bkgmodel.connect(self._control.setBkgModel)
         self._bkgHandling.useBkg.stateChanged.connect(self._checkBkgState)
@@ -373,6 +378,15 @@ class iintGUI(QtGui.QMainWindow):
         filename = name + "_scanProfiles.pdf"
         self.message("Creating the scan profile plot ...")
         self._control.processScanProfiles(filename)
+        self.message(" ... done.\n")
+        from subprocess import Popen
+        Popen(["evince", filename])
+
+    def _runMCA(self):
+        name, timesuffix = self._control.proposeSaveFileName()
+        filename = name + "_mca.pdf"
+        self.message("Creating the MCA plots ...")
+        self._control.processMCAPlots(filename)
         self.message(" ... done.\n")
         from subprocess import Popen
         Popen(["evince", filename])

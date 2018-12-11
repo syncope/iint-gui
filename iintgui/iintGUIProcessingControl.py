@@ -38,6 +38,7 @@ from adapt.processes import iintfinalization
 from adapt.processes import iintpolarization
 from adapt.processes import iintcontrolplots
 from adapt.processes import iintscanprofileplot
+from adapt.processes import iintmcaplot
 from adapt.processes import iintscanplot
 
 import numpy as np
@@ -82,6 +83,7 @@ class IintGUIProcessingControl():
                               "polana",
                               "inspection",
                               "scanprofileplot",
+                              "mcaplot",
                               "scanplot"]
         self._procRunList = []
         self._processParameters = {}
@@ -172,6 +174,7 @@ class IintGUIProcessingControl():
         self._processParameters["polana"] = iintpolarization.iintpolarization().getProcessDictionary()
         self._processParameters["inspection"] = iintcontrolplots.iintcontrolplots().getProcessDictionary()
         self._processParameters["scanprofileplot"] = iintscanprofileplot.iintscanprofileplot().getProcessDictionary()
+        self._processParameters["mcaplot"] = iintmcaplot.iintmcaplot().getProcessDictionary()
         self._processParameters["scanplot"] = iintscanplot.iintscanplot().getProcessDictionary()
 
         self._fitmodels = curvefitting.curvefitting().getFitModels()
@@ -242,6 +245,9 @@ class IintGUIProcessingControl():
         self._processParameters["inspection"]["fitresult"] = self._fittedSignalName
         self._processParameters["inspection"]["trapintname"] = self._trapintName
         self._processParameters["inspection"]["trackedColumns"] = []
+        # mca plots 
+        self._processParameters["mcaplot"]["input"] = self._rawName
+        self._processParameters["mcaplot"]["outfilename"] = ""
         # finalization: saving files
         self._processParameters["scanplot"]["specdataname"] = self._rawName
         self._processParameters["scanplot"]["fitresult"] = self._fittedSignalName
@@ -331,6 +337,9 @@ class IintGUIProcessingControl():
         for datum in data:
             pd = processData.ProcessData()
             pd.addData(name, datum)
+            if datum.getMCAName() != '':
+                pd.addData("MCAName", datum.getMCAName())
+                pd.addData("MCA", datum.getMCA())
             self._dataList.append(pd)
 
     def checkDataIntegrity(self, motor):
@@ -367,6 +376,10 @@ class IintGUIProcessingControl():
     def processScanProfiles(self, name):
         self._processParameters["scanprofileplot"]["outfilename"] = name
         self.processAll(self._processParameters["scanprofileplot"])
+
+    def processMCAPlots(self, name):
+        self._processParameters["mcaplot"]["outfilename"] = name
+        self.processAll(self._processParameters["mcaplot"])
 
     def processScanControlPlots(self, name):
         self._processParameters["scanplot"]["outfilename"] = name
