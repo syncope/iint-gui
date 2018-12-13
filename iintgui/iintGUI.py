@@ -96,7 +96,7 @@ class iintGUI(QtGui.QMainWindow):
         self._mcaplot = iintMCA.iintMCA(parent=self)
         self._mcaplot.hide()
         self._obsDef.showMCA.hide()
-        #~ self._obsDef.showMCA.clicked.connect(self._mcaplot.show)
+        self._obsDef.showMCA.clicked.connect(self._mcaplot.show)
         self._bkgHandling = iintBackgroundHandling.iintBackgroundHandling(self._control.getBKGDicts())
         self._bkgHandling.bkgmodel.connect(self._control.setBkgModel)
         self._bkgHandling.useBkg.stateChanged.connect(self._checkBkgState)
@@ -328,7 +328,11 @@ class iintGUI(QtGui.QMainWindow):
 
         sfr = self._control.createAndInitialize(filereaderdict)
         self._control.createDataList(sfr.getData(), self._control.getRawDataName())
-
+        # check for MCA! 
+        mcaDict = self._control.getMCA()
+        if mcaDict != {}:
+            self._obsDef.showMCA.show()
+            self._mcaplot.passData(mcaDict)
         # to set the displayed columns etc. one element of the selected data is needed
         self._rawdataobject = self._control.getDataList()[0].getData(self._control.getRawDataName())
         self._motorname = self._rawdataobject.getMotorName()

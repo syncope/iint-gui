@@ -54,6 +54,7 @@ class IintGUIProcessingControl():
         self._procControl = processingControl.ProcessingControl()
         self._procBuilder = processBuilder.ProcessBuilder()
         self._dataList = []
+        self._mcaDict = {}
         self._processList = []
         self._nodespike = True
         self._nobkg = True
@@ -95,6 +96,7 @@ class IintGUIProcessingControl():
             elem.clearAll()
         del self._dataList[:]
         self._dataList = []
+        self._mcaDict.clear()
         del self._processList[:]
         self._processList = []
         self._motorName = ""
@@ -340,7 +342,22 @@ class IintGUIProcessingControl():
             if datum.getMCAName() != '':
                 pd.addData("MCAName", datum.getMCAName())
                 pd.addData("MCA", datum.getMCA())
+                self._mcaDict[datum.getScanNumber()] = datum.getMCA()
             self._dataList.append(pd)
+
+    #~ def checkForMCA(self):
+        #~ # search through the list of data and retrieve the indices 
+        #~ mca = {}
+        #~ for datum in self._dataList:
+            #~ try:
+                #~ datum.getData("MCA")
+                #~ mca[datum.getData(self.getRawDataName()).getScanNumber()] = self._dataList.index(datum)
+            #~ except:
+                #~ pass
+        #~ return mca
+
+    def getMCA(self):
+        return self._mcaDict
 
     def checkDataIntegrity(self, motor):
         error = False

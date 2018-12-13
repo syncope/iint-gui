@@ -40,10 +40,13 @@ class iintMCA(QtGui.QDialog):
         self._tmpFit = None
         self._logScale = False
         self.setGeometry(640, 1, 840, 840)
-        self._zoomMarker = pg.LinearRegionItem([0,1])
-        self._zoomMarker.setZValue(-10)
-        self._zoomMarker.sigRegionChanged.connect(self.updateZoom)
-
+        #~ self._zoomMarker = pg.LinearRegionItem([0,1])
+        #~ self._zoomMarker.setZValue(-10)
+        #~ self._zoomMarker.sigRegionChanged.connect(self.update)
+        #~ self.viewPart.addItem(self._zoomMarker)
+        #~ self.viewPart.sigXRangeChanged.connect(self.updateZoom)
+        self.lowerZoom.valueChanged.connect(self.update)
+        self.upperZoom.valueChanged.connect(self.update)
         # still missing:
         # a) if zoom marker moved: call updateZoom
 
@@ -56,30 +59,43 @@ class iintMCA(QtGui.QDialog):
         self.hidden.emit()
 
     def update(self, action=None):
+        self.viewPart.setXRange(min=self.lowerZoom.value(),max=self.upperZoom.value(), padding=0)
         self.plot()
-        self.viewPart.addItem(self._zoomMarker)
 
-    def updateZoom(self):
-        self.viewPart.setXRange(*self._zoomMarker.getRegion(), padding=0)
-        self._zoomMarker.setRegion(self.viewPart.getViewBox().viewRange()[0])
+    #~ def updateZoom(self):
+        #~ self._zoomMarker.setRegion(self.viewPart.getViewBox().viewRange()[0])
 
     def _resetZoom(self):
-        pass
+        self.lowerZoom.setValue(self._zoomStartValues[0])
+        self.upperZoom.setValue(self._zoomStartValues[1])
+        #~ self._zoomMarker.setRegion(self._zoomStartValues)
 
-    def passData(self, datalist):
-        self._dataList = datalist
+    def passData(self, dataDict):
+        if len(dataDict) is 1:
+            self._dataList = list(dataDict.values())[0]
+        else:
+            # need some decision what to do here ...!?
+            pass
+        self._zoomStartValues = (0,len(self._dataList[0]))
+        self.lowerZoom.setMinimum(0)
+        self.lowerZoom.setMaximum(len(self._dataList[0]))
+        self.lowerZoom.setValue(0)
+        
+        self.upperZoom.setMinimum(0)
+        self.upperZoom.setMaximum(len(self._dataList[0]))
+        self.upperZoom.setValue(len(self._dataList[0]))
+        #~ self._zoomMarker.setRegion(self._zoomStartValues)
         self.update()
 
     def plot(self):
-        #~ datum = self._dataList[self._currentIndex]
-
-        self.mcaID.setText("t.b.d.")
-        #~ xdata = datum.getData(self._motorName)
-        #~ ydata = datum.getData(self._observableName)
+        datum = self._dataList[self._currentIndex]
+        self.mcaID.setText(str(self._currentIndex))
+        ydata = datum
+        xdata = np.asarray(range(len(datum)))
         #~ if (self._logScale):
             #~ ydata = np.log10(np.clip(ydata, 10e-3, np.inf))
-        #~ self.viewPart.clear()
-        #~ self.viewPart.plot(xdata, fitdata, pen='b')
+        self.viewPart.clear()
+        self.viewPart.plot(xdata, ydata, pen='b')
 
     #~ def plotFit(self, ydata):
         #~ datum = self._dataList[self._currentIndex]
