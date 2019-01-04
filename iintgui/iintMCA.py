@@ -22,6 +22,7 @@ from PyQt4 import QtCore, QtGui, uic
 import numpy as np
 import pyqtgraph as pg
 from . import getUIFile
+#~ from adapt.processes import curvefitting
 
 
 class iintMCA(QtGui.QDialog):
@@ -39,7 +40,7 @@ class iintMCA(QtGui.QDialog):
         self.currentIndex.emit(self._currentIndex)
         self._tmpFit = None
         self._logScale = False
-        self.setGeometry(640, 1, 840, 840)
+        self.setGeometry(640, 1, 840, 420)
         #~ self._zoomMarker = pg.LinearRegionItem([0,1])
         #~ self._zoomMarker.setZValue(-10)
         #~ self._zoomMarker.sigRegionChanged.connect(self.update)
@@ -49,8 +50,10 @@ class iintMCA(QtGui.QDialog):
         self.upperZoom.valueChanged.connect(self.update)
         # still missing:
         # a) if zoom marker moved: call updateZoom
-
         #~ self.showFIT.setToolTip("If fit data is available, checking/unchecking\nthe box will display/hide the fit result as curve.\nThe curve is drawn as solid blue line.")
+        #~ self._fitmodels = curvefitting.curvefitting().getFitModels()
+        #~ self.handlerPart = self._fitmodels["gaussianModel"]().getWidget(xdata, ydata, index=0)
+
 
     def reset(self):
         self._currentIndex = 0
