@@ -64,8 +64,8 @@ class iintObservableDefinition(QtGui.QWidget):
         self._obsDict = {}
         self._despikeDict = {}
         self._trapintDict = {}
-        self._useAttenuationFactor = False
-        self.observableAttFacCB.setDisabled(True)
+        #~ self.observableAttFacCB.setDisabled(True)
+        #~ self._useAttenuationFactor = False
         self.despikeCheckBox.setChecked(False)
         self._despike = False
         self._notEnabled(True)
@@ -112,6 +112,8 @@ class iintObservableDefinition(QtGui.QWidget):
         self.observableMonitorCB.setDisabled(state)
         self.observableTimeCB.setDisabled(state)
         self.observableAttFaccheck.setDisabled(state)
+        if state:
+            self.observableAttFaccheck.setCheckState(0)
         self.despikeCheckBox.setDisabled(state)
         self.obsDisplayBtn.setDisabled(state)
 
@@ -122,6 +124,7 @@ class iintObservableDefinition(QtGui.QWidget):
         self.showScanProfile.setDisabled(True)
 
     def toggleAttFac(self):
+        # creates trouble at reset 
         self.observableAttFacCB.setDisabled(self._useAttenuationFactor)
         self._useAttenuationFactor = not self._useAttenuationFactor
 
