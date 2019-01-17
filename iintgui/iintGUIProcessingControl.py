@@ -270,8 +270,8 @@ class IintGUIProcessingControl():
     def getMotorName(self):
         return self._motorName
 
-    def setMotorName(self, motor):
-        self._motorName = motor
+    def setMotorName(self):
+        self._motorName = self.getRawDataObject().getMotorName()
         self._processParameters["observabledef"]["motor_column"] = self._motorName
         self._processParameters["scanprofileplot"]["motor"] = self._motorName
         self._processParameters["bkgselect"]["input"] = [self._despObservableName, self._motorName]
@@ -359,13 +359,17 @@ class IintGUIProcessingControl():
     def getMCA(self):
         return self._mcaDict
 
-    def checkDataIntegrity(self, motor):
+    def checkDataIntegrity(self):
         error = False
+        motor = self._dataList[0].getData(self.getRawDataName()).getMotorName()
         for datum in self._dataList:
             if motor != datum.getData(self.getRawDataName()).getMotorName():
                 error = True
                 break
         return error
+
+    def getRawDataObject(self):
+        return self.getDataList()[0].getData(self.getRawDataName())
 
     def getDataList(self):
         return self._dataList

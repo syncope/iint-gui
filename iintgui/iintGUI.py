@@ -333,17 +333,14 @@ class iintGUI(QtGui.QMainWindow):
         if mcaDict != {}:
             self._obsDef.showMCA.show()
             self._mcaplot.passData(mcaDict)
-        # to set the displayed columns etc. one element of the selected data is needed
-        self._rawdataobject = self._control.getDataList()[0].getData(self._control.getRawDataName())
-        self._motorname = self._rawdataobject.getMotorName()
-        check = self._control.checkDataIntegrity(self._motorname)
+        check = self._control.checkDataIntegrity()
         if check:
             self.warning("There are different motor names in the selection!\n Can't continue, please correct!")
             return
 
-        self._control.setMotorName(self._motorname)
+        self._control.setMotorName()
         # pass info to the observable definition part
-        self._obsDef.passInfo(self._rawdataobject)
+        self._obsDef.passInfo(self._control.getRawDataObject())
         self.message("... done.\n")
 
     def runObservable(self, obsDict, despDict, reset=True):
