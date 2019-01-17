@@ -25,12 +25,12 @@ from . import getUIFile
 #~ from adapt.processes import curvefitting
 
 
-class iintMCA(QtGui.QDialog):
+class iintMCADialog(QtGui.QDialog):
     currentIndex = QtCore.pyqtSignal(int)
 
     def __init__(self, parent=None):
-        super(iintMCA, self).__init__(parent)
-        uic.loadUi(getUIFile.getUIFile("iintMCA.ui"), self)
+        super(iintMCADialog, self).__init__(parent)
+        uic.loadUi(getUIFile.getUIFile("iintMCADialog.ui"), self)
         self.showPreviousBtn.clicked.connect(self.decrementCurrentScanID)
         self.showNextBtn.clicked.connect(self.incrementCurrentScanID)
         self.resetZoom.clicked.connect(self._resetZoom)
