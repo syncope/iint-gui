@@ -257,7 +257,11 @@ class iintGUI(QtGui.QMainWindow):
         self._quit.show()
 
     def _saveConfig(self, num=None):
-        savename, timesuffix = self._control.proposeSaveFileName('')
+        try:
+            savename, timesuffix = self._control.proposeSaveFileName('')
+        except TypeError:
+            self.warning("Nothing to save (yet?).")
+            return
         self._control.saveConfig(savename + ".icfg")
         self._control.saveConfig(savename + timesuffix + ".icfg")
         self._file = savename + timesuffix + ".icfg"
