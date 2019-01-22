@@ -38,8 +38,8 @@ class iintObservableDefinition(QtGui.QWidget):
         self.observableTimeCB.currentIndexChanged.connect(self.setTime)
         self._useAttenuationFactor = False
         self.observableAttFaccheck.stateChanged.connect(self.toggleAttFac)
-        self.observableAttFacCB.setDisabled(True)
         self.observableAttFacCB.currentIndexChanged.connect(self.setAttFac)
+        self.observableAttFacCB.setDisabled(True)
         self.despikeCheckBox.stateChanged.connect(self.toggleDespiking)
         self._despike = False
         self._notEnabled(True)
@@ -64,8 +64,8 @@ class iintObservableDefinition(QtGui.QWidget):
         self._obsDict = {}
         self._despikeDict = {}
         self._trapintDict = {}
-        #~ self.observableAttFacCB.setDisabled(True)
-        #~ self._useAttenuationFactor = False
+        self.observableAttFacCB.setDisabled(True)
+        self._useAttenuationFactor = False
         self.despikeCheckBox.setChecked(False)
         self._despike = False
         self._notEnabled(True)
@@ -105,6 +105,10 @@ class iintObservableDefinition(QtGui.QWidget):
         self.observableMonitorCB.addItems(self._currentdataLabels)
         self.observableTimeCB.addItems(self._currentdataLabels)
         self.observableAttFacCB.addItems(self._currentdataLabels)
+        if not self._useAttenuationFactor:
+            self.observableAttFacCB.setDisabled(True)
+            self._useAttenuationFactor = False
+            self.observableAttFaccheck.setChecked(False)
 
     def _notEnabled(self, state):
         self.observableMotorLabel.setDisabled(state)
@@ -112,8 +116,7 @@ class iintObservableDefinition(QtGui.QWidget):
         self.observableMonitorCB.setDisabled(state)
         self.observableTimeCB.setDisabled(state)
         self.observableAttFaccheck.setDisabled(state)
-        if state:
-            self.observableAttFaccheck.setCheckState(0)
+        self.observableAttFacCB.setDisabled(state)
         self.despikeCheckBox.setDisabled(state)
         self.obsDisplayBtn.setDisabled(state)
 
@@ -138,15 +141,13 @@ class iintObservableDefinition(QtGui.QWidget):
         self._timename = self._currentdataLabels[timeindex]
 
     def setAttFac(self, attfacindex):
-        if(self._useAttenuationFactor):
-            self._attenfname = self._currentdataLabels[attfacindex]
+        # need to sort out the pre-condition
+        #~ if(self._useAttenuationFactor):
+        self._attenfname = self._currentdataLabels[attfacindex]
 
     def toggleDespiking(self):
         self._despike = not self._despike
-        self.doDespike.emit(self._despike)
-
-    def activateDespikingBox(self):
-        self.despikeCheckBox.setDisabled(False)
+        #~ self.doDespike.emit(self._despike)
 
     def emittit(self):
         self._obsDict["type"] = "iintdefinition"
@@ -159,6 +160,12 @@ class iintObservableDefinition(QtGui.QWidget):
         self._obsDict["id"] = "scannumber"
         if(self._useAttenuationFactor):
             self._obsDict["attenuationFactor_column"] = self._attenfname
+        else:
+            try:
+                del self._obsDict["attenuationFactor_column"]
+            except KeyError:
+                # maybe it doesn't exist yet
+                pass
 
         if(self._despike):
             self._despikeDict["type"] = "filter1d"
@@ -189,6 +196,17 @@ class iintObservableDefinition(QtGui.QWidget):
         index = self.observableTimeCB.findText(obsDict["exposureTime_column"], QtCore.Qt.MatchExactly)
         if index >= 0:
             self.observableTimeCB.setCurrentIndex(index)
+
+        try:
+            index = self.observableTimeCB.findText(obsDict["attenuationFactor_column"], QtCore.Qt.MatchExactly)
+            if index >= 0:
+                self.observableAttFacCB.setCurrentIndex(index)
+                self.observableAttFaccheck.setChecked(True)
+                self.observableAttFacCB.setDisabled(False)
+        except KeyError:
+            # there is no attenuation factor column
+            self.observableAttFacCB.setDisabled(True)
+            pass
 
         if (despDict != {}):
             self.despikeCheckBox.setChecked(True)
