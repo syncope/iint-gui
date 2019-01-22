@@ -518,6 +518,7 @@ class IintGUIProcessingControl():
         return self._processParameters["observabledef"]
 
     def setOBSDict(self, obsdic):
+        self._processParameters["observabledef"] = iintdefinition.iintdefinition().getProcessDictionary()
         for k, v in obsdic.items():
             self._processParameters["observabledef"][k] = v
 
