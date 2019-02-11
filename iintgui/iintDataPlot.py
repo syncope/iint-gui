@@ -229,7 +229,7 @@ class iintDataPlot(QtGui.QDialog):
         self.plot()
 
     def mouse_click(self, event):
-        position = self._theDrawItem.mapFromScene(event.pos())
+        position = self._theDrawItem.mapFromScene(event.scenePos())
         self.xPosition.setText("%.3f" % position.x())
         self.yPosition.setText("%.3f" % position.y())
 
