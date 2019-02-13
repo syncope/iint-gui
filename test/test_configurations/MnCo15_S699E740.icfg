@@ -1,0 +1,61 @@
+bkgfit:
+  error: None
+  model:
+    linbkg_:
+      modeltype: linearModel
+  result: bkgfitresult
+  type: curvefitting
+  usepreviousresult: 0
+  xdata: bkgX
+  ydata: bkgY
+bkgselect:
+  endpointnumber: 3
+  input:
+  - despikedObservable
+  - pth
+  output:
+  - bkgY
+  - bkgX
+  selectors:
+  - selectfromstart
+  - selectfromend
+  startpointnumber: 3
+  type: subsequenceselection
+bkgsubtract:
+  background: bkgPoints
+  input: despikedObservable
+  output: signalObservable
+  type: backgroundsubtraction
+calcbkgpoints:
+  fitresult: bkgfitresult
+  output: bkgPoints
+  type: gendatafromfunction
+  xdata: pth
+despike:
+  input: observable
+  method: p09despiking
+  output: despikedObservable
+  type: filter1d
+execlist:
+- read
+- observabledef
+- despike
+- bkgselect
+- bkgfit
+- calcbkgpoints
+- bkgsubtract
+observabledef:
+  detector_column: exp_c01
+  exposureTime_column: exp_t01
+  id: scannumber
+  input: rawdata
+  monitor_column: sumvfcs_counts
+  motor_column: pth
+  output: observable
+  type: iintdefinition
+read:
+  filename: /home/rosem/iintgui/iintgui/bin/MnCo15.spc
+  output: rawdata
+  outputdata: default
+  scanlist: 699-740
+  type: specfilereader
