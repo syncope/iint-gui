@@ -31,6 +31,7 @@ from . import getUIFile
 
 from . import iintDataPlot
 from . import fileInfo
+from . import outputDir
 from . import iintObservableDefinition
 from . import iintBackgroundHandling
 from . import iintSignalHandling
@@ -89,6 +90,7 @@ class iintGUI(QtGui.QMainWindow):
         self._resetQuestion = resetDialog.ResetDialog()
         self._resetQuestion.resetOK.connect(self._resetAll)
         self._fileInfo = fileInfo.FileInfo()
+        self._outDir = outputDir.OutputDir(self._control.getOutputDirectory())
         self._sfrGUI = specfilereader.specfilereaderGUI()
         self._obsDef = iintObservableDefinition.iintObservableDefinition()
         self._obsDef.doDespike.connect(self._control.useDespike)
@@ -125,6 +127,7 @@ class iintGUI(QtGui.QMainWindow):
         self.scrollArea2.setWidget(self.imageTabs)
 
         self.verticalLayout.addWidget(self._fileInfo)
+        self.verticalLayout.addWidget(self._outDir)
         self.verticalLayout.addWidget(self._obsDef)
         self.verticalLayout.addWidget(self._bkgHandling)
         self.verticalLayout.addWidget(self._signalHandling)
@@ -140,6 +143,7 @@ class iintGUI(QtGui.QMainWindow):
         self._widgetList = []
         self._trackedDataDict = {}
         self._resultFileName = None
+        self._outDir.newdirectory.connect(self._control.setOutputDirectory)
 
     def _unresize(self):
         # this is the place any resizing code could/should go

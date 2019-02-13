@@ -90,6 +90,7 @@ class IintGUIProcessingControl():
         self._processParameters = {}
         self._setupProcessParameters()
         self._setupDefaultNames()
+        self._outputDirectory = None
 
     def resetAll(self):
         for elem in self._dataList:
@@ -471,6 +472,15 @@ class IintGUIProcessingControl():
         handler = configurationHandler.ConfigurationHandler()
         handler.writeConfig(filename, procconfig)
 
+    def setOutputDirectory(self, name):
+        self._outputDirectory = name
+
+    def getOutputDirectory(self):
+        if self._outputDirectory is None:
+            import os.path
+            self._outputDirectory = os.path.expanduser('~')
+        return self._outputDirectory
+
     def proposeSaveFileName(self, suffix=''):
         # use the scanlist entries and the input spec file name
         try:
@@ -479,6 +489,7 @@ class IintGUIProcessingControl():
             basename = os.path.basename(self._processParameters["read"]["filename"]).split('.')[0]
         except:
             return
+        filenamestart = os.path.join(self._outputDirectory, basename)
         # decompose the scanlist parameters
         scanlist = str(self._processParameters["read"]["scanlist"])
         stride = None
@@ -509,7 +520,7 @@ class IintGUIProcessingControl():
             stridesuffix = "-s" + str(stride)
         else:
             stridesuffix = ''
-        return basename + "_S" + str(startnumber) + "E" + str(endnumber) + stridesuffix + suffix, datetime.datetime.now().strftime("_%Y%m%d-%Hh%M")
+        return filenamestart + "_S" + str(startnumber) + "E" + str(endnumber) + stridesuffix + suffix, datetime.datetime.now().strftime("_%Y%m%d-%Hh%M")
 
     def getSFRDict(self):
         return self._processParameters["read"]
