@@ -90,6 +90,18 @@ class iintBackgroundHandling(QtGui.QWidget):
         self.bkgStartPointsSB.setValue(self._selectParDict["startpointnumber"])
         self.bkgEndPointsSB.setValue(self._selectParDict["endpointnumber"])
         self._fitParDict = dicts[1]
+        model = self._fitParDict["model"]
+        modeltype = None
+        for k in model.keys():
+            try:
+                modeltype = model[k]['modeltype']
+            except:
+                pass
+        if modeltype == 'linearModel':
+            self.linearBkg.setChecked(True)
+        elif modeltype == 'constantModel':
+            self.constBkg.setChecked(True)
+
         self._calcParDict = dicts[2]
         self._subtractParDict = dicts[3]
         if dicts[0] != {} and dicts[1] != {} and dicts[2] != {} and dicts[3] != {}:
