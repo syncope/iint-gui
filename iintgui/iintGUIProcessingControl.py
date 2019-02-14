@@ -1,4 +1,4 @@
-# Copyright (C) 2018 Christoph Rosemann, DESY, Notkestr. 85, D-22607 Hamburg
+# Copyright (C) 2018-19 Christoph Rosemann, DESY, Notkestr. 85, D-22607 Hamburg
 # email contact: christoph.rosemann@desy.de
 #
 # iintgui is an application for the ADAPT framework
@@ -54,6 +54,7 @@ class IintGUIProcessingControl():
         self._procControl = processingControl.ProcessingControl()
         self._procBuilder = processBuilder.ProcessBuilder()
         self._dataList = []
+        self._mcaDict = {}
         self._processList = []
         self._nodespike = True
         self._nobkg = True
@@ -89,12 +90,14 @@ class IintGUIProcessingControl():
         self._processParameters = {}
         self._setupProcessParameters()
         self._setupDefaultNames()
+        self._outputDirectory = None
 
     def resetAll(self):
         for elem in self._dataList:
             elem.clearAll()
         del self._dataList[:]
         self._dataList = []
+        self._mcaDict.clear()
         del self._processList[:]
         self._processList = []
         self._motorName = ""
@@ -268,8 +271,8 @@ class IintGUIProcessingControl():
     def getMotorName(self):
         return self._motorName
 
-    def setMotorName(self, motor):
-        self._motorName = motor
+    def setMotorName(self):
+        self._motorName = self.getRawDataObject().getMotorName()
         self._processParameters["observabledef"]["motor_column"] = self._motorName
         self._processParameters["scanprofileplot"]["motor"] = self._motorName
         self._processParameters["bkgselect"]["input"] = [self._despObservableName, self._motorName]
@@ -340,15 +343,34 @@ class IintGUIProcessingControl():
             if datum.getMCAName() != '':
                 pd.addData("MCAName", datum.getMCAName())
                 pd.addData("MCA", datum.getMCA())
+                self._mcaDict[datum.getScanNumber()] = datum.getMCA()
             self._dataList.append(pd)
 
-    def checkDataIntegrity(self, motor):
+    #~ def checkForMCA(self):
+        #~ # search through the list of data and retrieve the indices 
+        #~ mca = {}
+        #~ for datum in self._dataList:
+            #~ try:
+                #~ datum.getData("MCA")
+                #~ mca[datum.getData(self.getRawDataName()).getScanNumber()] = self._dataList.index(datum)
+            #~ except:
+                #~ pass
+        #~ return mca
+
+    def getMCA(self):
+        return self._mcaDict
+
+    def checkDataIntegrity(self):
         error = False
+        motor = self._dataList[0].getData(self.getRawDataName()).getMotorName()
         for datum in self._dataList:
             if motor != datum.getData(self.getRawDataName()).getMotorName():
                 error = True
                 break
         return error
+
+    def getRawDataObject(self):
+        return self.getDataList()[0].getData(self.getRawDataName())
 
     def getDataList(self):
         return self._dataList
@@ -450,6 +472,15 @@ class IintGUIProcessingControl():
         handler = configurationHandler.ConfigurationHandler()
         handler.writeConfig(filename, procconfig)
 
+    def setOutputDirectory(self, name):
+        self._outputDirectory = name
+
+    def getOutputDirectory(self):
+        if self._outputDirectory is None:
+            import os.path
+            self._outputDirectory = os.path.expanduser('~')
+        return self._outputDirectory
+
     def proposeSaveFileName(self, suffix=''):
         # use the scanlist entries and the input spec file name
         try:
@@ -458,6 +489,7 @@ class IintGUIProcessingControl():
             basename = os.path.basename(self._processParameters["read"]["filename"]).split('.')[0]
         except:
             return
+        filenamestart = os.path.join(self._outputDirectory, basename)
         # decompose the scanlist parameters
         scanlist = str(self._processParameters["read"]["scanlist"])
         stride = None
@@ -488,7 +520,7 @@ class IintGUIProcessingControl():
             stridesuffix = "-s" + str(stride)
         else:
             stridesuffix = ''
-        return basename + "_S" + str(startnumber) + "E" + str(endnumber) + stridesuffix + suffix, datetime.datetime.now().strftime("_%Y%m%d-%Hh%M")
+        return filenamestart + "_S" + str(startnumber) + "E" + str(endnumber) + stridesuffix + suffix, datetime.datetime.now().strftime("_%Y%m%d-%Hh%M")
 
     def getSFRDict(self):
         return self._processParameters["read"]
@@ -497,6 +529,7 @@ class IintGUIProcessingControl():
         return self._processParameters["observabledef"]
 
     def setOBSDict(self, obsdic):
+        self._processParameters["observabledef"] = iintdefinition.iintdefinition().getProcessDictionary()
         for k, v in obsdic.items():
             self._processParameters["observabledef"][k] = v
 

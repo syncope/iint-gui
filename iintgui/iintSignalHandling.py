@@ -146,7 +146,7 @@ class iintSignalHandling(QtGui.QWidget):
                 self._hiddenuselist[i].setCheckState(2)
             except AttributeError:
                 pass
-        self.performFitPushBtn.setDisabled(False)
+        #~ self.performFitPushBtn.setDisabled(False)
 
     def passModels(self, modelDict):
         self._modelnames = sorted([key for key in modelDict.keys()])

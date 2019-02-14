@@ -1,0 +1,5 @@
+The default complete example is MnCo15_S699E740.icfg
+It features a complete polarization analysis, with despiking, linear background and gaussian peak.
+
+Another complete analysis instead with a constant background is given in MnCo15_S699E740-constBKG.icfg
+

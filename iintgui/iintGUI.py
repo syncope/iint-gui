@@ -1,4 +1,4 @@
-# Copyright (C) 2017-8  Christoph Rosemann, DESY, Notkestr. 85, D-22607 Hamburg
+# Copyright (C) 2017-19  Christoph Rosemann, DESY, Notkestr. 85, D-22607 Hamburg
 # email contact: christoph.rosemann@desy.de
 #
 # iintgui is an application for the ADAPT framework
@@ -31,6 +31,7 @@ from . import getUIFile
 
 from . import iintDataPlot
 from . import fileInfo
+from . import outputDir
 from . import iintObservableDefinition
 from . import iintBackgroundHandling
 from . import iintSignalHandling
@@ -42,7 +43,7 @@ from . import showFileContents
 from . import showAboutIintGUI
 from . import iintMultiTrackedDataView
 from . import iintInspectAnalyze
-from . import iintMCA
+from . import iintMCADialog
 from . import selectResultOutput
 
 
@@ -89,14 +90,15 @@ class iintGUI(QtGui.QMainWindow):
         self._resetQuestion = resetDialog.ResetDialog()
         self._resetQuestion.resetOK.connect(self._resetAll)
         self._fileInfo = fileInfo.FileInfo()
+        self._outDir = outputDir.OutputDir(self._control.getOutputDirectory())
         self._sfrGUI = specfilereader.specfilereaderGUI()
         self._obsDef = iintObservableDefinition.iintObservableDefinition()
         self._obsDef.doDespike.connect(self._control.useDespike)
         self._obsDef.showScanProfile.clicked.connect(self._runScanProfiles)
-        self._mcaplot = iintMCA.iintMCA(parent=self)
+        self._mcaplot = iintMCADialog.iintMCADialog(parent=self)
         self._mcaplot.hide()
         self._obsDef.showMCA.hide()
-        #~ self._obsDef.showMCA.clicked.connect(self._mcaplot.show)
+        self._obsDef.showMCA.clicked.connect(self._mcaplot.show)
         self._bkgHandling = iintBackgroundHandling.iintBackgroundHandling(self._control.getBKGDicts())
         self._bkgHandling.bkgmodel.connect(self._control.setBkgModel)
         self._bkgHandling.useBkg.stateChanged.connect(self._checkBkgState)
@@ -125,6 +127,7 @@ class iintGUI(QtGui.QMainWindow):
         self.scrollArea2.setWidget(self.imageTabs)
 
         self.verticalLayout.addWidget(self._fileInfo)
+        self.verticalLayout.addWidget(self._outDir)
         self.verticalLayout.addWidget(self._obsDef)
         self.verticalLayout.addWidget(self._bkgHandling)
         self.verticalLayout.addWidget(self._signalHandling)
@@ -140,6 +143,7 @@ class iintGUI(QtGui.QMainWindow):
         self._widgetList = []
         self._trackedDataDict = {}
         self._resultFileName = None
+        self._outDir.newdirectory.connect(self._control.setOutputDirectory)
 
     def _unresize(self):
         # this is the place any resizing code could/should go
@@ -257,7 +261,11 @@ class iintGUI(QtGui.QMainWindow):
         self._quit.show()
 
     def _saveConfig(self, num=None):
-        savename, timesuffix = self._control.proposeSaveFileName('')
+        try:
+            savename, timesuffix = self._control.proposeSaveFileName('')
+        except TypeError:
+            self.warning("Nothing to save (yet?).")
+            return
         self._control.saveConfig(savename + ".icfg")
         self._control.saveConfig(savename + timesuffix + ".icfg")
         self._file = savename + timesuffix + ".icfg"
@@ -328,18 +336,19 @@ class iintGUI(QtGui.QMainWindow):
 
         sfr = self._control.createAndInitialize(filereaderdict)
         self._control.createDataList(sfr.getData(), self._control.getRawDataName())
-
-        # to set the displayed columns etc. one element of the selected data is needed
-        self._rawdataobject = self._control.getDataList()[0].getData(self._control.getRawDataName())
-        self._motorname = self._rawdataobject.getMotorName()
-        check = self._control.checkDataIntegrity(self._motorname)
+        # check for MCA! 
+        mcaDict = self._control.getMCA()
+        if mcaDict != {}:
+            self._obsDef.showMCA.show()
+            self._mcaplot.passData(mcaDict)
+        check = self._control.checkDataIntegrity()
         if check:
             self.warning("There are different motor names in the selection!\n Can't continue, please correct!")
             return
 
-        self._control.setMotorName(self._motorname)
+        self._control.setMotorName()
         # pass info to the observable definition part
-        self._obsDef.passInfo(self._rawdataobject)
+        self._obsDef.passInfo(self._control.getRawDataObject())
         self.message("... done.\n")
 
     def runObservable(self, obsDict, despDict, reset=True):
