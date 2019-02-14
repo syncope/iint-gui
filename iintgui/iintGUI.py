@@ -26,7 +26,11 @@ pg.setConfigOption('background', 'w')
 pg.setConfigOption('foreground', 'k')
 
 from . import iintGUIProcessingControl
-from adapt.processes import specfilereader
+try:
+    from adapt.processes import specfilereader
+except ImportError:
+    print("[iintGUI]:: adapt is not available; please install or nothing will work.")
+    pass
 from . import getUIFile
 
 from . import iintDataPlot
