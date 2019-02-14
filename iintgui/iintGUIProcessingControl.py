@@ -21,25 +21,30 @@
 # the central control class for interactive processing
 # it holds an instance of the batch processing master
 
-from adapt import processingControl
-from adapt import processData
-from adapt import processBuilder
-from adapt import processingConfiguration
+try:
+    from adapt import processingControl
+    from adapt import processData
+    from adapt import processBuilder
+    from adapt import processingConfiguration
+    
+    from adapt.processes import specfilereader
+    from adapt.processes import iintdefinition
+    from adapt.processes import filter1d
+    from adapt.processes import subsequenceselection
+    from adapt.processes import curvefitting
+    from adapt.processes import gendatafromfunction
+    from adapt.processes import backgroundsubtraction
+    from adapt.processes import trapezoidintegration
+    from adapt.processes import iintfinalization
+    from adapt.processes import iintpolarization
+    from adapt.processes import iintcontrolplots
+    from adapt.processes import iintscanprofileplot
+    from adapt.processes import iintmcaplot
+    from adapt.processes import iintscanplot
+except ImportError:
+    print("adapt is not available, nothing can be instantiated.")
+    exit()
 
-from adapt.processes import specfilereader
-from adapt.processes import iintdefinition
-from adapt.processes import filter1d
-from adapt.processes import subsequenceselection
-from adapt.processes import curvefitting
-from adapt.processes import gendatafromfunction
-from adapt.processes import backgroundsubtraction
-from adapt.processes import trapezoidintegration
-from adapt.processes import iintfinalization
-from adapt.processes import iintpolarization
-from adapt.processes import iintcontrolplots
-from adapt.processes import iintscanprofileplot
-from adapt.processes import iintmcaplot
-from adapt.processes import iintscanplot
 
 import numpy as np
 import datetime
