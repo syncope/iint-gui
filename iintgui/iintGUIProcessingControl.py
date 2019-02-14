@@ -42,8 +42,8 @@ try:
     from adapt.processes import iintmcaplot
     from adapt.processes import iintscanplot
 except ImportError:
-    print("adapt is not available, nothing can be instantiated.")
-    exit()
+    print("[iintGUIProcessingControl]:: adapt is not available, nothing can be instantiated.")
+    pass
 
 
 import numpy as np

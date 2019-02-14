@@ -20,7 +20,11 @@
 
 from PyQt4 import QtCore, QtGui, uic
 from . import getUIFile
-from adapt import __version__ as adaptversion
+try:
+    from adapt import __version__ as adaptversion
+except ImportError:
+    print("[showAboutIintGUI]:: adapt is not available; please install.")
+    pass
 from . import __version__ as iintguiversion
 
 
