@@ -313,6 +313,7 @@ class iintGUI(QtGui.QMainWindow):
         if "observabledef" in runlist:
             self._obsDef.setParameterDicts(self._control.getOBSDict(), self._control.getDESDict())
             self.runObservable(self._control.getOBSDict(), self._control.getDESDict())
+            self._obsDef.activateShowScanProfile()
         else:
             return
         if "bkgsubtract" in runlist:
