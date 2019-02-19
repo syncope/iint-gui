@@ -56,7 +56,7 @@ observabledef:
   output: observable
   type: iintdefinition
 read:
-  filename: /home/rosem/iintgui/iintgui/bin/MnCo15.spc
+  filename: /home/rosem/iintgui/test/test_data/MnCo15.spc
   output: rawdata
   outputdata: default
   scanlist: 699-740
