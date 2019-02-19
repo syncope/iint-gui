@@ -6,12 +6,12 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>720</width>
+    <width>830</width>
     <height>1024</height>
    </rect>
   </property>
   <property name="windowTitle">
-   <string>ADAPT iint+</string>
+   <string>ADAPT iint-gui</string>
   </property>
   <widget class="QWidget" name="centralwidget">
    <layout class="QGridLayout" name="gridLayout">
@@ -75,7 +75,7 @@
     <rect>
      <x>0</x>
      <y>0</y>
-     <width>720</width>
+     <width>830</width>
      <height>26</height>
     </rect>
    </property>
