@@ -654,7 +654,7 @@
              <bool>false</bool>
             </property>
             <property name="text">
-             <string>Show profile of scans</string>
+             <string>2D map</string>
             </property>
            </widget>
           </item>
