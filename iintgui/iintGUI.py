@@ -513,7 +513,7 @@ class iintGUI(QtGui.QMainWindow):
         except:
             pass
         name, timesuffix = self._control.proposeSaveFileName()
-        filename = name + "_" + str(timesuffix) + "_scanControlPlots.pdf"
+        filename = name + "_" + str(timesuffix) + "_trackedColumnsPlots.pdf"
         self.message("Creating the control plots of the tracked columns ...")
         self._control.processTrackedColumnsControlPlots(filename)
         self.message(" ... done.\n")
