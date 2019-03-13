@@ -64,13 +64,14 @@ class iintObservableDefinition(QtGui.QWidget):
         self._obsDict = {}
         self._despikeDict = {}
         self._trapintDict = {}
-        self.observableAttFacCB.setDisabled(True)
         self._useAttenuationFactor = False
+        self.observableAttFacCB.setDisabled(True)
         self.despikeCheckBox.setChecked(False)
         self._despike = False
         self._notEnabled(True)
         self._observableName = 'observable'
         self.deactivateShowScanProfile()
+        self.showMCA.setDisabled(False)
 
     def reset(self):
         self._defaultSettings()
@@ -205,6 +206,7 @@ class iintObservableDefinition(QtGui.QWidget):
                 self.observableAttFacCB.setDisabled(False)
         except KeyError:
             # there is no attenuation factor column
+            self._useAttenuationFactor = False
             self.observableAttFacCB.setDisabled(True)
             pass
 
