@@ -345,6 +345,8 @@ class IintGUIProcessingControl():
         for datum in data:
             pd = processData.ProcessData()
             pd.addData(name, datum)
+            # this is not safe for multiple data elements with MCA data
+            # !!! FIXME !!!
             if datum.getMCAName() != '':
                 pd.addData("MCAName", datum.getMCAName())
                 pd.addData("MCA", datum.getMCA())
