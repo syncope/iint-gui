@@ -142,6 +142,7 @@ class iintGUI(QtGui.QMainWindow):
         self._sfrGUI.valuesSet.connect(self.runFileReader)
         self._obsDef.observableDicts.connect(self.runObservable)
         self._bkgHandling.bkgDicts.connect(self.runBkgProcessing)
+        self._simpleImageView.printButton.clicked.connect(self._printDisplayedData)
 
         self._initialGeometry = self.geometry()
         self._widgetList = []
@@ -494,6 +495,55 @@ class iintGUI(QtGui.QMainWindow):
         self.message(" ... done.\n")
         self._inspectAnalyze.activate()
         self._control.useSignalProcessing(True)
+
+    def _printDisplayedData(self):
+        dataDict = self._simpleImageView.getPrintData()
+        import matplotlib.pyplot as plt
+        from matplotlib.backends.backend_pdf import PdfPages
+        name, timesuffix = self._control.proposeSaveFileName()
+        filename = name + "_" + str(timesuffix) + "_SingleScan-#" + str(dataDict['scannumber']) + ".pdf"
+        _outfile = PdfPages(filename)
+        fig_size = plt.rcParams["figure.figsize"]
+        # print "Current size:", fig_size
+        fig_size[0] = 16
+        fig_size[1] = 12
+        plt.rcParams["figure.figsize"] = fig_size
+        plotlabels = []
+        plotlabelnames = []
+        # the plotting commands
+        try:
+            r = plt.plot(dataDict['motor'], dataDict['raw'], 'k+', label = "raw intensities") 
+        except KeyError:
+            pass
+        try:
+            d = plt.plot(dataDict['motor'], dataDict['despike'], 'gx', label = "despiked intensities")
+        except KeyError:
+            pass
+        try:
+            b = plt.plot(dataDict['motor'], dataDict['bkg'], 'rd', label = "estimated bkg")
+        except KeyError:
+            pass
+        try:
+            s = plt.plot(dataDict['motor'], dataDict['signal'], 'bo', label = "signal intensities")
+        except KeyError:
+            pass
+        try:
+            f = plt.plot(dataDict['motor'], dataDict['fit'], 'b-', label = "fitted intensities")
+        except KeyError:
+            pass
+        plt.xlabel(self._simpleImageView.getAxisNames()[0])
+        plt.ylabel(self._simpleImageView.getAxisNames()[1])
+        plt.legend()
+        # index/argument correct?
+        figure = plt.figure(1)
+        figure.suptitle('Scan number ' + str(dataDict['scannumber']), fontsize=14, fontweight='bold')
+
+        _outfile.savefig()
+        _outfile.close()
+        plt.close("all")
+        self.message("Created scan file.\n")
+        from subprocess import Popen
+        Popen(["evince", filename])
 
     def _runScanControlPlots(self):
         name, timesuffix = self._control.proposeSaveFileName()

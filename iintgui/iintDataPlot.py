@@ -59,6 +59,8 @@ class iintDataPlot(QtGui.QDialog):
         self._logScale = False
         self._showsigfit = False
         self.setGeometry(640, 1, 840, 840)
+        self._xaxisname = ''
+        self._yaxisname = ''
         self.showID.setToolTip("Shows the number of the currently displayed scan.")
         self.blacklistButton.setToolTip("Click here to toggle between showing or hiding the current scan.\nThis affects ONLY the display of the data, not the processing.")
         self.showPreviousBtn.setToolTip("Show the previous scan of the chosen list.\nIf the first scan is shown, this will show the last entry.")
@@ -182,19 +184,20 @@ class iintDataPlot(QtGui.QDialog):
                 fitdata = np.log10(np.clip(fitdata, 10e-3, np.inf))
             self.viewPart.plot(xdata, fitdata, pen='b')
         if self._logScale:
-            self.viewPart.setLabel('left','Signal intensity (log-Scale)')
+            self._yaxisname = "Signal intensity (log-Scale)"
         else:
-            self.viewPart.setLabel('left','Signal intensity')
-        self.viewPart.setLabel('bottom',str(self._motorName))
+            self._yaxisname = "Signal intensity"
+        self._xaxisname = str(self._motorName)
+        self.viewPart.setLabel('left', self._yaxisname)
+        self.viewPart.setLabel('bottom', self._yaxisname)
 
     def getPrintData(self):
-        # this routine is better suited to simply pass data references
-        # create exchange object that can be printed/committed to storage by itself?
-        # unclear right now, needs decision
+        # returns straightforward/simple dictionary
         printDict = {}
         datum = self._dataList[self._currentIndex]
         printDict['scannumber'] = datum.getData("scannumber")
         xdata = datum.getData(self._motorName)
+        printDict['motor'] = xdata
         rawdata = datum.getData(self._observableName)
         if (self._logScale):
             rawdata = np.log10(np.clip(rawdata, 10e-3, np.inf))
@@ -204,26 +207,29 @@ class iintDataPlot(QtGui.QDialog):
             despikeData = datum.getData(self._despObservableName)
             if (self._logScale):
                 despikeData = np.log10(np.clip(despikeData, 10e-3, np.inf))
-            printDict['despike'] = rawdata
+            printDict['despike'] = despikeData
             #~ self.viewPart.plot(xdata, despikeData, pen=None, symbolPen=(0,0,80), symbolBrush='g', symbol='x')
         if(self._showbkg):
             bkg = datum.getData(self._backgroundPointsName)
             if (self._logScale):
                 bkg = np.log10(np.clip(bkg, 10e-3, np.inf))
-            printDict['bkg'] = rawdata
+            printDict['bkg'] = bkg
             #~ self.viewPart.plot(xdata, bkg, pen=None, symbolPen='r', symbolBrush='r', symbol='d')
         if(self._showbkgsubtracted):
             signal = datum.getData(self._signalName)
             if (self._logScale):
                 signal = np.log10(np.clip(signal, 10e-3, np.inf))
-            printDict['signal'] = rawdata
+            printDict['signal'] = signal
             #~ self.viewPart.plot(xdata, signal, pen=None, symbolPen='b', symbolBrush='b', symbol='o')
         if(self._showsigfit):
             fitdata = datum.getData(self._fittedSignalName)
             if (self._logScale):
                 fitdata = np.log10(np.clip(fitdata, 10e-3, np.inf))
-            printDict['fit'] = rawdata
+            printDict['fit'] = fitdata
         return printDict
+
+    def getAxisNames(self):
+        return self._xaxisname, self._yaxisname
 
     def plotFit(self, ydata):
         datum = self._dataList[self._currentIndex]
