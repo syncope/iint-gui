@@ -181,6 +181,49 @@ class iintDataPlot(QtGui.QDialog):
             if (self._logScale):
                 fitdata = np.log10(np.clip(fitdata, 10e-3, np.inf))
             self.viewPart.plot(xdata, fitdata, pen='b')
+        if self._logScale:
+            self.viewPart.setLabel('left','Signal intensity (log-Scale)')
+        else:
+            self.viewPart.setLabel('left','Signal intensity')
+        self.viewPart.setLabel('bottom',str(self._motorName))
+
+    def getPrintData(self):
+        # this routine is better suited to simply pass data references
+        # create exchange object that can be printed/committed to storage by itself?
+        # unclear right now, needs decision
+        printDict = {}
+        datum = self._dataList[self._currentIndex]
+        printDict['scannumber'] = datum.getData("scannumber")
+        xdata = datum.getData(self._motorName)
+        rawdata = datum.getData(self._observableName)
+        if (self._logScale):
+            rawdata = np.log10(np.clip(rawdata, 10e-3, np.inf))
+        if(self._showraw): # raw data has black "plus signs"
+            printDict['raw'] = rawdata
+        if(self._showdespike): # despiked data: green "x"
+            despikeData = datum.getData(self._despObservableName)
+            if (self._logScale):
+                despikeData = np.log10(np.clip(despikeData, 10e-3, np.inf))
+            printDict['despike'] = rawdata
+            #~ self.viewPart.plot(xdata, despikeData, pen=None, symbolPen=(0,0,80), symbolBrush='g', symbol='x')
+        if(self._showbkg):
+            bkg = datum.getData(self._backgroundPointsName)
+            if (self._logScale):
+                bkg = np.log10(np.clip(bkg, 10e-3, np.inf))
+            printDict['bkg'] = rawdata
+            #~ self.viewPart.plot(xdata, bkg, pen=None, symbolPen='r', symbolBrush='r', symbol='d')
+        if(self._showbkgsubtracted):
+            signal = datum.getData(self._signalName)
+            if (self._logScale):
+                signal = np.log10(np.clip(signal, 10e-3, np.inf))
+            printDict['signal'] = rawdata
+            #~ self.viewPart.plot(xdata, signal, pen=None, symbolPen='b', symbolBrush='b', symbol='o')
+        if(self._showsigfit):
+            fitdata = datum.getData(self._fittedSignalName)
+            if (self._logScale):
+                fitdata = np.log10(np.clip(fitdata, 10e-3, np.inf))
+            printDict['fit'] = rawdata
+        return printDict
 
     def plotFit(self, ydata):
         datum = self._dataList[self._currentIndex]
