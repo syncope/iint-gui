@@ -631,7 +631,7 @@
              <bool>false</bool>
             </property>
             <property name="text">
-             <string>Show MCA</string>
+             <string>MCA</string>
             </property>
            </widget>
           </item>
@@ -655,6 +655,26 @@
             </property>
             <property name="text">
              <string>2D map</string>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <spacer name="horizontalSpacer_5">
+            <property name="orientation">
+             <enum>Qt::Horizontal</enum>
+            </property>
+            <property name="sizeHint" stdset="0">
+             <size>
+              <width>40</width>
+              <height>20</height>
+             </size>
+            </property>
+           </spacer>
+          </item>
+          <item>
+           <widget class="QPushButton" name="overlayBtn">
+            <property name="text">
+             <string>Overlay</string>
             </property>
            </widget>
           </item>

@@ -34,6 +34,8 @@ except ImportError:
 from . import getUIFile
 
 from . import iintDataPlot
+from . import iintOverlayPlot
+from . import iintOverlaySelection
 from . import fileInfo
 from . import outputDir
 from . import iintObservableDefinition
@@ -89,6 +91,7 @@ class iintGUI(QtGui.QMainWindow):
         self._simpleImageView = iintDataPlot.iintDataPlot(parent=self)
         self._simpleImageView.blacklist.connect(self._retrackDataDisplay)
         self._simpleImageView.hidden.connect(self._unresize)
+        self._overlayView = iintOverlayPlot.iintOverlayPlot(parent=self)
         self._blacklist = []
 
         self._resetQuestion = resetDialog.ResetDialog()
@@ -103,6 +106,7 @@ class iintGUI(QtGui.QMainWindow):
         self._mcaplot.hide()
         self._obsDef.showMCA.hide()
         self._obsDef.showMCA.clicked.connect(self._mcaplot.show)
+        self._obsDef.overlayBtn.clicked.connect(self.doOverlay)
         self._bkgHandling = iintBackgroundHandling.iintBackgroundHandling(self._control.getBKGDicts())
         self._bkgHandling.bkgmodel.connect(self._control.setBkgModel)
         self._bkgHandling.useBkg.stateChanged.connect(self._checkBkgState)
@@ -167,6 +171,7 @@ class iintGUI(QtGui.QMainWindow):
     def _resetAll(self):
         self._resetInternals()
         self._simpleImageView.reset()
+        self._overlayView.reset()
         self._fileInfo.reset()
         self._obsDef.reset()
         self._bkgHandling.reset()
@@ -188,7 +193,8 @@ class iintGUI(QtGui.QMainWindow):
 
     def _resetForSFR(self):
         self._resetInternals()
-        self._simpleImageView.reset()
+        self._simplePlotView.reset()
+        self._overlayView.reset()
         self._obsDef.reset()
         self._bkgHandling.reset()
         self._bkgHandling.setParameterDicts(self._control.getBKGDicts())
@@ -362,6 +368,7 @@ class iintGUI(QtGui.QMainWindow):
             self._control.setOBSDict(obsDict)
         if reset:
             self._simpleImageView.reset()
+            self._overlayView.reset()
             self.resetTabs(keepSpectra=True)
             self._control.resetOBSdata()
             self._inspectAnalyze.reset()
@@ -387,6 +394,15 @@ class iintGUI(QtGui.QMainWindow):
                 self._simpleImageView.update("des")
         self._bkgHandling.activate()
         self.message(" done.\n")
+
+    def doOverlay(self):
+        print("overlaying")
+        #~ self._control.getDataList()
+        try:
+            self._overlaySelection.show()
+        except AttributeError:
+            self._overlaySelection = iintOverlaySelection.iintOverlaySelection(self._control.getDataList())
+        self._overlaySelection.overlayscanlist.connect(self._showOverlay)        
 
     def _runScanProfiles(self):
         name, timesuffix = self._control.proposeSaveFileName()
@@ -640,6 +656,21 @@ class iintGUI(QtGui.QMainWindow):
             self._trackedDataDict[trackinfo.getName()] = trackinfo
             self.imageTabs.addTab(tdv, trackinfo.getName())
             tdv.pickedTrackedDataPoint.connect(self._setFocusToSpectrum)
+
+    def _showOverlay(self):
+        print("showing OVERLAY")
+        pass
+        #~ self._overlayView.passData(self._control.getDataList(),
+                                       #~ self._control.getMotorName(),
+                                       #~ self._control.getObservableName(),
+                                       #~ self._control.getDespikedObservableName(),
+                                       #~ self._control.getBackgroundName(),
+                                       #~ self._control.getSignalName(),
+                                       #~ self._control.getFittedSignalName(),
+                                       #~ )
+        #~ self.imageTabs.addTab(self._overlayView, "Overlay")
+        #~ self.imageTabs.show()
+        #~ self._overlayView.show()
 
     def _saveResultsFile(self):
         name, timesuffix = self._control.proposeSaveFileName()

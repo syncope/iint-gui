@@ -55,6 +55,7 @@ class iintObservableDefinition(QtGui.QWidget):
         self.observableAttFaccheck.setToolTip("Chose the entry from the scan file information for an attenuation factor.")
         self.observableAttFacCB.setToolTip("Check the box to enable the choice of an attenuation factor entry.")
         self.despikeCheckBox.setToolTip("Check the box to run a despiking/filtering algorithm\non the scan data to dampen spikes/noise fluctuation.")
+        self.overlayBtn.setToolTip("Open an overlay plot window to select scans to view at the same time.")
         self.obsDisplayBtn.setToolTip("Once everything is set, click this button to perform\nthe calculation of the observable data and open a display.")
         self.showScanProfile.setToolTip("Creates a stack of all scans as matrix, creating an image.\nThe result is stored in a file, which is shown in an external viewer.")
         #~ self.showMCA.hide()
@@ -119,6 +120,7 @@ class iintObservableDefinition(QtGui.QWidget):
         self.observableAttFaccheck.setDisabled(state)
         self.observableAttFacCB.setDisabled(state)
         self.despikeCheckBox.setDisabled(state)
+        self.overlayBtn.setDisabled(state)
         self.obsDisplayBtn.setDisabled(state)
 
     def activateShowScanProfile(self):
