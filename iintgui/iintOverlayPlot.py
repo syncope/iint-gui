@@ -24,9 +24,6 @@ from . import getUIFile
 
 
 class iintOverlayPlot(QtGui.QDialog):
-    currentIndex = QtCore.pyqtSignal(int)
-    blacklist = QtCore.pyqtSignal(list)
-    hidden = QtCore.pyqtSignal()
 
     def __init__(self, parent=None):
         super(iintOverlayPlot, self).__init__(parent)
@@ -34,7 +31,12 @@ class iintOverlayPlot(QtGui.QDialog):
         self.logScale.stateChanged.connect(self._toggleLOG)
         self.logScale.stateChanged.connect(self.plot)
         self.viewPart.scene().sigMouseClicked.connect(self.mouse_click)
-        self.scanSelectBtn.clicked.connect(print)
+        #~ self.scanSelectBtn.clicked.connect(print)
+        self.rawradio.clicked.connect(self.plot)
+        self.desradio.clicked.connect(self.plot)
+        self.bkgradio.clicked.connect(self.plot)
+        self.sigradio.clicked.connect(self.plot)
+        self.fitradio.clicked.connect(self.plot)
         self._logScale = False
         self.setGeometry(640, 1, 840, 840)
         self._xaxisname = ''
@@ -42,14 +44,19 @@ class iintOverlayPlot(QtGui.QDialog):
         self.logScale.setToolTip("Activate the check box to switch to logarithmic scale, an unchecked box means linear scaling.\nThere is a minimum value of 10^-2 for the logarithmic scale.")
         self.xPosition.setToolTip("Indicates the x position of a point if\nit is clicked somewhere in the scan display.")
         self.yPosition.setToolTip("Indicates the y position of a point if\nit is clicked somewhere in the scan display.")
+        self.rawradio.setToolTip("Activate to display the raw data. Is disabled if data not present.")
+        self.desradio.setToolTip("Activate to display the despiked data. Is disabled if data not present.")
+        self.bkgradio.setToolTip("Activate to display the background. Is disabled if data not present.")
+        self.sigradio.setToolTip("Activate to display the signal. Is disabled if data not present.")
+        self.fitradio.setToolTip("Activate to display the fitted signal. Is disabled if data not present.")
 
     def reset(self):
-        pass
+        self._dataList = []
+        self._selection = []
+        self._indexList = []
 
-    def update(self, action=None):
-        self._checkDataAvailability()
-
-    def passData(self, datalist, motorname, obsname, despobsname, bkgname, signalname, fittedsignalname):
+    def passData(self, selection, datalist, motorname, obsname, despobsname, bkgname, signalname, fittedsignalname):
+        self._selection = selection
         self._dataList = datalist
         self._motorName = motorname
         self._observableName = obsname
@@ -57,6 +64,16 @@ class iintOverlayPlot(QtGui.QDialog):
         self._backgroundPointsName = bkgname
         self._signalName = signalname
         self._fittedSignalName = fittedsignalname
+        self._indexList = []
+        self._generateIndexList()
+        self._checkDataAvailability()
+
+    def _generateIndexList(self):
+        for datum in self._dataList:
+            number = datum.getData("scannumber")
+            index = self._dataList.index(datum)
+            if str(number) in self._selection:
+                self._indexList.append(index)
 
     def _toggleLOG(self):
         self._logScale = not self._logScale
@@ -65,71 +82,65 @@ class iintOverlayPlot(QtGui.QDialog):
         datum = self._dataList[0]
         try:
             datum.getData(self._observableName)
-            self.showRAW.setDisabled(False)
+            self.rawradio.setDisabled(False)
         except KeyError:
-            self.showRAW.setDisabled(True)
+            self.rawradio.setDisabled(True)
         try:
             if(self._despObservableName == self._observableName):
-                self.showDES.setDisabled(True)
+                self.desradio.setDisabled(True)
             else:
                 datum.getData(self._despObservableName)
-                self.showDES.setDisabled(False)
+                self.desradio.setDisabled(False)
         except KeyError:
-            self.showDES.setDisabled(True)
+            self.desradio.setDisabled(True)
         try:
             datum.getData(self._backgroundPointsName)
-            self.showBKG.setDisabled(False)
+            self.bkgradio.setDisabled(False)
         except KeyError:
-            self.showBKG.setDisabled(True)
-            self.showBKG.setChecked(False)
+            self.bkgradio.setDisabled(True)
         try:
             datum.getData(self._signalName)
-            self.showSIG.setDisabled(False)
+            self.sigradio.setDisabled(False)
         except KeyError:
-            self.showSIG.setDisabled(True)
-            self.showSIG.setChecked(False)
+            self.sigradio.setDisabled(True)
         try:
             datum.getData(self._fittedSignalName)
-            self.showFIT.setDisabled(False)
+            self.fitradio.setDisabled(False)
         except KeyError:
-            self.showFIT.setDisabled(True)
-            self.showFIT.setChecked(False)
+            self.fitradio.setDisabled(True)
 
     def plot(self):
-        datum = self._dataList[self._currentIndex]
-        if(self._currentIndex in self._blacklist):
-            self._setBLB2Rm()
-        else:
-            self._setBLB2Add()
-
-        self.showID.setText(str(datum.getData("scannumber")))
-        xdata = datum.getData(self._motorName)
-        ydata = datum.getData(self._observableName)
-        if (self._logScale):
-            ydata = np.log10(np.clip(ydata, 10e-3, np.inf))
         self.viewPart.clear()
-        if(self._showraw): # raw data has black "plus signs"
-            self._theDrawItem = self.viewPart.plot(xdata, ydata, pen=None, symbolPen='k', symbolBrush='k', symbol='+')
-        if(self._showdespike): # despiked data: green "x"
-            despikeData = datum.getData(self._despObservableName)
+
+        for index in self._indexList:
+            datum = self._dataList[index]
+
+            xdata = datum.getData(self._motorName)
+
+            if self.rawradio.isChecked():
+                ydata = datum.getData(self._observableName)
+                spen = 'k'
+            elif self.desradio.isChecked():
+                ydata = datum.getData(self._despObservableName)
+                spen = (0,0,80)
+            elif self.bkgradio.isChecked():
+                ydata = datum.getData(self._backgroundPointsName)
+                spen = 'r'
+            elif self.sigradio.isChecked():
+                ydata = datum.getData(self._signalName)
+                spen = 'b'
+            elif self.fitradio.isChecked():
+                ydata = datum.getData(self._fittedSignalName)
+                spen = 'b'
+
             if (self._logScale):
-                despikeData = np.log10(np.clip(despikeData, 10e-3, np.inf))
-            self.viewPart.plot(xdata, despikeData, pen=None, symbolPen=(0,0,80), symbolBrush='g', symbol='x')
-        if(self._showbkg):
-            bkg = datum.getData(self._backgroundPointsName)
-            if (self._logScale):
-                bkg = np.log10(np.clip(bkg, 10e-3, np.inf))
-            self.viewPart.plot(xdata, bkg, pen=None, symbolPen='r', symbolBrush='r', symbol='d')
-        if(self._showbkgsubtracted):
-            signal = datum.getData(self._signalName)
-            if (self._logScale):
-                signal = np.log10(np.clip(signal, 10e-3, np.inf))
-            self.viewPart.plot(xdata, signal, pen=None, symbolPen='b', symbolBrush='b', symbol='o')
-        if(self._showsigfit):
-            fitdata = datum.getData(self._fittedSignalName)
-            if (self._logScale):
-                fitdata = np.log10(np.clip(fitdata, 10e-3, np.inf))
-            self.viewPart.plot(xdata, fitdata, pen='b')
+                ydata = np.log10(np.clip(ydata, 10e-3, np.inf))
+
+            try:
+                self._theDrawItem = self.viewPart.plot(xdata, ydata, pen=spen)
+            except:
+                pass
+
         if self._logScale:
             self._yaxisname = "Signal intensity (log-Scale)"
         else:

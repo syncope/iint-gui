@@ -28,18 +28,14 @@ class iintOverlaySelection(QtGui.QWidget):
     def __init__(self, datalist=None, parent=None):
         super(iintOverlaySelection, self).__init__(parent)
         uic.loadUi(getUIFile.getUIFile("chooseOverlayScans.ui"), self)
-        self._datalist = datalist
-
+        self._datalist = list(map(str, datalist))
+        self._fillLists()
         self.okButton.clicked.connect(self._emitOverlayScans)
         self.cancelButton.clicked.connect(self.close)
-
-        self.addToOverlay.setDisabled(True)
-        #~ self.addToOverlay.clicked.connect(self._moveButtonToSelectedScans)
-        self.removeFromOverlay.setDisabled(True)
-        #~ self.removeFromOverlay.clicked.connect(self._moveButtonToUnselectedScans)
-
-        self._currentUnSelectedItemScans = 0
-        self._currentSelectedItemScans = 0
+        self.addToOverlay.setDisabled(False)
+        self.addToOverlay.clicked.connect(self._moveToOverlay)
+        self.removeFromOverlay.setDisabled(False)
+        self.removeFromOverlay.clicked.connect(self._removeFromOverlay)
 
         self.listScans.setToolTip("List of scans not included in the overlay.\n Select by double-clicking or by selecting via single mouse click and then using the button '>>'.")
         self.listOverlayScans.setToolTip("The list of already selected scans to overlay.\n De-select by double-clicking or by selecting via single mouse click and then using the button '<<'.")
@@ -52,27 +48,37 @@ class iintOverlaySelection(QtGui.QWidget):
         self.hide()
 
     def reset(self):
-        #~ self.listScans.clear()
-        #~ self.listOverlayScans.clear()
+        self._currentItemScans.clear()
+        self._currentItemOverlays.clear()
+        self._updateDisplay()
         self.close()
 
-    #~ def _pickedUnselectedItemScans(self, item):
-        #~ self._currentUnSelectedItemScans = item
-        #~ self.addToListScans.setDisabled(False)
+    def _fillLists(self):
+        # two lists: scans and overlays
+        self._currentItemScans = sorted(self._datalist)
+        self._currentItemOverlays = []
 
-    #~ def _pickedSelectedItemScans(self, item):
-        #~ self._currentSelectedItemScans = item
-        #~ self.removeFromListScans.setDisabled(False)
+        self.listScans.addItems(self._currentItemScans)
+        #~ 
 
-    #~ def _addToOverlayScans(self):
-        #~ self._moveToSelectedScans(self.listAllScans.selectedItems())
+    def _updateDisplay(self):
+        self.listScans.clear()
+        self.listOverlayScans.clear()
+        self.listScans.addItems(sorted(self._currentItemScans))
+        self.listOverlayScans.addItems(sorted(self._currentItemOverlays))
 
-    #~ def _removeFromOverlayScans(self):
-        #~ self.listSelectedScans.addItems(self.listSelectedScans.selectedItems())
-        #~ for elem in self.listSelectedScans.selectedItems():
-            #~ self.listSelectedScans.takeItem(self.listSelectedScans.row(elem))
+    def _moveToOverlay(self):
+        for index in self.listScans.selectedIndexes():
+            self._currentItemOverlays.append(index.data())
+            self._currentItemScans = [i for i in self._currentItemScans if i != index.data() ] 
+        self._updateDisplay()
+
+    def _removeFromOverlay(self):
+        for index in self.listOverlayScans.selectedIndexes():
+            self._currentItemScans.append(index.data())
+            self._currentItemOverlays = [i for i in self._currentItemOverlays if i != index.data() ] 
+        self._updateDisplay()
 
     def _emitOverlayScans(self):
-        #~ emitterData = self._trackedDataColumns + self._trackedDataScans
-        #~ self.trackedData.emit(emitterData)
+        self.overlayscanlist.emit(self._currentItemOverlays)
         self.hide()

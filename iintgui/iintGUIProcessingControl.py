@@ -561,6 +561,41 @@ class IintGUIProcessingControl():
     def setSpecFile(self, name, scanlist):
         self._processParameters["read"]["filename"] = name
         self._processParameters["read"]["scanlist"] = scanlist
+        self._scanlist = self._expandList(scanlist)
+
+    def getScanlist(self):
+        return self._scanlist
+
+    def _expandList(self, somelist):
+        scanlist = str(somelist)
+        retlist = []
+        stride = None
+        self._scanlist = []
+        if scanlist.find(':') != -1:
+            stride = int(scanlist.split(':')[-1])
+            scanlist = scanlist.split(':')[0]
+        scanlist = scanlist.split('[')[-1]
+        scanlist = scanlist.split(']')[0]
+        try:
+            li = scanlist.split(',')
+        except AttributeError:
+            pass
+        for elem in li:
+            try:
+                retlist.append(int(elem))
+            except ValueError:
+                try:
+                    tmp = elem.split('-')
+                    if stride:
+                        for n in range(tmp[0],(tmp[1]+1), stride):
+                            retlist.append(n)
+                    else:
+                        for n in range(int(tmp[0]),int(tmp[1])+1):
+                            retlist.append(n)
+                except:
+                    pass
+        retlist.sort()
+        return retlist
 
     def setBkgModel(self, modelname):
         if modelname == "linearModel":

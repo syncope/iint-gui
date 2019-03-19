@@ -104,12 +104,17 @@ class iintGUI(QtGui.QMainWindow):
         self._obsDef.showScanProfile.clicked.connect(self._runScanProfiles)
         self._mcaplot = iintMCADialog.iintMCADialog(parent=self)
         self._mcaplot.hide()
+
         self._obsDef.showMCA.hide()
         self._obsDef.showMCA.clicked.connect(self._mcaplot.show)
         self._obsDef.overlayBtn.clicked.connect(self.doOverlay)
+
+        self._overlayView.scanSelectBtn.clicked.connect(self.doOverlay)
+
         self._bkgHandling = iintBackgroundHandling.iintBackgroundHandling(self._control.getBKGDicts())
         self._bkgHandling.bkgmodel.connect(self._control.setBkgModel)
         self._bkgHandling.useBkg.stateChanged.connect(self._checkBkgState)
+
         self._signalHandling = iintSignalHandling.iintSignalHandling(self._control.getSIGDict())
         self._signalHandling.passModels(self._control.getFitModels())
         self._signalHandling.modelcfg.connect(self.openFitDialog)
@@ -185,7 +190,9 @@ class iintGUI(QtGui.QMainWindow):
         try:
             self._trackedDataChoice.reset()
             self._trackedDataChoice.close()
-            self._trackedDataChoice = 0
+            #~ self._trackedDataChoice = 0
+            self._overlaySelection.reset()
+            self._overlaySelection.close()
         except AttributeError:
             pass
         self._inspectAnalyze.reset()
@@ -396,13 +403,27 @@ class iintGUI(QtGui.QMainWindow):
         self.message(" done.\n")
 
     def doOverlay(self):
-        print("overlaying")
-        #~ self._control.getDataList()
         try:
             self._overlaySelection.show()
         except AttributeError:
-            self._overlaySelection = iintOverlaySelection.iintOverlaySelection(self._control.getDataList())
+            self._overlaySelection = iintOverlaySelection.iintOverlaySelection(datalist=self._control.getScanlist())
+            self._overlaySelection.show()
         self._overlaySelection.overlayscanlist.connect(self._showOverlay)        
+
+    def _showOverlay(self, selection):
+        self._overlayView.passData(selection,
+                                       self._control.getDataList(),
+                                       self._control.getMotorName(),
+                                       self._control.getObservableName(),
+                                       self._control.getDespikedObservableName(),
+                                       self._control.getBackgroundName(),
+                                       self._control.getSignalName(),
+                                       self._control.getFittedSignalName(),
+                                       )
+        self.imageTabs.addTab(self._overlayView, "Overlay")
+        self.imageTabs.show()
+        self._overlayView.plot()
+        self._overlayView.show()
 
     def _runScanProfiles(self):
         name, timesuffix = self._control.proposeSaveFileName()
@@ -517,6 +538,7 @@ class iintGUI(QtGui.QMainWindow):
         import matplotlib.pyplot as plt
         from matplotlib.backends.backend_pdf import PdfPages
         name, timesuffix = self._control.proposeSaveFileName()
+        print("print display: name: " + str(name))
         filename = name + "_" + str(timesuffix) + "_SingleScan-#" + str(dataDict['scannumber']) + ".pdf"
         _outfile = PdfPages(filename)
         fig_size = plt.rcParams["figure.figsize"]
@@ -656,21 +678,6 @@ class iintGUI(QtGui.QMainWindow):
             self._trackedDataDict[trackinfo.getName()] = trackinfo
             self.imageTabs.addTab(tdv, trackinfo.getName())
             tdv.pickedTrackedDataPoint.connect(self._setFocusToSpectrum)
-
-    def _showOverlay(self):
-        print("showing OVERLAY")
-        pass
-        #~ self._overlayView.passData(self._control.getDataList(),
-                                       #~ self._control.getMotorName(),
-                                       #~ self._control.getObservableName(),
-                                       #~ self._control.getDespikedObservableName(),
-                                       #~ self._control.getBackgroundName(),
-                                       #~ self._control.getSignalName(),
-                                       #~ self._control.getFittedSignalName(),
-                                       #~ )
-        #~ self.imageTabs.addTab(self._overlayView, "Overlay")
-        #~ self.imageTabs.show()
-        #~ self._overlayView.show()
 
     def _saveResultsFile(self):
         name, timesuffix = self._control.proposeSaveFileName()
