@@ -451,8 +451,6 @@ class iintGUI(QtGui.QMainWindow):
             self._control.resetFITdata()
             self._control.resetBKGdata()
             self._bkgHandling.setParameterDicts(self._control.getBKGDicts())
-            self._control.resetTrackedData()
-            self.resetTabs(keepSpectra=True)
         self.message("Fitting background ...")
         if selDict == {}:
             self._control.useBKG(False)
@@ -514,8 +512,6 @@ class iintGUI(QtGui.QMainWindow):
     def runSignalFitting(self, fitDict, reset):
         if reset:
             self._inspectAnalyze.reset()
-            self._control.resetTrackedData()
-            self.resetTabs(keepSpectra=True)
 
         self.message("Fitting the signal, this can take a while ...")
         rundict = self._control.getSIGDict()
@@ -533,7 +529,6 @@ class iintGUI(QtGui.QMainWindow):
         self._inspectAnalyze.activate()
         self._control.useSignalProcessing(True)
         self._showTracked()
-
 
     def _printDisplayedData(self):
         dataDict = self._simpleImageView.getPrintData()
@@ -670,7 +665,6 @@ class iintGUI(QtGui.QMainWindow):
                 del self._trackedDataDict[name]
         for index in range(self.imageTabs.__len__(), 1, -1):
             self.imageTabs.removeTab(index)
-
         namelist = self._control.getTrackedData()
         for name in namelist:
             trackinfo = self._control.getTrackInformation(name)

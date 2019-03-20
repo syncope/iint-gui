@@ -695,6 +695,8 @@ class IintGUIProcessingControl():
                 # exclude the duplicate part for gauss/lorentz
                 if "fwhm" in param:
                     continue
+                elif "height" in param:
+                    continue
                 try:
                     infoholder[params[param].name].append((params[param].value, params[param].stderr))
                 except KeyError:
@@ -734,6 +736,8 @@ class IintGUIProcessingControl():
             for param in params:
                 # exclude the duplicate part for gauss/lorentz
                 if "fwhm" in param:
+                    continue
+                elif "height" in param:
                     continue
                 try:
                     infoholder[params[param].name].append((params[param].value, params[param].stderr))
