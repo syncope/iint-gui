@@ -27,21 +27,18 @@ class iintInspectAnalyze(QtGui.QWidget):
     def __init__(self, parent=None):
         super(iintInspectAnalyze, self).__init__(parent)
         uic.loadUi(getUIFile.getUIFile("inspectAnalyze.ui"), self)
-        self.trackData.setToolTip("Open a dialog to select column and header\ndata to be included in the output file.")
         self.trackedColumnsPlot.setToolTip("Creates and shows a pdf of all scan parameters vs. the tracked columns\nas selected in the data to track dialog.\nWorks only for gaussian/lorentzian fit model!")
         self.showScanFits.setToolTip("Saves a pdf of all scans including the fitted curves\nand opens an external viewer showing this file.")
         self.polAnalysis.setToolTip("Run a polarization analysis on the current data; non-interactive.\nA pdf file and a .stokes file with be created and saved.\nThe pdf file will be opened in an external viewer.")
         self.saveResults.setToolTip("Opens a dialog to allow the saving of the output file.\nThe file automatically contains the scan number, all fit parameters\nand the iint sum including their errors.\nIn addition the data is included that has been selected in the 'Choose data to track' dialog.")
 
     def activate(self):
-        self.trackData.setDisabled(False)
         self.trackedColumnsPlot.setDisabled(False)
         self.showScanFits.setDisabled(False)
         self.polAnalysis.setDisabled(False)
         self.saveResults.setDisabled(False)
 
     def reset(self):
-        self.trackData.setDisabled(True)
         self.trackedColumnsPlot.setDisabled(True)
         self.showScanFits.setDisabled(True)
         self.polAnalysis.setDisabled(True)

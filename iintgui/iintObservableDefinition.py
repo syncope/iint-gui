@@ -58,6 +58,7 @@ class iintObservableDefinition(QtGui.QWidget):
         self.overlayBtn.setToolTip("Open an overlay plot window to select scans to view at the same time.")
         self.obsDisplayBtn.setToolTip("Once everything is set, click this button to perform\nthe calculation of the observable data and open a display.")
         self.showScanProfile.setToolTip("Creates a stack of all scans as matrix, creating an image.\nThe result is stored in a file, which is shown in an external viewer.")
+        self.trackData.setToolTip("Open a dialog to select column and header\ndata to be included in the output file.")
         #~ self.showMCA.hide()
         self.showMCA.setDisabled(False)
 
@@ -73,6 +74,7 @@ class iintObservableDefinition(QtGui.QWidget):
         self._observableName = 'observable'
         self.deactivateShowScanProfile()
         self.showMCA.setDisabled(False)
+        self.trackData.setDisabled(True)
 
     def reset(self):
         self._defaultSettings()
@@ -122,6 +124,7 @@ class iintObservableDefinition(QtGui.QWidget):
         self.despikeCheckBox.setDisabled(state)
         self.overlayBtn.setDisabled(state)
         self.obsDisplayBtn.setDisabled(state)
+        self.trackData.setDisabled(state)
 
     def activateShowScanProfile(self):
         self.showScanProfile.setDisabled(False)

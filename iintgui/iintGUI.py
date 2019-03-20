@@ -107,6 +107,7 @@ class iintGUI(QtGui.QMainWindow):
 
         self._obsDef.showMCA.hide()
         self._obsDef.showMCA.clicked.connect(self._mcaplot.show)
+        self._obsDef.trackData.clicked.connect(self._dataToTrack)
         self._obsDef.overlayBtn.clicked.connect(self.doOverlay)
 
         self._overlayView.scanSelectBtn.clicked.connect(self.doOverlay)
@@ -123,7 +124,6 @@ class iintGUI(QtGui.QMainWindow):
         self._fitList = []
 
         self._inspectAnalyze = iintInspectAnalyze.iintInspectAnalyze()
-        self._inspectAnalyze.trackData.clicked.connect(self._dataToTrack)
         self._inspectAnalyze.trackedColumnsPlot.clicked.connect(self._runTrackedControlPlots)
         self._inspectAnalyze.showScanFits.clicked.connect(self._runScanControlPlots)
         self._inspectAnalyze.polAnalysis.clicked.connect(self._runPolarizationAnalysis)
@@ -532,13 +532,14 @@ class iintGUI(QtGui.QMainWindow):
         self.message(" ... done.\n")
         self._inspectAnalyze.activate()
         self._control.useSignalProcessing(True)
+        self._showTracked()
+
 
     def _printDisplayedData(self):
         dataDict = self._simpleImageView.getPrintData()
         import matplotlib.pyplot as plt
         from matplotlib.backends.backend_pdf import PdfPages
         name, timesuffix = self._control.proposeSaveFileName()
-        print("print display: name: " + str(name))
         filename = name + "_" + str(timesuffix) + "_SingleScan-#" + str(dataDict['scannumber']) + ".pdf"
         _outfile = PdfPages(filename)
         fig_size = plt.rcParams["figure.figsize"]
@@ -661,7 +662,6 @@ class iintGUI(QtGui.QMainWindow):
         except AttributeError:
             self._trackedDataChoice = iintTrackedDataChoice.iintTrackedDataChoice(rawScanData, self._control.getTrackedData())
         self._trackedDataChoice.trackedData.connect(self._control.setTrackedData)
-        self._trackedDataChoice.trackedData.connect(self._showTracked)
 
     def _showTracked(self):
         # prepare the tabs and dict of tracked data for re-display
