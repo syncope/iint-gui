@@ -56,6 +56,5 @@ observabledef:
 read:
   filename: /home/rosem/iintgui/test/test_data/MnCo15.spc
   output: rawdata
-  outputdata: default
   scanlist: 699-740
   type: specfilereader
