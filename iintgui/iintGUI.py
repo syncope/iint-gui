@@ -127,7 +127,8 @@ class iintGUI(QtGui.QMainWindow):
         self._inspectAnalyze.trackedColumnsPlot.clicked.connect(self._runTrackedControlPlots)
         self._inspectAnalyze.showScanFits.clicked.connect(self._runScanControlPlots)
         self._inspectAnalyze.polAnalysis.clicked.connect(self._runPolarizationAnalysis)
-        self._inspectAnalyze.saveResults.clicked.connect(self._saveResultsFile)
+        #~ self._inspectAnalyze.saveResults.clicked.connect(self._saveResultsFile)
+        self._inspectAnalyze.saveResults.clicked.connect(self._saveResultsFiles)
 
         self._saveResultsDialog = selectResultOutput.SelectResultOutput()
         self._saveResultsDialog.accept.connect(self._control.setResultFilename)
@@ -678,13 +679,23 @@ class iintGUI(QtGui.QMainWindow):
         self._saveResultsDialog.setName(name+timesuffix)
         self._saveResultsDialog.show()
 
+    def _saveResultsFiles(self):
+        name, timesuffix = self._control.proposeSaveFileName()
+        self._saveResultsDialog.setName(name+timesuffix)
+        self._saveResultsDialog.show()
+
     def runOutputSaving(self):
         self._control.useFinalizing(True)
         finalDict = self._control.getFinalizingDict()
 
-        self.message("Saving results file ...")
+        self.message("Saving results files, might take a while ...")
         self._control.processAll(finalDict)
         self._resultFileName = finalDict["outfilename"]
+
+        filename = self._control.getResultBaseFilename()
+        self._control.processScanProfiles(filename + "_scanProfiles.pdf")
+        self._control.processTrackedColumnsControlPlots(filename  + "_trackedColumnsPlots.pdf")
+        self._control.processScanControlPlots(filename + "_scanControlPlots.pdf")
         self.message(" ... done.\n")
 
     def _retrackDataDisplay(self, blacklist):

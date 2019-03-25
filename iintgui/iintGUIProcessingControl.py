@@ -752,7 +752,13 @@ class IintGUIProcessingControl():
 
     def setResultFilename(self, filename):
         self._processParameters["finalize"]["outfilename"] = filename + ".iint"
+        self._resultBaseFilename = filename
 
+    def getResultBaseFilename(self):
+        try:
+            return self._resultBaseFilename
+        except:
+            return None
 
 class trackedInformation():
 
