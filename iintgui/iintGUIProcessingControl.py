@@ -229,7 +229,8 @@ class IintGUIProcessingControl():
         self._processParameters["signalcurvefit"]["xdata"] = self._motorName
         self._processParameters["signalcurvefit"]["ydata"] = self._signalName
         self._processParameters["signalcurvefit"]["error"] = "None"
-        self._processParameters["signalcurvefit"]["usepreviousresult"] = 1
+        self._processParameters["signalcurvefit"]["usepreviousresult"] = 0
+        self._processParameters["signalcurvefit"]["useguessing"] = 1
         self._processParameters["signalcurvefit"]["result"] = self._fittedSignalName
         self._processParameters["signalcurvefit"]["model"] = {"m0_": {"modeltype": "gaussianModel"}}
         # calc fitted signal points
@@ -759,6 +760,15 @@ class IintGUIProcessingControl():
             return self._resultBaseFilename
         except:
             return None
+
+    def useGuessSignalFit(self, guess=True):
+        if guess:
+            self._processParameters["signalcurvefit"]["usepreviousresult"] = 0
+            self._processParameters["signalcurvefit"]["useguessing"] = 1
+        else:
+            self._processParameters["signalcurvefit"]["usepreviousresult"] = 1
+            self._processParameters["signalcurvefit"]["useguessing"] = 0
+
 
 class trackedInformation():
 
