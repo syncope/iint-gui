@@ -201,7 +201,7 @@ class iintGUI(QtGui.QMainWindow):
 
     def _resetForSFR(self):
         self._resetInternals()
-        self._simplePlotView.reset()
+        self._simpleImageView.reset()
         self._overlayView.reset()
         self._obsDef.reset()
         self._bkgHandling.reset()
