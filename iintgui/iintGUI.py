@@ -191,7 +191,6 @@ class iintGUI(QtGui.QMainWindow):
         try:
             self._trackedDataChoice.reset()
             self._trackedDataChoice.close()
-            #~ self._trackedDataChoice = 0
             self._overlaySelection.reset()
             self._overlaySelection.close()
         except AttributeError:
@@ -452,6 +451,7 @@ class iintGUI(QtGui.QMainWindow):
             self._control.resetFITdata()
             self._control.resetBKGdata()
             self._bkgHandling.setParameterDicts(self._control.getBKGDicts())
+            self._signalHandling.deactivateFitting()
         self.message("Fitting background ...")
         if selDict == {}:
             self._control.useBKG(False)
@@ -469,9 +469,9 @@ class iintGUI(QtGui.QMainWindow):
 
     def _checkBkgState(self, i):
         self._control.useBKG(i)
-        if i is 0:
+        if i is 2:
             self._signalHandling.deactivateConfiguration()
-        elif i is 2:
+        elif i is 0:
             self._signalHandling.activateConfiguration()
 
     def plotit(self):
