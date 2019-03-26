@@ -119,6 +119,7 @@ class iintGUI(QtGui.QMainWindow):
         self._signalHandling = iintSignalHandling.iintSignalHandling(self._control.getSIGDict())
         self._signalHandling.passModels(self._control.getFitModels())
         self._signalHandling.modelcfg.connect(self.openFitDialog)
+        self._signalHandling.guesspeak.connect(self._control.useGuessSignalFit)
         self._signalHandling.removeIndex.connect(self._removeFitFromListByIndex)
         self._signalHandling.performFitPushBtn.clicked.connect(self._prepareSignalFitting)
         self._fitList = []
@@ -513,14 +514,20 @@ class iintGUI(QtGui.QMainWindow):
     def runSignalFitting(self, fitDict, reset):
         if reset:
             self._inspectAnalyze.reset()
-
-        self.message("Fitting the signal, this can take a while ...")
         rundict = self._control.getSIGDict()
-        rundict['model'] = fitDict
+        self.message("Fitting the signal, this can take a while ...")
+        if self._control.guessSignalFit():
+            rundict['model'] = { "m0_": { 'modeltype': "gaussianModel",
+                  'center' : {'value':1.},
+                  'amplitude': {'value': 2.},
+                  'sigma': {'value': 3.} }}
+        else:
+            rundict['model'] = fitDict
         self._control.createAndBulkExecute(rundict)
         self._control.createAndBulkExecute(self._control.getSignalFitDict())
         if(self._simpleImageView is not None):
             self._simpleImageView.update("plotfit")
+
         trackinfo = self._control.getDefaultTrackInformation()
         tdv = iintMultiTrackedDataView.iintMultiTrackedDataView(trackinfo)
         self._trackedDataDict[trackinfo.getName()] = trackinfo

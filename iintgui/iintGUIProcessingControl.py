@@ -761,13 +761,16 @@ class IintGUIProcessingControl():
         except:
             return None
 
-    def useGuessSignalFit(self, guess=True):
+    def useGuessSignalFit(self, guess):
         if guess:
             self._processParameters["signalcurvefit"]["usepreviousresult"] = 0
             self._processParameters["signalcurvefit"]["useguessing"] = 1
         else:
             self._processParameters["signalcurvefit"]["usepreviousresult"] = 1
             self._processParameters["signalcurvefit"]["useguessing"] = 0
+
+    def guessSignalFit(self):
+        return self._processParameters["signalcurvefit"]["useguessing"]
 
 
 class trackedInformation():

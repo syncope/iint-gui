@@ -1,4 +1,4 @@
-# Copyright (C) 2017-8  Christoph Rosemann, DESY, Notkestr. 85, D-22607 Hamburg
+# Copyright (C) 2017-9  Christoph Rosemann, DESY, Notkestr. 85, D-22607 Hamburg
 # email contact: christoph.rosemann@desy.de
 #
 # iintgui is an application for the ADAPT framework
@@ -25,6 +25,7 @@ from . import getUIFile
 class iintSignalHandling(QtGui.QWidget):
     modelcfg = QtCore.pyqtSignal(str, int)
     removeIndex = QtCore.pyqtSignal(int)
+    guesspeak = QtCore.pyqtSignal(int)
 
     def __init__(self, pDict, parent=None):
         super(iintSignalHandling, self).__init__(parent)
@@ -34,10 +35,12 @@ class iintSignalHandling(QtGui.QWidget):
         self._hiddenuselist = [self._dummy, self.useSecond, self.useThird, self.useFourth]
         self.setParameterDict(pDict)
         self.performFitPushBtn.setDisabled(True)
+        self.guessMode.setDisabled(True)
         self.configureFirst.clicked.connect(self.emitfirstmodelconfig)
         self.configureSecond.clicked.connect(self.emitsecondmodelconfig)
         self.configureThird.clicked.connect(self.emitthirdmodelconfig)
         self.configureFourth.clicked.connect(self.emitfourthmodelconfig)
+        self.guessMode.stateChanged.connect(self.doGuessing)
         self._inactive = [False, True, True, True]
         self._firstModelDict = {}
         self._secondModelDict = {}
@@ -48,6 +51,7 @@ class iintSignalHandling(QtGui.QWidget):
         self.useThird.stateChanged.connect(self._toggleThird)
         self.useFourth.stateChanged.connect(self._toggleFourth)
         #~ self.useFirst.setToolTip("Always checked, since there needs to be at least one model to fit.")
+        self.guessMode.setToolTip("Check to enable guessing of fit start parameters, suited for varying peak positions.\nCurrently only implemented for single gaussian models.\nIf checked no second model can be selected.")
         self.useSecond.setToolTip("Check to activate the options on the line,\nenabling the choice of a model and its configuration.")
         self.useThird.setToolTip("Check to activate the options on the line,\nenabling the choice of a model and its configuration.")
         self.useFourth.setToolTip("Check to activate the options on the line,\nenabling the choice of a model and its configuration.")
@@ -68,18 +72,22 @@ class iintSignalHandling(QtGui.QWidget):
         self._fourthModelDict = {}
         self.performFitPushBtn.setDisabled(True)
         self.configureFirst.setDisabled(True)
+        self.guessMode.setDisabled(True)
 
     def activateConfiguration(self):
         self.firstModelCB.setDisabled(False)
         self.configureFirst.setDisabled(False)
+        self.guessMode.setDisabled(False)
         #~ self.useFirst.setDisabled(False)
         self.useSecond.setDisabled(False)
         self.useThird.setDisabled(False)
         self.useFourth.setDisabled(False)
+        self.guessMode.setChecked(True)
 
     def deactivateConfiguration(self):
         self.firstModelCB.setDisabled(True)
         self.configureFirst.setDisabled(True)
+        self.guessMode.setDisabled(True)
 
     def activateFitting(self):
         self.performFitPushBtn.setDisabled(False)
@@ -89,6 +97,7 @@ class iintSignalHandling(QtGui.QWidget):
         self.useFourth.setDisabled(False)
 
     def deactivateFitting(self):
+        self.guessMode.setDisabled(True)
         self.performFitPushBtn.setDisabled(True)
         self.firstModelCB.setDisabled(True)
         self.configureFirst.setDisabled(True)
@@ -103,6 +112,23 @@ class iintSignalHandling(QtGui.QWidget):
         self.useThird.setDisabled(True)
         self.useFourth.setDisabled(True)
 
+    def doGuessing(self, state):
+        if state is 2:
+            self.configureFirst.setDisabled(True)
+            self.activateFitting()
+            self.guesspeak.emit(1)
+            self.useSecond.setDisabled(True)
+            self.useThird.setDisabled(True)
+            self.useFourth.setDisabled(True)
+        elif state is 0:
+            self.configureFirst.setDisabled(False)
+            self.guesspeak.emit(0)
+            self.configureFirst.setDisabled(False)
+            self.useSecond.setDisabled(False)
+            self.useThird.setDisabled(False)
+            self.useFourth.setDisabled(False)
+            self.performFitPushBtn.setDisabled(True)
+
     #~ def _toggleFirst(self):
         #~ self._inactive[0] = not self._inactive[0]
         #~ self.firstModelCB.setDisabled(self._inactive[0])
@@ -114,6 +140,9 @@ class iintSignalHandling(QtGui.QWidget):
         self.configureSecond.setDisabled(self._inactive[1])
         if(self._inactive[1]):
             self.removeIndex.emit(1)
+        else: 
+            self.guessMode.setChecked(False)
+        self._checkGuessEnabled()
 
     def _toggleThird(self):
         self._inactive[2] = not self._inactive[2]
@@ -121,6 +150,9 @@ class iintSignalHandling(QtGui.QWidget):
         self.configureThird.setDisabled(self._inactive[2])
         if(self._inactive[2]):
             self.removeIndex.emit(2)
+        else: 
+            self.guessMode.setChecked(False)
+        self._checkGuessEnabled()
 
     def _toggleFourth(self):
         self._inactive[3] = not self._inactive[3]
@@ -128,7 +160,16 @@ class iintSignalHandling(QtGui.QWidget):
         self.configureFourth.setDisabled(self._inactive[3])
         if(self._inactive[3]):
             self.removeIndex.emit(3)
+        else: 
+            self.guessMode.setChecked(False)
+        self._checkGuessEnabled()
 
+    def _checkGuessEnabled(self):
+        if self._inactive[1] and self._inactive[2] and self._inactive[3]:
+            self.guessMode.setDisabled(False)
+        else:
+            self.guessMode.setDisabled(True)
+            
     def setParameterDict(self, pDict):
         self._parDict = pDict
 
@@ -146,7 +187,6 @@ class iintSignalHandling(QtGui.QWidget):
                 self._hiddenuselist[i].setCheckState(2)
             except AttributeError:
                 pass
-        #~ self.performFitPushBtn.setDisabled(False)
 
     def passModels(self, modelDict):
         self._modelnames = sorted([key for key in modelDict.keys()])
