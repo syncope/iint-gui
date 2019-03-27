@@ -253,7 +253,7 @@ class IintGUIProcessingControl():
         self._processParameters["inspection"]["specdataname"] = self._rawName
         self._processParameters["inspection"]["fitresult"] = self._fittedSignalName
         self._processParameters["inspection"]["trapintname"] = self._trapintName
-        self._processParameters["inspection"]["trackedColumns"] = []
+        self._processParameters["inspection"]["trackedData"] = []
         # mca plots 
         self._processParameters["mcaplot"]["input"] = self._rawName
         self._processParameters["mcaplot"]["outfilename"] = ""
@@ -269,7 +269,7 @@ class IintGUIProcessingControl():
                 self._processParameters["finalize"]["trackedData"].remove(name)
             except:
                 continue
-        self._processParameters["inspection"]["trackedColumns"] = self._processParameters["finalize"]["trackedData"]
+        self._processParameters["inspection"]["trackedData"] = self._processParameters["finalize"]["trackedData"]
 
     def getRawDataName(self):
         return self._rawName
@@ -660,7 +660,7 @@ class IintGUIProcessingControl():
         return self._processParameters["finalize"]
 
     def setTrackedData(self, namelist):
-        self._processParameters["inspection"]["trackedColumns"] = namelist
+        self._processParameters["inspection"]["trackedData"] = namelist
         self._processParameters["finalize"]["trackedData"] = namelist
 
     def getTrackedData(self):
