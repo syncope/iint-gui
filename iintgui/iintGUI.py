@@ -518,9 +518,11 @@ class iintGUI(QtGui.QMainWindow):
         self.message("Fitting the signal, this can take a while ...")
         if self._control.guessSignalFit():
             rundict['model'] = { "m0_": { 'modeltype': "gaussianModel",
-                  'center' : {'value':1.},
-                  'amplitude': {'value': 2.},
-                  'sigma': {'value': 3.} }}
+                  'm0_center' : {'value':1.},
+                  'm0_amplitude': {'value': 2.},
+                  'm0_height': {'value': 22.},
+                  'm0_fwhm': {'value': 21.},
+                  'm0_sigma': {'value': 3.} }}
         else:
             rundict['model'] = fitDict
         self._control.createAndBulkExecute(rundict)
