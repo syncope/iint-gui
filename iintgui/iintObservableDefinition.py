@@ -45,7 +45,7 @@ class iintObservableDefinition(QtGui.QWidget):
         self._notEnabled(True)
         self.obsDisplayBtn.clicked.connect(self.emittit)
         self.obsDisplayBtn.clicked.connect(self.activateShowScanProfile)
-        self.obsDisplayBtn.clicked.connect(self.activateMCA)
+        #~ self.obsDisplayBtn.clicked.connect(self.activateMCA)
         self._observableName = 'observable'
         self.observableMotorLabel.setToolTip("The motor taken from the scan command for the chosen series of scans.")
         self.label.setToolTip("The shorthand notation for the used formula to calculate\nthe number of counts at the given motor position.")
@@ -55,22 +55,27 @@ class iintObservableDefinition(QtGui.QWidget):
         self.observableAttFaccheck.setToolTip("Chose the entry from the scan file information for an attenuation factor.")
         self.observableAttFacCB.setToolTip("Check the box to enable the choice of an attenuation factor entry.")
         self.despikeCheckBox.setToolTip("Check the box to run a despiking/filtering algorithm\non the scan data to dampen spikes/noise fluctuation.")
+        self.overlayBtn.setToolTip("Open an overlay plot window to select scans to view at the same time.")
         self.obsDisplayBtn.setToolTip("Once everything is set, click this button to perform\nthe calculation of the observable data and open a display.")
         self.showScanProfile.setToolTip("Creates a stack of all scans as matrix, creating an image.\nThe result is stored in a file, which is shown in an external viewer.")
+        self.trackData.setToolTip("Open a dialog to select column and header\ndata to be included in the output file.")
+        self.maptracks.setToolTip("After tracked data has been selected, choose data to map.")
         #~ self.showMCA.hide()
-        self.showMCA.setDisabled(False)
+        #~ self.showMCA.setDisabled(False)
 
     def _defaultSettings(self):
         self._obsDict = {}
         self._despikeDict = {}
         self._trapintDict = {}
-        self.observableAttFacCB.setDisabled(True)
         self._useAttenuationFactor = False
+        self.observableAttFacCB.setDisabled(True)
         self.despikeCheckBox.setChecked(False)
         self._despike = False
         self._notEnabled(True)
         self._observableName = 'observable'
         self.deactivateShowScanProfile()
+        #~ self.showMCA.setDisabled(False)
+        self.trackData.setDisabled(True)
 
     def reset(self):
         self._defaultSettings()
@@ -78,9 +83,15 @@ class iintObservableDefinition(QtGui.QWidget):
     def activate(self):
         self._notEnabled(False)
 
-    def activateMCA(self):
-        self.showMCA.show()
-        self.showMCA.setDisabled(False)
+    def activateMapTrack(self):
+        self.maptracks.setDisabled(False)
+
+    def deactivateMapTrack(self):
+        self.maptracks.setDisabled(True)
+
+    #~ def activateMCA(self):
+        #~ self.showMCA.show()
+        #~ self.showMCA.setDisabled(False)
 
     def passInfo(self, dataobject):
         if dataobject is None:
@@ -118,7 +129,9 @@ class iintObservableDefinition(QtGui.QWidget):
         self.observableAttFaccheck.setDisabled(state)
         self.observableAttFacCB.setDisabled(state)
         self.despikeCheckBox.setDisabled(state)
+        self.overlayBtn.setDisabled(state)
         self.obsDisplayBtn.setDisabled(state)
+        self.trackData.setDisabled(state)
 
     def activateShowScanProfile(self):
         self.showScanProfile.setDisabled(False)
@@ -205,6 +218,7 @@ class iintObservableDefinition(QtGui.QWidget):
                 self.observableAttFacCB.setDisabled(False)
         except KeyError:
             # there is no attenuation factor column
+            self._useAttenuationFactor = False
             self.observableAttFacCB.setDisabled(True)
             pass
 

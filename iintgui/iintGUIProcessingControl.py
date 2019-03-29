@@ -229,7 +229,8 @@ class IintGUIProcessingControl():
         self._processParameters["signalcurvefit"]["xdata"] = self._motorName
         self._processParameters["signalcurvefit"]["ydata"] = self._signalName
         self._processParameters["signalcurvefit"]["error"] = "None"
-        self._processParameters["signalcurvefit"]["usepreviousresult"] = 1
+        self._processParameters["signalcurvefit"]["usepreviousresult"] = 0
+        self._processParameters["signalcurvefit"]["useguessing"] = 1
         self._processParameters["signalcurvefit"]["result"] = self._fittedSignalName
         self._processParameters["signalcurvefit"]["model"] = {"m0_": {"modeltype": "gaussianModel"}}
         # calc fitted signal points
@@ -252,7 +253,7 @@ class IintGUIProcessingControl():
         self._processParameters["inspection"]["specdataname"] = self._rawName
         self._processParameters["inspection"]["fitresult"] = self._fittedSignalName
         self._processParameters["inspection"]["trapintname"] = self._trapintName
-        self._processParameters["inspection"]["trackedColumns"] = []
+        self._processParameters["inspection"]["trackedData"] = []
         # mca plots 
         self._processParameters["mcaplot"]["input"] = self._rawName
         self._processParameters["mcaplot"]["outfilename"] = ""
@@ -268,7 +269,7 @@ class IintGUIProcessingControl():
                 self._processParameters["finalize"]["trackedData"].remove(name)
             except:
                 continue
-        self._processParameters["inspection"]["trackedColumns"] = self._processParameters["finalize"]["trackedData"]
+        self._processParameters["inspection"]["trackedData"] = self._processParameters["finalize"]["trackedData"]
 
     def getRawDataName(self):
         return self._rawName
@@ -345,6 +346,8 @@ class IintGUIProcessingControl():
         for datum in data:
             pd = processData.ProcessData()
             pd.addData(name, datum)
+            # this is not safe for multiple data elements with MCA data
+            # !!! FIXME !!!
             if datum.getMCAName() != '':
                 pd.addData("MCAName", datum.getMCAName())
                 pd.addData("MCA", datum.getMCA())
@@ -559,6 +562,41 @@ class IintGUIProcessingControl():
     def setSpecFile(self, name, scanlist):
         self._processParameters["read"]["filename"] = name
         self._processParameters["read"]["scanlist"] = scanlist
+        self._scanlist = self._expandList(scanlist)
+
+    def getScanlist(self):
+        return self._scanlist
+
+    def _expandList(self, somelist):
+        scanlist = str(somelist)
+        retlist = []
+        stride = None
+        self._scanlist = []
+        if scanlist.find(':') != -1:
+            stride = int(scanlist.split(':')[-1])
+            scanlist = scanlist.split(':')[0]
+        scanlist = scanlist.split('[')[-1]
+        scanlist = scanlist.split(']')[0]
+        try:
+            li = scanlist.split(',')
+        except AttributeError:
+            pass
+        for elem in li:
+            try:
+                retlist.append(int(elem))
+            except ValueError:
+                try:
+                    tmp = elem.split('-')
+                    if stride:
+                        for n in range(tmp[0],(tmp[1]+1), stride):
+                            retlist.append(n)
+                    else:
+                        for n in range(int(tmp[0]),int(tmp[1])+1):
+                            retlist.append(n)
+                except:
+                    pass
+        retlist.sort()
+        return retlist
 
     def setBkgModel(self, modelname):
         if modelname == "linearModel":
@@ -622,7 +660,7 @@ class IintGUIProcessingControl():
         return self._processParameters["finalize"]
 
     def setTrackedData(self, namelist):
-        self._processParameters["inspection"]["trackedColumns"] = namelist
+        self._processParameters["inspection"]["trackedData"] = namelist
         self._processParameters["finalize"]["trackedData"] = namelist
 
     def getTrackedData(self):
@@ -658,6 +696,8 @@ class IintGUIProcessingControl():
                 # exclude the duplicate part for gauss/lorentz
                 if "fwhm" in param:
                     continue
+                elif "height" in param:
+                    continue
                 try:
                     infoholder[params[param].name].append((params[param].value, params[param].stderr))
                 except KeyError:
@@ -675,6 +715,23 @@ class IintGUIProcessingControl():
                     print("Can't retrieve the information of " + str(name))
                     return
         return trackedInformation(name, value, error, infoholder)
+
+    def getRawTrackInformation(self, name):
+        '''Collect the tracked data given by name.
+           Returns the name, value and error of the tracked parameter,
+           plus a dictionary of the fitted parameters including their error.'''
+        value, error = [], []
+        for datum in self._dataList:
+            try:
+                array = datum.getData(self._rawName).getArray(name)
+                value.append(np.mean(array))
+            except KeyError:
+                try:
+                    value.append(datum.getData(self._rawName).getCustomVar(name))
+                except:
+                    print("Can't retrieve the information of " + str(name))
+                    return
+        return value
 
     def getSignalFitResults(self):
         resultlist = []
@@ -698,6 +755,8 @@ class IintGUIProcessingControl():
                 # exclude the duplicate part for gauss/lorentz
                 if "fwhm" in param:
                     continue
+                elif "height" in param:
+                    continue
                 try:
                     infoholder[params[param].name].append((params[param].value, params[param].stderr))
                 except KeyError:
@@ -711,6 +770,24 @@ class IintGUIProcessingControl():
 
     def setResultFilename(self, filename):
         self._processParameters["finalize"]["outfilename"] = filename + ".iint"
+        self._resultBaseFilename = filename
+
+    def getResultBaseFilename(self):
+        try:
+            return self._resultBaseFilename
+        except:
+            return None
+
+    def useGuessSignalFit(self, guess):
+        if guess:
+            self._processParameters["signalcurvefit"]["usepreviousresult"] = 0
+            self._processParameters["signalcurvefit"]["useguessing"] = 1
+        else:
+            self._processParameters["signalcurvefit"]["usepreviousresult"] = 1
+            self._processParameters["signalcurvefit"]["useguessing"] = 0
+
+    def guessSignalFit(self):
+        return self._processParameters["signalcurvefit"]["useguessing"]
 
 
 class trackedInformation():

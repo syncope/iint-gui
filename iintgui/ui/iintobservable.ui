@@ -6,7 +6,7 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>433</width>
+    <width>575</width>
     <height>323</height>
    </rect>
   </property>
@@ -626,12 +626,35 @@
         <item>
          <layout class="QHBoxLayout" name="horizontalLayout">
           <item>
-           <widget class="QPushButton" name="showMCA">
+           <widget class="QPushButton" name="trackData">
             <property name="enabled">
              <bool>false</bool>
             </property>
             <property name="text">
-             <string>Show MCA</string>
+             <string>Track selection</string>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <spacer name="horizontalSpacer_6">
+            <property name="orientation">
+             <enum>Qt::Horizontal</enum>
+            </property>
+            <property name="sizeHint" stdset="0">
+             <size>
+              <width>40</width>
+              <height>20</height>
+             </size>
+            </property>
+           </spacer>
+          </item>
+          <item>
+           <widget class="QPushButton" name="maptracks">
+            <property name="enabled">
+             <bool>false</bool>
+            </property>
+            <property name="text">
+             <string>Map Track</string>
             </property>
            </widget>
           </item>
@@ -654,7 +677,27 @@
              <bool>false</bool>
             </property>
             <property name="text">
-             <string>Show profile of scans</string>
+             <string>2D map</string>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <spacer name="horizontalSpacer_5">
+            <property name="orientation">
+             <enum>Qt::Horizontal</enum>
+            </property>
+            <property name="sizeHint" stdset="0">
+             <size>
+              <width>40</width>
+              <height>20</height>
+             </size>
+            </property>
+           </spacer>
+          </item>
+          <item>
+           <widget class="QPushButton" name="overlayBtn">
+            <property name="text">
+             <string>Overlay</string>
             </property>
            </widget>
           </item>

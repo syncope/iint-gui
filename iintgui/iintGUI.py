@@ -34,12 +34,16 @@ except ImportError:
 from . import getUIFile
 
 from . import iintDataPlot
+from . import iintOverlayPlot
+from . import iintOverlaySelection
 from . import fileInfo
 from . import outputDir
 from . import iintObservableDefinition
 from . import iintBackgroundHandling
 from . import iintSignalHandling
 from . import iintTrackedDataChoice
+from . import trackedDataMap
+from . import iintTrackedDataMapDisplay
 from . import quitDialog
 from . import loggerBox
 from . import resetDialog
@@ -89,6 +93,7 @@ class iintGUI(QtGui.QMainWindow):
         self._simpleImageView = iintDataPlot.iintDataPlot(parent=self)
         self._simpleImageView.blacklist.connect(self._retrackDataDisplay)
         self._simpleImageView.hidden.connect(self._unresize)
+        self._overlayView = iintOverlayPlot.iintOverlayPlot(parent=self)
         self._blacklist = []
 
         self._resetQuestion = resetDialog.ResetDialog()
@@ -101,24 +106,32 @@ class iintGUI(QtGui.QMainWindow):
         self._obsDef.showScanProfile.clicked.connect(self._runScanProfiles)
         self._mcaplot = iintMCADialog.iintMCADialog(parent=self)
         self._mcaplot.hide()
-        self._obsDef.showMCA.hide()
-        self._obsDef.showMCA.clicked.connect(self._mcaplot.show)
+
+        #~ self._obsDef.showMCA.hide()
+        #~ self._obsDef.showMCA.clicked.connect(self._mcaplot.show)
+        self._obsDef.trackData.clicked.connect(self._dataToTrack)
+        self._obsDef.overlayBtn.clicked.connect(self.doOverlay)
+
+        self._overlayView.scanSelectBtn.clicked.connect(self.doOverlay)
+
         self._bkgHandling = iintBackgroundHandling.iintBackgroundHandling(self._control.getBKGDicts())
         self._bkgHandling.bkgmodel.connect(self._control.setBkgModel)
         self._bkgHandling.useBkg.stateChanged.connect(self._checkBkgState)
+
         self._signalHandling = iintSignalHandling.iintSignalHandling(self._control.getSIGDict())
         self._signalHandling.passModels(self._control.getFitModels())
         self._signalHandling.modelcfg.connect(self.openFitDialog)
+        self._signalHandling.guesspeak.connect(self._control.useGuessSignalFit)
         self._signalHandling.removeIndex.connect(self._removeFitFromListByIndex)
         self._signalHandling.performFitPushBtn.clicked.connect(self._prepareSignalFitting)
         self._fitList = []
 
         self._inspectAnalyze = iintInspectAnalyze.iintInspectAnalyze()
-        self._inspectAnalyze.trackData.clicked.connect(self._dataToTrack)
         self._inspectAnalyze.trackedColumnsPlot.clicked.connect(self._runTrackedControlPlots)
         self._inspectAnalyze.showScanFits.clicked.connect(self._runScanControlPlots)
         self._inspectAnalyze.polAnalysis.clicked.connect(self._runPolarizationAnalysis)
-        self._inspectAnalyze.saveResults.clicked.connect(self._saveResultsFile)
+        #~ self._inspectAnalyze.saveResults.clicked.connect(self._saveResultsFile)
+        self._inspectAnalyze.saveResults.clicked.connect(self._saveResultsFiles)
 
         self._saveResultsDialog = selectResultOutput.SelectResultOutput()
         self._saveResultsDialog.accept.connect(self._control.setResultFilename)
@@ -142,6 +155,7 @@ class iintGUI(QtGui.QMainWindow):
         self._sfrGUI.valuesSet.connect(self.runFileReader)
         self._obsDef.observableDicts.connect(self.runObservable)
         self._bkgHandling.bkgDicts.connect(self.runBkgProcessing)
+        self._simpleImageView.printButton.clicked.connect(self._printDisplayedData)
 
         self._initialGeometry = self.geometry()
         self._widgetList = []
@@ -166,6 +180,7 @@ class iintGUI(QtGui.QMainWindow):
     def _resetAll(self):
         self._resetInternals()
         self._simpleImageView.reset()
+        self._overlayView.reset()
         self._fileInfo.reset()
         self._obsDef.reset()
         self._bkgHandling.reset()
@@ -179,7 +194,8 @@ class iintGUI(QtGui.QMainWindow):
         try:
             self._trackedDataChoice.reset()
             self._trackedDataChoice.close()
-            self._trackedDataChoice = 0
+            self._overlaySelection.reset()
+            self._overlaySelection.close()
         except AttributeError:
             pass
         self._inspectAnalyze.reset()
@@ -188,6 +204,7 @@ class iintGUI(QtGui.QMainWindow):
     def _resetForSFR(self):
         self._resetInternals()
         self._simpleImageView.reset()
+        self._overlayView.reset()
         self._obsDef.reset()
         self._bkgHandling.reset()
         self._bkgHandling.setParameterDicts(self._control.getBKGDicts())
@@ -313,6 +330,7 @@ class iintGUI(QtGui.QMainWindow):
         if "observabledef" in runlist:
             self._obsDef.setParameterDicts(self._control.getOBSDict(), self._control.getDESDict())
             self.runObservable(self._control.getOBSDict(), self._control.getDESDict())
+            self._obsDef.activateShowScanProfile()
         else:
             return
         if "bkgsubtract" in runlist:
@@ -341,10 +359,10 @@ class iintGUI(QtGui.QMainWindow):
         sfr = self._control.createAndInitialize(filereaderdict)
         self._control.createDataList(sfr.getData(), self._control.getRawDataName())
         # check for MCA! 
-        mcaDict = self._control.getMCA()
-        if mcaDict != {}:
-            self._obsDef.showMCA.show()
-            self._mcaplot.passData(mcaDict)
+        #~ mcaDict = self._control.getMCA()
+        #~ if mcaDict != {}:
+            #~ self._obsDef.showMCA.show()
+            #~ self._mcaplot.passData(mcaDict)
         check = self._control.checkDataIntegrity()
         if check:
             self.warning("There are different motor names in the selection!\n Can't continue, please correct!")
@@ -360,6 +378,7 @@ class iintGUI(QtGui.QMainWindow):
             self._control.setOBSDict(obsDict)
         if reset:
             self._simpleImageView.reset()
+            self._overlayView.reset()
             self.resetTabs(keepSpectra=True)
             self._control.resetOBSdata()
             self._inspectAnalyze.reset()
@@ -385,6 +404,29 @@ class iintGUI(QtGui.QMainWindow):
                 self._simpleImageView.update("des")
         self._bkgHandling.activate()
         self.message(" done.\n")
+
+    def doOverlay(self):
+        try:
+            self._overlaySelection.show()
+        except AttributeError:
+            self._overlaySelection = iintOverlaySelection.iintOverlaySelection(datalist=self._control.getScanlist())
+            self._overlaySelection.show()
+        self._overlaySelection.overlayscanlist.connect(self._showOverlay)        
+
+    def _showOverlay(self, selection):
+        self._overlayView.passData(selection,
+                                       self._control.getDataList(),
+                                       self._control.getMotorName(),
+                                       self._control.getObservableName(),
+                                       self._control.getDespikedObservableName(),
+                                       self._control.getBackgroundName(),
+                                       self._control.getSignalName(),
+                                       self._control.getFittedSignalName(),
+                                       )
+        self.imageTabs.addTab(self._overlayView, "Overlay")
+        self.imageTabs.show()
+        self._overlayView.plot()
+        self._overlayView.show()
 
     def _runScanProfiles(self):
         name, timesuffix = self._control.proposeSaveFileName()
@@ -412,8 +454,7 @@ class iintGUI(QtGui.QMainWindow):
             self._control.resetFITdata()
             self._control.resetBKGdata()
             self._bkgHandling.setParameterDicts(self._control.getBKGDicts())
-            self._control.resetTrackedData()
-            self.resetTabs(keepSpectra=True)
+            self._signalHandling.deactivateFitting()
         self.message("Fitting background ...")
         if selDict == {}:
             self._control.useBKG(False)
@@ -431,9 +472,9 @@ class iintGUI(QtGui.QMainWindow):
 
     def _checkBkgState(self, i):
         self._control.useBKG(i)
-        if i is 0:
+        if i is 2:
             self._signalHandling.deactivateConfiguration()
-        elif i is 2:
+        elif i is 0:
             self._signalHandling.activateConfiguration()
 
     def plotit(self):
@@ -475,16 +516,22 @@ class iintGUI(QtGui.QMainWindow):
     def runSignalFitting(self, fitDict, reset):
         if reset:
             self._inspectAnalyze.reset()
-            self._control.resetTrackedData()
-            self.resetTabs(keepSpectra=True)
-
-        self.message("Fitting the signal, this can take a while ...")
         rundict = self._control.getSIGDict()
-        rundict['model'] = fitDict
+        self.message("Fitting the signal, this can take a while ...")
+        if self._control.guessSignalFit():
+            rundict['model'] = { "m0_": { 'modeltype': "gaussianModel",
+                  'm0_center' : {'value':1.},
+                  'm0_amplitude': {'value': 2.},
+                  'm0_height': {'value': 22.},
+                  'm0_fwhm': {'value': 21.},
+                  'm0_sigma': {'value': 3.} }}
+        else:
+            rundict['model'] = fitDict
         self._control.createAndBulkExecute(rundict)
         self._control.createAndBulkExecute(self._control.getSignalFitDict())
         if(self._simpleImageView is not None):
             self._simpleImageView.update("plotfit")
+
         trackinfo = self._control.getDefaultTrackInformation()
         tdv = iintMultiTrackedDataView.iintMultiTrackedDataView(trackinfo)
         self._trackedDataDict[trackinfo.getName()] = trackinfo
@@ -493,6 +540,56 @@ class iintGUI(QtGui.QMainWindow):
         self.message(" ... done.\n")
         self._inspectAnalyze.activate()
         self._control.useSignalProcessing(True)
+        self._showTracked()
+
+    def _printDisplayedData(self):
+        dataDict = self._simpleImageView.getPrintData()
+        import matplotlib.pyplot as plt
+        from matplotlib.backends.backend_pdf import PdfPages
+        name, timesuffix = self._control.proposeSaveFileName()
+        filename = name + "_" + str(timesuffix) + "_SingleScan-#" + str(dataDict['scannumber']) + ".pdf"
+        _outfile = PdfPages(filename)
+        fig_size = plt.rcParams["figure.figsize"]
+        # print "Current size:", fig_size
+        fig_size[0] = 16
+        fig_size[1] = 12
+        plt.rcParams["figure.figsize"] = fig_size
+        plotlabels = []
+        plotlabelnames = []
+        # the plotting commands
+        try:
+            r = plt.plot(dataDict['motor'], dataDict['raw'], 'k+', label = "raw intensities") 
+        except KeyError:
+            pass
+        try:
+            d = plt.plot(dataDict['motor'], dataDict['despike'], 'gx', label = "despiked intensities")
+        except KeyError:
+            pass
+        try:
+            b = plt.plot(dataDict['motor'], dataDict['bkg'], 'rd', label = "estimated bkg")
+        except KeyError:
+            pass
+        try:
+            s = plt.plot(dataDict['motor'], dataDict['signal'], 'bo', label = "signal intensities")
+        except KeyError:
+            pass
+        try:
+            f = plt.plot(dataDict['motor'], dataDict['fit'], 'b-', label = "fitted intensities")
+        except KeyError:
+            pass
+        plt.xlabel(self._simpleImageView.getAxisNames()[0])
+        plt.ylabel(self._simpleImageView.getAxisNames()[1])
+        plt.legend()
+        # index/argument correct?
+        figure = plt.figure(1)
+        figure.suptitle('Scan number ' + str(dataDict['scannumber']), fontsize=14, fontweight='bold')
+
+        _outfile.savefig()
+        _outfile.close()
+        plt.close("all")
+        self.message("Created scan file.\n")
+        from subprocess import Popen
+        Popen(["evince", filename])
 
     def _runScanControlPlots(self):
         name, timesuffix = self._control.proposeSaveFileName()
@@ -512,7 +609,7 @@ class iintGUI(QtGui.QMainWindow):
         except:
             pass
         name, timesuffix = self._control.proposeSaveFileName()
-        filename = name + "_" + str(timesuffix) + "_scanControlPlots.pdf"
+        filename = name + "_" + str(timesuffix) + "_trackedColumnsPlots.pdf"
         self.message("Creating the control plots of the tracked columns ...")
         self._control.processTrackedColumnsControlPlots(filename)
         self.message(" ... done.\n")
@@ -571,17 +668,28 @@ class iintGUI(QtGui.QMainWindow):
             self._trackedDataChoice.show()
         except AttributeError:
             self._trackedDataChoice = iintTrackedDataChoice.iintTrackedDataChoice(rawScanData, self._control.getTrackedData())
+            self._trackedDataMap = trackedDataMap.TrackedDataMap()
+            self._trackedDataMap.trackeddatatomap.connect(self._addMappedData)
         self._trackedDataChoice.trackedData.connect(self._control.setTrackedData)
-        self._trackedDataChoice.trackedData.connect(self._showTracked)
+        self._trackedDataChoice.trackedData.connect(self._checkTrackMapActivation)
+        self._obsDef.maptracks.clicked.connect(self._trackedDataMap.show)
+
+    def _checkTrackMapActivation(self, outlist):
+        if len(outlist) > 0:
+            self._obsDef.activateMapTrack()
+            self._trackedDataMap.passNames(self._control.getTrackedData())
+        else:
+            self._obsDef.deactivateMapTrack()
 
     def _showTracked(self):
         # prepare the tabs and dict of tracked data for re-display
-        for name in list(self._trackedDataDict.keys()):
-            if name != "ScanNumber":
-                del self._trackedDataDict[name]
+        self._trackedDataDict.clear()
+        #~ for name in list(self._trackedDataDict.keys()):
+            #~ if name != "ScanNumber":
+                #~ del self._trackedDataDict[name]
+            #~ del self._trackedDataDict[name]
         for index in range(self.imageTabs.__len__(), 1, -1):
             self.imageTabs.removeTab(index)
-
         namelist = self._control.getTrackedData()
         for name in namelist:
             trackinfo = self._control.getTrackInformation(name)
@@ -590,7 +698,21 @@ class iintGUI(QtGui.QMainWindow):
             self.imageTabs.addTab(tdv, trackinfo.getName())
             tdv.pickedTrackedDataPoint.connect(self._setFocusToSpectrum)
 
+    def _addMappedData(self, one, two):
+        mtdmd = iintTrackedDataMapDisplay.iintTrackedDataMapDisplay( \
+                            one, self._control.getRawTrackInformation(one),
+                            two, self._control.getRawTrackInformation(two))
+
+        mtdmd.maperror.connect(self.warning)
+        mtdmd.plot()
+        self.imageTabs.addTab(mtdmd, one + " vs. " + two)
+
     def _saveResultsFile(self):
+        name, timesuffix = self._control.proposeSaveFileName()
+        self._saveResultsDialog.setName(name+timesuffix)
+        self._saveResultsDialog.show()
+
+    def _saveResultsFiles(self):
         name, timesuffix = self._control.proposeSaveFileName()
         self._saveResultsDialog.setName(name+timesuffix)
         self._saveResultsDialog.show()
@@ -599,9 +721,14 @@ class iintGUI(QtGui.QMainWindow):
         self._control.useFinalizing(True)
         finalDict = self._control.getFinalizingDict()
 
-        self.message("Saving results file ...")
+        self.message("Saving results files, might take a while ...")
         self._control.processAll(finalDict)
         self._resultFileName = finalDict["outfilename"]
+
+        filename = self._control.getResultBaseFilename()
+        self._control.processScanProfiles(filename + "_scanProfiles.pdf")
+        self._control.processTrackedColumnsControlPlots(filename  + "_trackedColumnsPlots.pdf")
+        self._control.processScanControlPlots(filename + "_scanControlPlots.pdf")
         self.message(" ... done.\n")
 
     def _retrackDataDisplay(self, blacklist):
