@@ -1,3 +1,15 @@
+iintgui (0.8.0-1+deb9u5~fsec) stretch; urgency=low
+
+  * Large number of feature additions:
+    ** print single scan
+    ** add overlays
+    ** tracked data selection in observable definition
+    ** free selection to map tracked data selections
+    ** allow automatic fit initialization for single peak
+    ** several bug fixes of GUI misbehaviour
+
+ -- Christoph Rosemann <christoph.rosemann@desy.de>  Fri, 29 Mar 2019 10:36:00 +0100
+
 iintgui (0.7.0-1+deb9u5~fsec) stretch; urgency=low
 
   * Several bugfixes: ftting constant bkg, larger statistics.
