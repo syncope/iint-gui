@@ -45,7 +45,7 @@ class iintObservableDefinition(QtGui.QWidget):
         self._notEnabled(True)
         self.obsDisplayBtn.clicked.connect(self.emittit)
         self.obsDisplayBtn.clicked.connect(self.activateShowScanProfile)
-        self.obsDisplayBtn.clicked.connect(self.activateMCA)
+        #~ self.obsDisplayBtn.clicked.connect(self.activateMCA)
         self._observableName = 'observable'
         self.observableMotorLabel.setToolTip("The motor taken from the scan command for the chosen series of scans.")
         self.label.setToolTip("The shorthand notation for the used formula to calculate\nthe number of counts at the given motor position.")
@@ -59,8 +59,9 @@ class iintObservableDefinition(QtGui.QWidget):
         self.obsDisplayBtn.setToolTip("Once everything is set, click this button to perform\nthe calculation of the observable data and open a display.")
         self.showScanProfile.setToolTip("Creates a stack of all scans as matrix, creating an image.\nThe result is stored in a file, which is shown in an external viewer.")
         self.trackData.setToolTip("Open a dialog to select column and header\ndata to be included in the output file.")
+        self.maptracks.setToolTip("After tracked data has been selected, choose data to map.")
         #~ self.showMCA.hide()
-        self.showMCA.setDisabled(False)
+        #~ self.showMCA.setDisabled(False)
 
     def _defaultSettings(self):
         self._obsDict = {}
@@ -73,7 +74,7 @@ class iintObservableDefinition(QtGui.QWidget):
         self._notEnabled(True)
         self._observableName = 'observable'
         self.deactivateShowScanProfile()
-        self.showMCA.setDisabled(False)
+        #~ self.showMCA.setDisabled(False)
         self.trackData.setDisabled(True)
 
     def reset(self):
@@ -82,9 +83,15 @@ class iintObservableDefinition(QtGui.QWidget):
     def activate(self):
         self._notEnabled(False)
 
-    def activateMCA(self):
-        self.showMCA.show()
-        self.showMCA.setDisabled(False)
+    def activateMapTrack(self):
+        self.maptracks.setDisabled(False)
+
+    def deactivateMapTrack(self):
+        self.maptracks.setDisabled(True)
+
+    #~ def activateMCA(self):
+        #~ self.showMCA.show()
+        #~ self.showMCA.setDisabled(False)
 
     def passInfo(self, dataobject):
         if dataobject is None:

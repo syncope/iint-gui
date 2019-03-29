@@ -6,7 +6,7 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>566</width>
+    <width>575</width>
     <height>323</height>
    </rect>
   </property>
@@ -626,12 +626,12 @@
         <item>
          <layout class="QHBoxLayout" name="horizontalLayout">
           <item>
-           <widget class="QPushButton" name="showMCA">
+           <widget class="QPushButton" name="trackData">
             <property name="enabled">
              <bool>false</bool>
             </property>
             <property name="text">
-             <string>MCA</string>
+             <string>Track selection</string>
             </property>
            </widget>
           </item>
@@ -649,12 +649,12 @@
            </spacer>
           </item>
           <item>
-           <widget class="QPushButton" name="trackData">
+           <widget class="QPushButton" name="maptracks">
             <property name="enabled">
              <bool>false</bool>
             </property>
             <property name="text">
-             <string>Track selection</string>
+             <string>Map Track</string>
             </property>
            </widget>
           </item>

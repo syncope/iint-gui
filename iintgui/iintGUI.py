@@ -42,6 +42,8 @@ from . import iintObservableDefinition
 from . import iintBackgroundHandling
 from . import iintSignalHandling
 from . import iintTrackedDataChoice
+from . import trackedDataMap
+from . import iintTrackedDataMapDisplay
 from . import quitDialog
 from . import loggerBox
 from . import resetDialog
@@ -105,8 +107,8 @@ class iintGUI(QtGui.QMainWindow):
         self._mcaplot = iintMCADialog.iintMCADialog(parent=self)
         self._mcaplot.hide()
 
-        self._obsDef.showMCA.hide()
-        self._obsDef.showMCA.clicked.connect(self._mcaplot.show)
+        #~ self._obsDef.showMCA.hide()
+        #~ self._obsDef.showMCA.clicked.connect(self._mcaplot.show)
         self._obsDef.trackData.clicked.connect(self._dataToTrack)
         self._obsDef.overlayBtn.clicked.connect(self.doOverlay)
 
@@ -357,10 +359,10 @@ class iintGUI(QtGui.QMainWindow):
         sfr = self._control.createAndInitialize(filereaderdict)
         self._control.createDataList(sfr.getData(), self._control.getRawDataName())
         # check for MCA! 
-        mcaDict = self._control.getMCA()
-        if mcaDict != {}:
-            self._obsDef.showMCA.show()
-            self._mcaplot.passData(mcaDict)
+        #~ mcaDict = self._control.getMCA()
+        #~ if mcaDict != {}:
+            #~ self._obsDef.showMCA.show()
+            #~ self._mcaplot.passData(mcaDict)
         check = self._control.checkDataIntegrity()
         if check:
             self.warning("There are different motor names in the selection!\n Can't continue, please correct!")
@@ -666,13 +668,26 @@ class iintGUI(QtGui.QMainWindow):
             self._trackedDataChoice.show()
         except AttributeError:
             self._trackedDataChoice = iintTrackedDataChoice.iintTrackedDataChoice(rawScanData, self._control.getTrackedData())
+            self._trackedDataMap = trackedDataMap.TrackedDataMap()
+            self._trackedDataMap.trackeddatatomap.connect(self._addMappedData)
         self._trackedDataChoice.trackedData.connect(self._control.setTrackedData)
+        self._trackedDataChoice.trackedData.connect(self._checkTrackMapActivation)
+        self._obsDef.maptracks.clicked.connect(self._trackedDataMap.show)
+
+    def _checkTrackMapActivation(self, outlist):
+        if len(outlist) > 0:
+            self._obsDef.activateMapTrack()
+            self._trackedDataMap.passNames(self._control.getTrackedData())
+        else:
+            self._obsDef.deactivateMapTrack()
 
     def _showTracked(self):
         # prepare the tabs and dict of tracked data for re-display
-        for name in list(self._trackedDataDict.keys()):
-            if name != "ScanNumber":
-                del self._trackedDataDict[name]
+        self._trackedDataDict.clear()
+        #~ for name in list(self._trackedDataDict.keys()):
+            #~ if name != "ScanNumber":
+                #~ del self._trackedDataDict[name]
+            #~ del self._trackedDataDict[name]
         for index in range(self.imageTabs.__len__(), 1, -1):
             self.imageTabs.removeTab(index)
         namelist = self._control.getTrackedData()
@@ -682,6 +697,15 @@ class iintGUI(QtGui.QMainWindow):
             self._trackedDataDict[trackinfo.getName()] = trackinfo
             self.imageTabs.addTab(tdv, trackinfo.getName())
             tdv.pickedTrackedDataPoint.connect(self._setFocusToSpectrum)
+
+    def _addMappedData(self, one, two):
+        mtdmd = iintTrackedDataMapDisplay.iintTrackedDataMapDisplay( \
+                            one, self._control.getRawTrackInformation(one),
+                            two, self._control.getRawTrackInformation(two))
+
+        mtdmd.maperror.connect(self.warning)
+        mtdmd.plot()
+        self.imageTabs.addTab(mtdmd, one + " vs. " + two)
 
     def _saveResultsFile(self):
         name, timesuffix = self._control.proposeSaveFileName()

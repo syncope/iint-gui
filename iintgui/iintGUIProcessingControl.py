@@ -716,6 +716,23 @@ class IintGUIProcessingControl():
                     return
         return trackedInformation(name, value, error, infoholder)
 
+    def getRawTrackInformation(self, name):
+        '''Collect the tracked data given by name.
+           Returns the name, value and error of the tracked parameter,
+           plus a dictionary of the fitted parameters including their error.'''
+        value, error = [], []
+        for datum in self._dataList:
+            try:
+                array = datum.getData(self._rawName).getArray(name)
+                value.append(np.mean(array))
+            except KeyError:
+                try:
+                    value.append(datum.getData(self._rawName).getCustomVar(name))
+                except:
+                    print("Can't retrieve the information of " + str(name))
+                    return
+        return value
+
     def getSignalFitResults(self):
         resultlist = []
         try:
