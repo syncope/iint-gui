@@ -1,0 +1,45 @@
+execlist:
+- read
+- observabledef
+- trapint
+- signalcurvefit
+observabledef:
+  detector_column: exp_c03
+  exposureTime_column: exp_t01
+  id: scannumber
+  input: rawdata
+  monitor_column: sumvfcs_counts
+  motor_column: del
+  output: observable
+  type: iintdefinition
+read:
+  filename: /home/rosem/iintgui/test/test_data/EuPtIn4_remeasured_clean.spc
+  output: rawdata
+  scanlist: 349, 356, 361, 367, 373, 379, 385, 391
+  type: specfilereader
+signalcurvefit:
+  error: None
+  model:
+    m0_:
+      m0_amplitude:
+        value: 2.0
+      m0_center:
+        value: 1.0
+      m0_fwhm:
+        value: 21.0
+      m0_height:
+        value: 22.0
+      m0_sigma:
+        value: 3.0
+      modeltype: gaussianModel
+  result: signalcurvefitresult
+  type: curvefitting
+  useguessing: 1
+  usepreviousresult: 0
+  xdata: del
+  ydata: observable
+trapint:
+  motor: del
+  observable: observable
+  output: trapezoidIntegral
+  type: trapezoidintegration
