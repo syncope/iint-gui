@@ -277,8 +277,8 @@ class IintGUIProcessingControl():
     def getMotorName(self):
         return self._motorName
 
-    def setMotorName(self):
-        self._motorName = self.getRawDataObject().getMotorName()
+    def setMotorName(self, name=None):
+        self._motorName = name
         self._processParameters["observabledef"]["motor_column"] = self._motorName
         self._processParameters["scanprofileplot"]["motor"] = self._motorName
         self._processParameters["bkgselect"]["input"] = [self._despObservableName, self._motorName]
@@ -434,6 +434,10 @@ class IintGUIProcessingControl():
             self._nodespike = False
         if "bkgsubtract" in execOrder:
             self._nobkg = False
+        # set motor name proper from the config !
+        if self._processParameters["observabledef"]["motor_column"] is not None:
+            self.setMotorName(self._processParameters["observabledef"]["motor_column"])
+
         # cleaning up, improper handling of save value -- how to really fix?
         if self._processParameters["observabledef"]["attenuationFactor_column"] is None:
             del self._processParameters["observabledef"]["attenuationFactor_column"]

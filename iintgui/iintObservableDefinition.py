@@ -23,6 +23,7 @@ from . import getUIFile
 
 
 class iintObservableDefinition(QtGui.QWidget):
+    motorName = QtCore.pyqtSignal(str)
     observableDicts = QtCore.pyqtSignal(dict, dict)
     doDespike = QtCore.pyqtSignal(int)
 
@@ -33,6 +34,7 @@ class iintObservableDefinition(QtGui.QWidget):
         self._obsDict = {}
         self._despikeDict = {}
         self._trapintDict = {}
+        self.motorCB.currentIndexChanged.connect(self.setMotor)
         self.observableDetectorCB.currentIndexChanged.connect(self.setObservable)
         self.observableMonitorCB.currentIndexChanged.connect(self.setMonitor)
         self.observableTimeCB.currentIndexChanged.connect(self.setTime)
@@ -47,7 +49,7 @@ class iintObservableDefinition(QtGui.QWidget):
         self.obsDisplayBtn.clicked.connect(self.activateShowScanProfile)
         #~ self.obsDisplayBtn.clicked.connect(self.activateMCA)
         self._observableName = 'observable'
-        self.observableMotorLabel.setToolTip("The motor taken from the scan command for the chosen series of scans.")
+        self.motorCB.setToolTip("Choose the independent axis of the scan display (the 'motor'), e.g. from the scan command.")
         self.label.setToolTip("The shorthand notation for the used formula to calculate\nthe number of counts at the given motor position.")
         self.observableDetectorCB.setToolTip("Chose the detector entry from the scan file information.")
         self.observableMonitorCB.setToolTip("Chose the monitor name from the scan file information.")
@@ -93,7 +95,7 @@ class iintObservableDefinition(QtGui.QWidget):
         #~ self.showMCA.show()
         #~ self.showMCA.setDisabled(False)
 
-    def passInfo(self, dataobject):
+    def passInfo(self, dataobject, defaultmotor=None):
         if dataobject is None:
             self._notEnabled(True)
             return
@@ -103,15 +105,16 @@ class iintObservableDefinition(QtGui.QWidget):
         self._currentdataLabels = dataobject.getLabels()
         self.scantype.setText(dataobject.getScanType())
         self.scantype.setStyleSheet("color: red;")
-        self.observableMotorLabel.setStyleSheet("color: blue;")
-        self._motorname = dataobject.getMotorName()
+        #~ self.observableMotorLabel.setStyleSheet("color: blue;")
+        self._scanmotorname = dataobject.getMotorName()
 
         # now set the texts and labels
-        self.observableMotorLabel.setText(self._motorname)
+        self.motorCB.clear()
         self.observableDetectorCB.clear()
         self.observableMonitorCB.clear()
         self.observableTimeCB.clear()
         self.observableAttFacCB.clear()
+        self.motorCB.addItems(self._currentdataLabels)
         self.observableDetectorCB.addItems(self._currentdataLabels)
         self.observableMonitorCB.addItems(self._currentdataLabels)
         self.observableTimeCB.addItems(self._currentdataLabels)
@@ -120,9 +123,13 @@ class iintObservableDefinition(QtGui.QWidget):
             self.observableAttFacCB.setDisabled(True)
             self._useAttenuationFactor = False
             self.observableAttFaccheck.setChecked(False)
+        if defaultmotor is not None:
+            index = self.motorCB.findText(defaultmotor, QtCore.Qt.MatchExactly)
+            if index >= 0:
+                self.motorCB.setCurrentIndex(index)
 
     def _notEnabled(self, state):
-        self.observableMotorLabel.setDisabled(state)
+        self.motorCB.setDisabled(state)
         self.observableDetectorCB.setDisabled(state)
         self.observableMonitorCB.setDisabled(state)
         self.observableTimeCB.setDisabled(state)
@@ -143,6 +150,10 @@ class iintObservableDefinition(QtGui.QWidget):
         # creates trouble at reset 
         self.observableAttFacCB.setDisabled(self._useAttenuationFactor)
         self._useAttenuationFactor = not self._useAttenuationFactor
+
+    def setMotor(self, motorindex):
+        self._motorname = self._currentdataLabels[motorindex]
+        self.motorName.emit(self._motorname)
 
     def setObservable(self, obsindex):
         self._detname = self._currentdataLabels[obsindex]
@@ -195,8 +206,10 @@ class iintObservableDefinition(QtGui.QWidget):
         self.observableDicts.emit(self._obsDict, self._despikeDict)
 
     def setParameterDicts(self, obsDict, despDict):
-        self.observableMotorLabel.setStyleSheet("color: blue;")
-        self.observableMotorLabel.setText(obsDict["motor_column"])
+        index = self.motorCB.findText(obsDict["motor_column"], QtCore.Qt.MatchExactly)
+        if index >= 0:
+            self.motorCB.setCurrentIndex(index)
+
         # first get index of element
         index = self.observableDetectorCB.findText(obsDict["detector_column"], QtCore.Qt.MatchExactly)
         if index >= 0:
@@ -211,7 +224,7 @@ class iintObservableDefinition(QtGui.QWidget):
             self.observableTimeCB.setCurrentIndex(index)
 
         try:
-            index = self.observableTimeCB.findText(obsDict["attenuationFactor_column"], QtCore.Qt.MatchExactly)
+            index = self.observableAttFacCB.findText(obsDict["attenuationFactor_column"], QtCore.Qt.MatchExactly)
             if index >= 0:
                 self.observableAttFacCB.setCurrentIndex(index)
                 self.observableAttFaccheck.setChecked(True)
