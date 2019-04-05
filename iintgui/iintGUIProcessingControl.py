@@ -275,10 +275,11 @@ class IintGUIProcessingControl():
         return self._rawName
 
     def getMotorName(self):
+        print("[iGUIPC]:: motor name: " + str(self._motorName))
         return self._motorName
 
-    def setMotorName(self):
-        self._motorName = self.getRawDataObject().getMotorName()
+    def setMotorName(self, name=None):
+        self._motorName = name
         self._processParameters["observabledef"]["motor_column"] = self._motorName
         self._processParameters["scanprofileplot"]["motor"] = self._motorName
         self._processParameters["bkgselect"]["input"] = [self._despObservableName, self._motorName]
@@ -439,6 +440,8 @@ class IintGUIProcessingControl():
             del self._processParameters["observabledef"]["attenuationFactor_column"]
         if "finalize" in execOrder:
             self._cleanUpTrackedData()
+        print("loaded: " + str(self._processParameters["observabledef"]["motor_column"]))
+            
         return execOrder
 
     def saveConfig(self, filename):
@@ -534,12 +537,15 @@ class IintGUIProcessingControl():
         return self._processParameters["read"]
 
     def getOBSDict(self):
+        print("obsdict; " + str(self._processParameters["observabledef"]["motor_column"]))
+
         return self._processParameters["observabledef"]
 
     def setOBSDict(self, obsdic):
         self._processParameters["observabledef"] = iintdefinition.iintdefinition().getProcessDictionary()
         for k, v in obsdic.items():
             self._processParameters["observabledef"][k] = v
+        print("settubg obsdict:??? "  + str(self._processParameters["observabledef"]["motor_column"]))
 
     def getDESDict(self):
         if self._nodespike:

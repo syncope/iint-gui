@@ -104,6 +104,7 @@ class iintGUI(QtGui.QMainWindow):
         self._obsDef = iintObservableDefinition.iintObservableDefinition()
         self._obsDef.doDespike.connect(self._control.useDespike)
         self._obsDef.showScanProfile.clicked.connect(self._runScanProfiles)
+        self._obsDef.motorName.connect(self.setMotorName)
         self._mcaplot = iintMCADialog.iintMCADialog(parent=self)
         self._mcaplot.hide()
 
@@ -328,6 +329,7 @@ class iintGUI(QtGui.QMainWindow):
         else:
             return
         if "observabledef" in runlist:
+            print("from CONFIG:, get : " + str(self._control.getOBSDict()))
             self._obsDef.setParameterDicts(self._control.getOBSDict(), self._control.getDESDict())
             self.runObservable(self._control.getOBSDict(), self._control.getDESDict())
             self._obsDef.activateShowScanProfile()
@@ -368,10 +370,13 @@ class iintGUI(QtGui.QMainWindow):
             self.warning("There are different motor names in the selection!\n Can't continue, please correct!")
             return
 
-        self._control.setMotorName()
         # pass info to the observable definition part
         self._obsDef.passInfo(self._control.getRawDataObject())
         self.message("... done.\n")
+
+    def setMotorName(self, name):
+        print("iGUI:: motorname: " + str(name))
+        self._control.setMotorName(name)
 
     def runObservable(self, obsDict, despDict, reset=True):
         if obsDict != self._control.getOBSDict():
