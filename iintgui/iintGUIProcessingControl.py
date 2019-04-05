@@ -275,7 +275,6 @@ class IintGUIProcessingControl():
         return self._rawName
 
     def getMotorName(self):
-        print("[iGUIPC]:: motor name: " + str(self._motorName))
         return self._motorName
 
     def setMotorName(self, name=None):
@@ -435,13 +434,15 @@ class IintGUIProcessingControl():
             self._nodespike = False
         if "bkgsubtract" in execOrder:
             self._nobkg = False
+        # set motor name proper from the config !
+        if self._processParameters["observabledef"]["motor_column"] is not None:
+            self.setMotorName(self._processParameters["observabledef"]["motor_column"])
+
         # cleaning up, improper handling of save value -- how to really fix?
         if self._processParameters["observabledef"]["attenuationFactor_column"] is None:
             del self._processParameters["observabledef"]["attenuationFactor_column"]
         if "finalize" in execOrder:
             self._cleanUpTrackedData()
-        print("loaded: " + str(self._processParameters["observabledef"]["motor_column"]))
-            
         return execOrder
 
     def saveConfig(self, filename):
@@ -537,15 +538,12 @@ class IintGUIProcessingControl():
         return self._processParameters["read"]
 
     def getOBSDict(self):
-        print("obsdict; " + str(self._processParameters["observabledef"]["motor_column"]))
-
         return self._processParameters["observabledef"]
 
     def setOBSDict(self, obsdic):
         self._processParameters["observabledef"] = iintdefinition.iintdefinition().getProcessDictionary()
         for k, v in obsdic.items():
             self._processParameters["observabledef"][k] = v
-        print("settubg obsdict:??? "  + str(self._processParameters["observabledef"]["motor_column"]))
 
     def getDESDict(self):
         if self._nodespike:

@@ -321,7 +321,6 @@ class iintGUI(QtGui.QMainWindow):
         # reset logic is screwed up
         # first load the config into the actual description
         runlist = self._control.loadConfig(self._procconf)
-
         # the next step is to set the gui up to reflect all the new values
         if "read" in runlist:
             self._sfrGUI.setParameterDict(self._control.getSFRDict())
@@ -329,7 +328,6 @@ class iintGUI(QtGui.QMainWindow):
         else:
             return
         if "observabledef" in runlist:
-            print("from CONFIG:, get : " + str(self._control.getOBSDict()))
             self._obsDef.setParameterDicts(self._control.getOBSDict(), self._control.getDESDict())
             self.runObservable(self._control.getOBSDict(), self._control.getDESDict())
             self._obsDef.activateShowScanProfile()
@@ -357,7 +355,6 @@ class iintGUI(QtGui.QMainWindow):
         self._fileInfo.setNames(filereaderdict["filename"], filereaderdict["scanlist"])
         self._control.setSpecFile(filereaderdict["filename"], filereaderdict["scanlist"])
         self.message("Reading spec file: " + str(filereaderdict["filename"]))
-
         sfr = self._control.createAndInitialize(filereaderdict)
         self._control.createDataList(sfr.getData(), self._control.getRawDataName())
         # check for MCA! 
@@ -369,13 +366,11 @@ class iintGUI(QtGui.QMainWindow):
         if check:
             self.warning("There are different motor names in the selection!\n Can't continue, please correct!")
             return
-
         # pass info to the observable definition part
-        self._obsDef.passInfo(self._control.getRawDataObject())
+        self._obsDef.passInfo(self._control.getRawDataObject(), self._control.getMotorName())
         self.message("... done.\n")
 
     def setMotorName(self, name):
-        print("iGUI:: motorname: " + str(name))
         self._control.setMotorName(name)
 
     def runObservable(self, obsDict, despDict, reset=True):

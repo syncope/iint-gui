@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>575</width>
-    <height>359</height>
+    <width>493</width>
+    <height>313</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -17,7 +17,7 @@
    <item row="0" column="0">
     <widget class="QGroupBox" name="groupBox">
      <property name="title">
-      <string>Observable</string>
+      <string>Signal definition</string>
      </property>
      <layout class="QGridLayout" name="gridLayout">
       <item row="0" column="0">
@@ -78,7 +78,7 @@
            </font>
           </property>
           <property name="text">
-           <string>obs = detector * mean(monitor)/monitor/time</string>
+           <string>intensity(x) = detector * mean(monitor)/monitor/time</string>
           </property>
          </widget>
         </item>
@@ -87,7 +87,7 @@
           <item>
            <widget class="QLabel" name="label_3">
             <property name="text">
-             <string>motor</string>
+             <string>x-axis (motor)</string>
             </property>
            </widget>
           </item>

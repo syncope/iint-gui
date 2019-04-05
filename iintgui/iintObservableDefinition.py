@@ -95,7 +95,7 @@ class iintObservableDefinition(QtGui.QWidget):
         #~ self.showMCA.show()
         #~ self.showMCA.setDisabled(False)
 
-    def passInfo(self, dataobject):
+    def passInfo(self, dataobject, defaultmotor=None):
         if dataobject is None:
             self._notEnabled(True)
             return
@@ -123,6 +123,10 @@ class iintObservableDefinition(QtGui.QWidget):
             self.observableAttFacCB.setDisabled(True)
             self._useAttenuationFactor = False
             self.observableAttFaccheck.setChecked(False)
+        if defaultmotor is not None:
+            index = self.motorCB.findText(defaultmotor, QtCore.Qt.MatchExactly)
+            if index >= 0:
+                self.motorCB.setCurrentIndex(index)
 
     def _notEnabled(self, state):
         self.motorCB.setDisabled(state)
@@ -203,8 +207,6 @@ class iintObservableDefinition(QtGui.QWidget):
 
     def setParameterDicts(self, obsDict, despDict):
         index = self.motorCB.findText(obsDict["motor_column"], QtCore.Qt.MatchExactly)
-        print("setting: find the motor, index is: " +str(index))
-        print(" the dict says: " + str(obsDict["motor_column"]))
         if index >= 0:
             self.motorCB.setCurrentIndex(index)
 
