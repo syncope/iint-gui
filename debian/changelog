@@ -1,3 +1,9 @@
+iintgui (0.9.0-1+deb9u5~fsec) stretch; urgency=low
+
+  * Feature addition: Freely configurable x-axis (aka motor).
+
+ -- Christoph Rosemann <christoph.rosemann@desy.de>  Fri, 5 Apr 2019 22:10:00 +0100
+
 iintgui (0.8.0-1+deb9u5~fsec) stretch; urgency=low
 
   * Large number of feature additions:
