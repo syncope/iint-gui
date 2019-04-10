@@ -28,6 +28,7 @@ pg.setConfigOption('foreground', 'k')
 from . import iintGUIProcessingControl
 try:
     from adapt.processes import specfilereader
+    from adapt.processes import fiofilereader
 except ImportError:
     print("[iintGUI]:: adapt is not available; please install or nothing will work.")
     pass
@@ -63,6 +64,7 @@ class iintGUI(QtGui.QMainWindow):
 
         self.actionNew.triggered.connect(self._askReset)
         self.action_Open_SPEC_file.triggered.connect(self.showSFRGUI)
+        self.actionOpen_FIO_files.triggered.connect(self.showFFRGUI)
         self.actionOpen_file.triggered.connect(self.chooseAndLoadConfig)
         self.actionSave_file.triggered.connect(self._saveConfig)
         self.actionExit.triggered.connect(self._closeApp)
@@ -101,6 +103,7 @@ class iintGUI(QtGui.QMainWindow):
         self._fileInfo = fileInfo.FileInfo()
         self._outDir = outputDir.OutputDir(self._control.getOutputDirectory())
         self._sfrGUI = specfilereader.specfilereaderGUI()
+        self._ffrGUI = fiofilereader.fiofilereaderGUI()
         self._obsDef = iintObservableDefinition.iintObservableDefinition()
         self._obsDef.doDespike.connect(self._control.useDespike)
         self._obsDef.showScanProfile.clicked.connect(self._runScanProfiles)
@@ -303,6 +306,9 @@ class iintGUI(QtGui.QMainWindow):
     def showSFRGUI(self):
         self._sfrGUI.show()
 
+    def showFFRGUI(self):
+        self._ffrGUI.show()
+
     def chooseAndLoadConfig(self):
         try:
             prev = self._file
@@ -321,8 +327,10 @@ class iintGUI(QtGui.QMainWindow):
         # reset logic is screwed up
         # first load the config into the actual description
         runlist = self._control.loadConfig(self._procconf)
+        print(" from config: runlist is: \n" + str(runlist))
         # the next step is to set the gui up to reflect all the new values
-        if "read" in runlist:
+        if "specread" in runlist:
+            # check the type !
             self._sfrGUI.setParameterDict(self._control.getSFRDict())
             self.runFileReader()
         else:
@@ -350,8 +358,13 @@ class iintGUI(QtGui.QMainWindow):
         self._signalHandling.activateConfiguration()
         self._inspectAnalyze.activate()
 
-    def runFileReader(self):
+    def runFileReader(self, reader=None):
         filereaderdict = self._sfrGUI.getParameterDict()
+        if reader == "spec" or reader == None:
+            filereaderdict = self._sfrGUI.getParameterDict()
+        elif reader == "fio":
+            filereaderdict = self._ffrGUI.getParameterDict()
+
         self._fileInfo.setNames(filereaderdict["filename"], filereaderdict["scanlist"])
         self._control.setSpecFile(filereaderdict["filename"], filereaderdict["scanlist"])
         self.message("Reading spec file: " + str(filereaderdict["filename"]))

@@ -6,7 +6,7 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>830</width>
+    <width>1551</width>
     <height>1024</height>
    </rect>
   </property>
@@ -61,7 +61,7 @@
         <rect>
          <x>0</x>
          <y>0</y>
-         <width>82</width>
+         <width>803</width>
          <height>955</height>
         </rect>
        </property>
@@ -75,7 +75,7 @@
     <rect>
      <x>0</x>
      <y>0</y>
-     <width>830</width>
+     <width>1551</width>
      <height>26</height>
     </rect>
    </property>
@@ -85,6 +85,7 @@
     </property>
     <addaction name="actionNew"/>
     <addaction name="action_Open_SPEC_file"/>
+    <addaction name="actionOpen_FIO_files"/>
     <addaction name="actionOpen_file"/>
     <addaction name="actionSave_file"/>
     <addaction name="separator"/>
@@ -95,6 +96,7 @@
      <string>&amp;Information</string>
     </property>
     <addaction name="action_Config_File"/>
+    <addaction name="actionFIO_File_s"/>
     <addaction name="action_Spec_File"/>
     <addaction name="action_Fit_Results"/>
     <addaction name="action_Results_File"/>
@@ -149,7 +151,7 @@
   </action>
   <action name="action_Spec_File">
    <property name="text">
-    <string>&amp;Spec File</string>
+    <string>&amp;SPEC File</string>
    </property>
   </action>
   <action name="action_Fit_Results">
@@ -178,6 +180,16 @@
    </property>
    <property name="shortcut">
     <string>Ctrl+A</string>
+   </property>
+  </action>
+  <action name="actionOpen_FIO_files">
+   <property name="text">
+    <string>Open FIO file(s)</string>
+   </property>
+  </action>
+  <action name="actionFIO_File_s">
+   <property name="text">
+    <string>FIO File(s)</string>
    </property>
   </action>
  </widget>

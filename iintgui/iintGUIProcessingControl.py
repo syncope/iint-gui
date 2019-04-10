@@ -28,6 +28,7 @@ try:
     from adapt import processingConfiguration
     
     from adapt.processes import specfilereader
+    from adapt.processes import fiofilereader
     from adapt.processes import iintdefinition
     from adapt.processes import filter1d
     from adapt.processes import subsequenceselection
@@ -75,7 +76,8 @@ class IintGUIProcessingControl():
         self._fittedSignalName = "signalcurvefitresult"
         self._fitSignalPointsName = "signalFitPoints"
         self._trapintName = "trapezoidIntegral"
-        self._processNames = ["read",
+        self._processNames = ["specread",
+                              "fioread",
                               "observabledef",
                               "despike",
                               "bkgselect",
@@ -168,7 +170,8 @@ class IintGUIProcessingControl():
                 pass
 
     def _setupProcessParameters(self):
-        self._processParameters["read"] = specfilereader.specfilereader().getProcessDictionary()
+        self._processParameters["specread"] = specfilereader.specfilereader().getProcessDictionary()
+        self._processParameters["fioread"] = fiofilereader.fiofilereader().getProcessDictionary()
         self._processParameters["observabledef"] = iintdefinition.iintdefinition().getProcessDictionary()
         self._processParameters["despike"] = filter1d.filter1d().getProcessDictionary()
         self._processParameters["bkgselect"] = subsequenceselection.subsequenceselection().getProcessDictionary()
@@ -188,7 +191,8 @@ class IintGUIProcessingControl():
         self._fitmodels = curvefitting.curvefitting().getFitModels()
 
     def _setupDefaultNames(self):
-        self._processParameters["read"]["output"] = self._rawName
+        self._processParameters["specread"]["output"] = self._rawName
+        self._processParameters["fioread"]["output"] = self._rawName
         # from out to in:
         self._processParameters["observabledef"]["input"] = self._rawName
         self._processParameters["observabledef"]["output"] = self._observableName
@@ -446,9 +450,10 @@ class IintGUIProcessingControl():
         return execOrder
 
     def saveConfig(self, filename):
-        execlist = ["read", "observabledef"]
+        execlist = ["specread", "observabledef"]
         processDict = {}
-        processDict["read"] = self.getSFRDict()
+        processDict["specread"] = self.getSFRDict()
+        processDict["fioread"] = self.getFFRDict()
         processDict["observabledef"] = self.getOBSDict()
         try:
             if processDict["observabledef"]["attenuationFactor_column"] is None:
@@ -498,12 +503,12 @@ class IintGUIProcessingControl():
         try:
             import os.path
             # TODO: fix the removal of path!
-            basename = os.path.basename(self._processParameters["read"]["filename"]).split('.')[0]
+            basename = os.path.basename(self._processParameters["specread"]["filename"]).split('.')[0]
         except:
             return
         filenamestart = os.path.join(self._outputDirectory, basename)
         # decompose the scanlist parameters
-        scanlist = str(self._processParameters["read"]["scanlist"])
+        scanlist = str(self._processParameters["specread"]["scanlist"])
         stride = None
         retlist = []
         if scanlist.find(':') != -1:
@@ -535,7 +540,7 @@ class IintGUIProcessingControl():
         return filenamestart + "_S" + str(startnumber) + "E" + str(endnumber) + stridesuffix + suffix, datetime.datetime.now().strftime("_%Y%m%d-%Hh%M")
 
     def getSFRDict(self):
-        return self._processParameters["read"]
+        return self._processParameters["specread"]
 
     def getOBSDict(self):
         return self._processParameters["observabledef"]
@@ -564,8 +569,8 @@ class IintGUIProcessingControl():
             return {}
 
     def setSpecFile(self, name, scanlist):
-        self._processParameters["read"]["filename"] = name
-        self._processParameters["read"]["scanlist"] = scanlist
+        self._processParameters["specread"]["filename"] = name
+        self._processParameters["specread"]["scanlist"] = scanlist
         self._scanlist = self._expandList(scanlist)
 
     def getScanlist(self):
