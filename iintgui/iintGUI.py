@@ -155,8 +155,10 @@ class iintGUI(QtGui.QMainWindow):
         self.verticalLayout.addWidget(self._inspectAnalyze)
         self.verticalLayout.addWidget(self._loggingBox)
 
-        self._sfrGUI.valuesSet.connect(self._resetForSFR)
+        self._sfrGUI.valuesSet.connect(self._resetForFR)
+        self._ffrGUI.valuesSet.connect(self._resetForFR)
         self._sfrGUI.valuesSet.connect(self.runFileReader)
+        self._ffrGUI.valuesSet.connect(self.runFileReader)
         self._obsDef.observableDicts.connect(self.runObservable)
         self._bkgHandling.bkgDicts.connect(self.runBkgProcessing)
         self._simpleImageView.printButton.clicked.connect(self._printDisplayedData)
@@ -205,7 +207,7 @@ class iintGUI(QtGui.QMainWindow):
         self._inspectAnalyze.reset()
         self.message("Cleared all data and processing configuration.")
 
-    def _resetForSFR(self):
+    def _resetForFR(self):
         self._resetInternals()
         self._simpleImageView.reset()
         self._overlayView.reset()
@@ -327,7 +329,6 @@ class iintGUI(QtGui.QMainWindow):
         # reset logic is screwed up
         # first load the config into the actual description
         runlist = self._control.loadConfig(self._procconf)
-        print(" from config: runlist is: \n" + str(runlist))
         # the next step is to set the gui up to reflect all the new values
         if "specread" in runlist:
             # check the type !
@@ -359,17 +360,20 @@ class iintGUI(QtGui.QMainWindow):
         self._inspectAnalyze.activate()
 
     def runFileReader(self, reader=None):
-        filereaderdict = self._sfrGUI.getParameterDict()
         if reader == "spec" or reader == None:
             filereaderdict = self._sfrGUI.getParameterDict()
+            self._fileInfo.setNames(filereaderdict["filename"], filereaderdict["scanlist"])
+            self._control.setSpecFile(filereaderdict["filename"], filereaderdict["scanlist"])
+            self.message("Reading spec file: " + str(filereaderdict["filename"]))
+            sfr = self._control.createAndInitialize(filereaderdict)
+            self._control.createDataList(sfr.getData(), self._control.getRawDataName())
         elif reader == "fio":
             filereaderdict = self._ffrGUI.getParameterDict()
-
-        self._fileInfo.setNames(filereaderdict["filename"], filereaderdict["scanlist"])
-        self._control.setSpecFile(filereaderdict["filename"], filereaderdict["scanlist"])
-        self.message("Reading spec file: " + str(filereaderdict["filename"]))
-        sfr = self._control.createAndInitialize(filereaderdict)
-        self._control.createDataList(sfr.getData(), self._control.getRawDataName())
+            #~ self._fileInfo.setNames(filereaderdict["filename"], filereaderdict["scanlist"])
+            self._control.setFioFile(filereaderdict["filenames"])
+            self.message("Reading fio file(s): " + str(filereaderdict["filenames"]))
+            ffr = self._control.createAndBulkExecute(filereaderdict)
+            self._control.createDataList(ffr.getData(), self._control.getRawDataName())
         # check for MCA! 
         #~ mcaDict = self._control.getMCA()
         #~ if mcaDict != {}:

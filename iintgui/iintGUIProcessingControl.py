@@ -398,6 +398,7 @@ class IintGUIProcessingControl():
         proc = self._procBuilder.createProcessFromDictionary(pDict)
         proc.initialize()
         proc.loopExecuteWithOverwrite(self._dataList, emitProgress=True)
+        return proc
 
     def processAll(self, pDict):
         if pDict is None:
@@ -572,6 +573,11 @@ class IintGUIProcessingControl():
         self._processParameters["specread"]["filename"] = name
         self._processParameters["specread"]["scanlist"] = scanlist
         self._scanlist = self._expandList(scanlist)
+
+    def setFioFile(self, names):
+        self._processParameters["fioread"]["filenames"] = names
+        # am i gonna do this?
+        self._scanlist = None #
 
     def getScanlist(self):
         return self._scanlist
