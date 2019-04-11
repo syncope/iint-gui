@@ -189,7 +189,7 @@ class iintDataPlot(QtGui.QDialog):
             self._yaxisname = "Signal intensity"
         self._xaxisname = str(self._motorName)
         self.viewPart.setLabel('left', self._yaxisname)
-        self.viewPart.setLabel('bottom', self._yaxisname)
+        self.viewPart.setLabel('bottom', self._xaxisname)
 
     def getPrintData(self):
         # returns straightforward/simple dictionary
