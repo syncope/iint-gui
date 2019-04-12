@@ -744,7 +744,6 @@ class iintGUI(QtGui.QMainWindow):
         self.message("Saving results files, might take a while ...")
         self._control.processAll(finalDict)
         self._resultFileName = finalDict["outfilename"]
-
         filename = self._control.getResultBaseFilename()
         self._control.processScanProfiles(filename + "_scanProfiles.pdf")
         self._control.processTrackedColumnsControlPlots(filename  + "_trackedColumnsPlots.pdf")

@@ -98,15 +98,17 @@ class IintGUIProcessingControl():
         self._setupProcessParameters()
         self._setupDefaultNames()
         self._outputDirectory = None
+        self._trackedData = []
 
     def resetAll(self):
         for elem in self._dataList:
             elem.clearAll()
         del self._dataList[:]
-        self._dataList = []
+        self._dataList.clear()
         self._mcaDict.clear()
         del self._processList[:]
-        self._processList = []
+        self._trackedData.clear()
+        self._processList.clear()
         self._motorName = ""
         self._rawName = "rawdata"
         self._observableName = "observable"
@@ -267,13 +269,15 @@ class IintGUIProcessingControl():
         self._processParameters["scanplot"]["trapintname"] = self._trapintName
 
     def _cleanUpTrackedData(self):
-        removeNames = ['scannumber', 'signalcurvefitresult', 'trapezoidIntegral', 'trapezoidIntegral_stderr']
-        for name in removeNames:
-            try:
-                self._processParameters["finalize"]["trackedData"].remove(name)
-            except:
-                continue
-        self._processParameters["inspection"]["trackedData"] = self._processParameters["finalize"]["trackedData"]
+        self._trackedData.clear()
+        # tbr
+        #~ removeNames = ['scannumber', 'signalcurvefitresult', 'trapezoidIntegral', 'trapezoidIntegral_stderr']
+        #~ for name in removeNames:
+            #~ try:
+                #~ self._processParameters["finalize"]["trackedData"].remove(name)
+            #~ except:
+                #~ continue
+        #~ self._processParameters["inspection"]["trackedData"] = self._processParameters["finalize"]["trackedData"]
 
     def getRawDataName(self):
         return self._rawName
@@ -678,19 +682,25 @@ class IintGUIProcessingControl():
         return self._processParameters["trapint"]
 
     def getFinalizingDict(self):
-        tdl = ['scannumber', self._fittedSignalName, self._trapintName, self._trapintName+"_stderr"] + self._processParameters["finalize"]["trackedData"]
-        self._processParameters["finalize"]["trackedData"] = tdl
+        try:
+            if 'scannumber' not in self._processParameters["finalize"]["trackedData"]:
+                self._processParameters["finalize"]["trackedData"] = \
+                    ['scannumber', self._fittedSignalName, self._trapintName, self._trapintName+"_stderr"] +  self._processParameters["finalize"]["trackedData"]
+        except TypeError:
+            self._processParameters["finalize"]["trackedData"] =  ['scannumber', self._fittedSignalName, self._trapintName, self._trapintName+"_stderr"]
         return self._processParameters["finalize"]
 
     def setTrackedData(self, namelist):
+        self._cleanUpTrackedData()
+        self._trackedData = namelist
         self._processParameters["inspection"]["trackedData"] = namelist
         self._processParameters["finalize"]["trackedData"] = namelist
 
     def getTrackedData(self):
-        return self._processParameters["finalize"]["trackedData"]
+        return self._trackedData
 
     def resetTrackedData(self):
-        self._processParameters["finalize"]["trackedData"] = []
+        self._trackedData.clear()
 
     def useBKG(self, value):
         self._nobkg = not value
