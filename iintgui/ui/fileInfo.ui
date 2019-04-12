@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>468</width>
-    <height>75</height>
+    <width>249</width>
+    <height>51</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -27,7 +27,7 @@
           </font>
          </property>
          <property name="text">
-          <string>Spec file:</string>
+          <string>File:</string>
          </property>
         </widget>
        </item>

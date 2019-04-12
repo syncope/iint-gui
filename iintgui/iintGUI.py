@@ -28,6 +28,7 @@ pg.setConfigOption('foreground', 'k')
 from . import iintGUIProcessingControl
 try:
     from adapt.processes import specfilereader
+    from adapt.processes import fiofilereader
 except ImportError:
     print("[iintGUI]:: adapt is not available; please install or nothing will work.")
     pass
@@ -63,6 +64,7 @@ class iintGUI(QtGui.QMainWindow):
 
         self.actionNew.triggered.connect(self._askReset)
         self.action_Open_SPEC_file.triggered.connect(self.showSFRGUI)
+        self.actionOpen_FIO_files.triggered.connect(self.showFFRGUI)
         self.actionOpen_file.triggered.connect(self.chooseAndLoadConfig)
         self.actionSave_file.triggered.connect(self._saveConfig)
         self.actionExit.triggered.connect(self._closeApp)
@@ -99,8 +101,9 @@ class iintGUI(QtGui.QMainWindow):
         self._resetQuestion = resetDialog.ResetDialog()
         self._resetQuestion.resetOK.connect(self._resetAll)
         self._fileInfo = fileInfo.FileInfo()
-        self._outDir = outputDir.OutputDir(self._control.getOutputDirectory())
+        self._outDir = outputDir.OutputDir("Unset")
         self._sfrGUI = specfilereader.specfilereaderGUI()
+        self._ffrGUI = fiofilereader.fiofilereaderGUI()
         self._obsDef = iintObservableDefinition.iintObservableDefinition()
         self._obsDef.doDespike.connect(self._control.useDespike)
         self._obsDef.showScanProfile.clicked.connect(self._runScanProfiles)
@@ -152,8 +155,10 @@ class iintGUI(QtGui.QMainWindow):
         self.verticalLayout.addWidget(self._inspectAnalyze)
         self.verticalLayout.addWidget(self._loggingBox)
 
-        self._sfrGUI.valuesSet.connect(self._resetForSFR)
+        self._sfrGUI.valuesSet.connect(self._resetForFR)
+        self._ffrGUI.valuesSet.connect(self._resetForFR)
         self._sfrGUI.valuesSet.connect(self.runFileReader)
+        self._ffrGUI.valuesSet.connect(self.runFileReader)
         self._obsDef.observableDicts.connect(self.runObservable)
         self._bkgHandling.bkgDicts.connect(self.runBkgProcessing)
         self._simpleImageView.printButton.clicked.connect(self._printDisplayedData)
@@ -202,7 +207,7 @@ class iintGUI(QtGui.QMainWindow):
         self._inspectAnalyze.reset()
         self.message("Cleared all data and processing configuration.")
 
-    def _resetForSFR(self):
+    def _resetForFR(self):
         self._resetInternals()
         self._simpleImageView.reset()
         self._overlayView.reset()
@@ -303,6 +308,9 @@ class iintGUI(QtGui.QMainWindow):
     def showSFRGUI(self):
         self._sfrGUI.show()
 
+    def showFFRGUI(self):
+        self._ffrGUI.show()
+
     def chooseAndLoadConfig(self):
         try:
             prev = self._file
@@ -322,7 +330,8 @@ class iintGUI(QtGui.QMainWindow):
         # first load the config into the actual description
         runlist = self._control.loadConfig(self._procconf)
         # the next step is to set the gui up to reflect all the new values
-        if "read" in runlist:
+        if "specread" in runlist:
+            # check the type !
             self._sfrGUI.setParameterDict(self._control.getSFRDict())
             self.runFileReader()
         else:
@@ -350,13 +359,24 @@ class iintGUI(QtGui.QMainWindow):
         self._signalHandling.activateConfiguration()
         self._inspectAnalyze.activate()
 
-    def runFileReader(self):
-        filereaderdict = self._sfrGUI.getParameterDict()
-        self._fileInfo.setNames(filereaderdict["filename"], filereaderdict["scanlist"])
-        self._control.setSpecFile(filereaderdict["filename"], filereaderdict["scanlist"])
-        self.message("Reading spec file: " + str(filereaderdict["filename"]))
-        sfr = self._control.createAndInitialize(filereaderdict)
-        self._control.createDataList(sfr.getData(), self._control.getRawDataName())
+    def runFileReader(self, reader=None):
+        if reader == "spec" or reader == None:
+            filereaderdict = self._sfrGUI.getParameterDict()
+            self._fileInfo.setNames(filereaderdict["filename"], filereaderdict["scanlist"])
+            self._control.setSpecFile(filereaderdict["filename"], filereaderdict["scanlist"])
+            self.message("Reading spec file: " + str(filereaderdict["filename"]))
+            sfr = self._control.createAndInitialize(filereaderdict)
+            self._control.createDataList(sfr.getData(), self._control.getRawDataName())
+            self._control.setDefaultOutputDirectory(filereaderdict["filename"])
+        elif reader == "fio":
+            filereaderdict = self._ffrGUI.getParameterDict()
+            #~ self._fileInfo.setNames(filereaderdict["filename"], filereaderdict["scanlist"])
+            self._control.setFioFile(filereaderdict["filenames"])
+            self.message("Reading fio file(s): " + str(filereaderdict["filenames"]))
+            ffr = self._control.createAndBulkExecute(filereaderdict)
+            self._control.createDataList(ffr.getData(), self._control.getRawDataName())
+            self._control.setDefaultOutputDirectory(filereaderdict["filenames"][0])
+        self._outDir.setOutputDirectory(self._control.getOutputDirectory())
         # check for MCA! 
         #~ mcaDict = self._control.getMCA()
         #~ if mcaDict != {}:
@@ -724,7 +744,6 @@ class iintGUI(QtGui.QMainWindow):
         self.message("Saving results files, might take a while ...")
         self._control.processAll(finalDict)
         self._resultFileName = finalDict["outfilename"]
-
         filename = self._control.getResultBaseFilename()
         self._control.processScanProfiles(filename + "_scanProfiles.pdf")
         self._control.processTrackedColumnsControlPlots(filename  + "_trackedColumnsPlots.pdf")

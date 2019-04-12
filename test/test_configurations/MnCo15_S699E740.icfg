@@ -37,7 +37,7 @@ despike:
   output: despikedObservable
   type: filter1d
 execlist:
-- read
+- specread
 - observabledef
 - despike
 - bkgselect
@@ -53,7 +53,7 @@ observabledef:
   motor_column: pth
   output: observable
   type: iintdefinition
-read:
+specread:
   filename: /home/rosem/iintgui/test/test_data/MnCo15.spc
   output: rawdata
   scanlist: 699-740
