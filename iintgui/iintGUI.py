@@ -101,7 +101,7 @@ class iintGUI(QtGui.QMainWindow):
         self._resetQuestion = resetDialog.ResetDialog()
         self._resetQuestion.resetOK.connect(self._resetAll)
         self._fileInfo = fileInfo.FileInfo()
-        self._outDir = outputDir.OutputDir(self._control.getOutputDirectory())
+        self._outDir = outputDir.OutputDir("Unset")
         self._sfrGUI = specfilereader.specfilereaderGUI()
         self._ffrGUI = fiofilereader.fiofilereaderGUI()
         self._obsDef = iintObservableDefinition.iintObservableDefinition()
@@ -367,6 +367,7 @@ class iintGUI(QtGui.QMainWindow):
             self.message("Reading spec file: " + str(filereaderdict["filename"]))
             sfr = self._control.createAndInitialize(filereaderdict)
             self._control.createDataList(sfr.getData(), self._control.getRawDataName())
+            self._control.setDefaultOutputDirectory(filereaderdict["filename"])
         elif reader == "fio":
             filereaderdict = self._ffrGUI.getParameterDict()
             #~ self._fileInfo.setNames(filereaderdict["filename"], filereaderdict["scanlist"])
@@ -374,6 +375,8 @@ class iintGUI(QtGui.QMainWindow):
             self.message("Reading fio file(s): " + str(filereaderdict["filenames"]))
             ffr = self._control.createAndBulkExecute(filereaderdict)
             self._control.createDataList(ffr.getData(), self._control.getRawDataName())
+            self._control.setDefaultOutputDirectory(filereaderdict["filenames"][0])
+        self._outDir.setOutputDirectory(self._control.getOutputDirectory())
         # check for MCA! 
         #~ mcaDict = self._control.getMCA()
         #~ if mcaDict != {}:

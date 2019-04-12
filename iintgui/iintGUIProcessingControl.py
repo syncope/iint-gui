@@ -499,6 +499,11 @@ class IintGUIProcessingControl():
             self._outputDirectory = os.path.expanduser('~')
         return self._outputDirectory
 
+    def setDefaultOutputDirectory(self, filename):
+        import os.path
+        defpath = os.path.dirname(filename)
+        self.setOutputDirectory(defpath)
+
     def proposeSaveFileName(self, suffix=''):
         # use the scanlist entries and the input spec file name
         try:
@@ -542,6 +547,9 @@ class IintGUIProcessingControl():
 
     def getSFRDict(self):
         return self._processParameters["specread"]
+
+    def getFFRDict(self):
+        return self._processParameters["fioread"]
 
     def getOBSDict(self):
         return self._processParameters["observabledef"]

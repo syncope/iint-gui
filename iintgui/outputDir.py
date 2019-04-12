@@ -38,3 +38,6 @@ class OutputDir(QtGui.QWidget):
         if newname:
             self.outdir.setText(newname)
             self.newdirectory.emit(newname)
+
+    def setOutputDirectory(self, name):
+        self.outdir.setText(name)
