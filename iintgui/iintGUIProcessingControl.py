@@ -509,14 +509,8 @@ class IintGUIProcessingControl():
         self.setOutputDirectory(defpath)
 
     def proposeSaveFileName(self, suffix=''):
-        # use the scanlist entries and the input spec file name
-        try:
-            import os.path
-            # TODO: fix the removal of path!
-            basename = os.path.basename(self._processParameters["specread"]["filename"]).split('.')[0]
-        except:
-            return
-        filenamestart = os.path.join(self._outputDirectory, basename)
+        import os.path
+        filenamestart = os.path.join(self._outputDirectory, self._outfileName)
         # decompose the scanlist parameters
         scanlist = str(self._processParameters["specread"]["scanlist"])
         stride = None
@@ -548,6 +542,16 @@ class IintGUIProcessingControl():
         else:
             stridesuffix = ''
         return filenamestart + "_S" + str(startnumber) + "E" + str(endnumber) + stridesuffix + suffix, datetime.datetime.now().strftime("_%Y%m%d-%Hh%M")
+
+    def _setOutfileName(self, name):
+        if name == "spec":
+            try:
+                import os.path
+                self._outfileName = os.path.basename(self._processParameters["specread"]["filename"]).split('.')[0]
+            except:
+                return
+        elif name == "fio":
+            self._outfileName = "fiotest"
 
     def getSFRDict(self):
         return self._processParameters["specread"]
@@ -585,9 +589,11 @@ class IintGUIProcessingControl():
         self._processParameters["specread"]["filename"] = name
         self._processParameters["specread"]["scanlist"] = scanlist
         self._scanlist = self._expandList(scanlist)
+        self._setOutfileName("spec")
 
     def setFioFile(self, names):
         self._processParameters["fioread"]["filenames"] = names
+        self._setOutfileName("fio")
         # am i gonna do this?
         self._scanlist = None #
 
