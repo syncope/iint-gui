@@ -361,6 +361,8 @@ class IintGUIProcessingControl():
                 pd.addData("MCA", datum.getMCA())
                 self._mcaDict[datum.getScanNumber()] = datum.getMCA()
             self._dataList.append(pd)
+        # and now create the scan list!
+        self._createScanList()
 
     #~ def checkForMCA(self):
         #~ # search through the list of data and retrieve the indices 
@@ -511,6 +513,7 @@ class IintGUIProcessingControl():
     def proposeSaveFileName(self, suffix=''):
         import os.path
         filenamestart = os.path.join(self._outputDirectory, self._outfileName)
+        # needs distinction between fio and spec !
         # decompose the scanlist parameters
         scanlist = str(self._processParameters["specread"]["scanlist"])
         stride = None
@@ -588,17 +591,22 @@ class IintGUIProcessingControl():
     def setSpecFile(self, name, scanlist):
         self._processParameters["specread"]["filename"] = name
         self._processParameters["specread"]["scanlist"] = scanlist
-        self._scanlist = self._expandList(scanlist)
+        #~ self._scanlist = self._expandList(scanlist)
         self._setOutfileName("spec")
 
     def setFioFile(self, names):
         self._processParameters["fioread"]["filenames"] = names
         self._setOutfileName("fio")
-        # am i gonna do this?
-        self._scanlist = None #
+        #~ self._createScanList()
 
     def getScanlist(self):
         return self._scanlist
+
+    def _createScanList(self):
+        self._scanlist = []
+        for datum in self._dataList:
+            sn = datum.getData(self.getRawDataName()).getScanNumber()
+            self._scanlist.append(sn)
 
     def _expandList(self, somelist):
         scanlist = str(somelist)
