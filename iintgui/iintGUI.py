@@ -435,6 +435,7 @@ class iintGUI(QtGui.QMainWindow):
 
     def doOverlay(self):
         try:
+            self._overlaySelection.passData(self._control.getScanlist())
             self._overlaySelection.show()
         except AttributeError:
             self._overlaySelection = iintOverlaySelection.iintOverlaySelection(datalist=self._control.getScanlist())
