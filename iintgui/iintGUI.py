@@ -200,6 +200,9 @@ class iintGUI(QtGui.QMainWindow):
         try:
             self._trackedDataChoice.reset()
             self._trackedDataChoice.close()
+        except AttributeError:
+            pass
+        try:
             self._overlaySelection.reset()
             self._overlaySelection.close()
         except AttributeError:
@@ -224,6 +227,11 @@ class iintGUI(QtGui.QMainWindow):
             self._trackedDataChoice.reset()
             self._trackedDataChoice.close()
             self._trackedDataChoice = 0
+        except AttributeError:
+            pass
+        try:
+            self._overlaySelection.reset()
+            self._overlaySelection.close()
         except AttributeError:
             pass
         self.message("Cleared all data and processing configuration.")
