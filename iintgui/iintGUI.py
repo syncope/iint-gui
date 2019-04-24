@@ -69,6 +69,7 @@ class iintGUI(QtGui.QMainWindow):
         self.actionSave_file.triggered.connect(self._saveConfig)
         self.actionExit.triggered.connect(self._closeApp)
         self.action_Config_File.triggered.connect(self._showConfig)
+        self.actionFIO_File_s.triggered.connect(self._showFIOFiles)
         self.action_Spec_File.triggered.connect(self._showSpecFile)
         self.action_Fit_Results.triggered.connect(self._showFitResults)
         self.action_Results_File.triggered.connect(self._showResultsFile)
@@ -268,7 +269,19 @@ class iintGUI(QtGui.QMainWindow):
         try:
             self._widgetList.append(showFileContents.ShowFileContents(open(self._sfrGUI.getParameterDict()["filename"]).read()))
         except TypeError:
-            self.message("Can't show spec file, since none has been selected yet.\nOpen a spec file file first (see File Menu).\n")
+            self.message("Can't show spec file, since none has been selected yet.\nOpen a spec file first (see File Menu).\n")
+        return
+
+    def _showFIOFiles(self):
+        try:
+            text = ''
+            for fiofile in self._ffrGUI.getParameterDict()["filenames"]:
+                text += "filename: " + str(fiofile)
+                text += open(fiofile).read()
+                text += 80*"*" + "\n" + 80*"*" + "\n" + 80*"*" + "\n\n\n"
+            self._widgetList.append(showFileContents.ShowFileContents(text))
+        except TypeError:
+            self.message("Can't show fio file(s), since none has been selected yet.\nFirst open fio file(s) (see File Menu).\n")
         return
 
     def _showResultsFile(self):
