@@ -99,6 +99,7 @@ class IintGUIProcessingControl():
         self._setupDefaultNames()
         self._outputDirectory = None
         self._trackedData = []
+        self._readerType = ""
 
     def resetAll(self):
         for elem in self._dataList:
@@ -121,6 +122,7 @@ class IintGUIProcessingControl():
         self._setupProcessParameters()
         self._setupDefaultNames()
         self.resetTrackedData()
+        self._readerType = ""
 
     def resetRAWdata(self):
         for elem in self._dataList:
@@ -430,9 +432,16 @@ class IintGUIProcessingControl():
         self._processParameters["inspection"]["outfilename"] = name
         self.processAll(self._processParameters["inspection"])
 
+    def setReaderType(self, rtype=""):
+        self._readerType = rtype
+
     def loadConfig(self, processConfig):
         self._procRunList.clear()
         execOrder = processConfig.getOrderOfExecution()
+        if "fioread" in execOrder:
+            self._readerType = "fio"
+        elif "specread" in execOrder:
+            self._readerType = "spec"
         pDefs = processConfig.getProcessDefinitions()
         for proc in execOrder:
             if proc in self._processNames:
@@ -457,7 +466,12 @@ class IintGUIProcessingControl():
         return execOrder
 
     def saveConfig(self, filename):
-        execlist = ["specread", "observabledef"]
+        if self._readerType == "spec":
+            execlist = ["specread", "observabledef"]
+        elif  self._readerType == "fio":
+            execlist = ["fioread", "observabledef"]
+        else:
+            return
         processDict = {}
         processDict["specread"] = self.getSFRDict()
         processDict["fioread"] = self.getFFRDict()

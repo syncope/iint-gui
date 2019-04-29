@@ -276,7 +276,7 @@ class iintGUI(QtGui.QMainWindow):
         try:
             text = ''
             for fiofile in self._ffrGUI.getParameterDict()["filenames"]:
-                text += "filename: " + str(fiofile)
+                text += "Filename: " + str(fiofile)
                 text += open(fiofile).read()
                 text += 80*"*" + "\n" + 80*"*" + "\n" + 80*"*" + "\n\n\n"
             self._widgetList.append(showFileContents.ShowFileContents(text))
@@ -354,7 +354,10 @@ class iintGUI(QtGui.QMainWindow):
         if "specread" in runlist:
             # check the type !
             self._sfrGUI.setParameterDict(self._control.getSFRDict())
-            self.runFileReader()
+            self.runFileReader("spec")
+        elif "fioread" in runlist:
+            self._ffrGUI.setParameterDict(self._control.getFFRDict())
+            self.runFileReader("fio")
         else:
             return
         if "observabledef" in runlist:
@@ -382,6 +385,7 @@ class iintGUI(QtGui.QMainWindow):
 
     def runFileReader(self, reader=None):
         if reader == "spec" or reader == None:
+            self._control.setReaderType("spec")
             filereaderdict = self._sfrGUI.getParameterDict()
             self._fileInfo.setNames(filereaderdict["filename"], filereaderdict["scanlist"])
             self._control.setSpecFile(filereaderdict["filename"], filereaderdict["scanlist"])
@@ -390,6 +394,7 @@ class iintGUI(QtGui.QMainWindow):
             self._control.createDataList(sfr.getData(), self._control.getRawDataName())
             self._control.setDefaultOutputDirectory(filereaderdict["filename"])
         elif reader == "fio":
+            self._control.setReaderType("fio")
             filereaderdict = self._ffrGUI.getParameterDict()
             #~ self._fileInfo.setNames(filereaderdict["filename"], filereaderdict["scanlist"])
             self._control.setFioFile(filereaderdict["filenames"])
