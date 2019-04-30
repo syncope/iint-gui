@@ -198,6 +198,7 @@ class iintGUI(QtGui.QMainWindow):
         self._signalHandling.deactivateFitting()
         self._control.resetAll()
         self._sfrGUI.reset()
+        self._ffrGUI.reset()
         self.resetTabs()
         try:
             self._trackedDataChoice.reset()
@@ -719,9 +720,9 @@ class iintGUI(QtGui.QMainWindow):
             self._trackedDataChoice = iintTrackedDataChoice.iintTrackedDataChoice(rawScanData, self._control.getTrackedData())
             self._trackedDataMap = trackedDataMap.TrackedDataMap()
             self._trackedDataMap.trackeddatatomap.connect(self._addMappedData)
-        self._trackedDataChoice.trackedData.connect(self._control.setTrackedData)
-        self._trackedDataChoice.trackedData.connect(self._checkTrackMapActivation)
-        self._obsDef.maptracks.clicked.connect(self._trackedDataMap.show)
+            self._trackedDataChoice.trackedData.connect(self._control.setTrackedData)
+            self._trackedDataChoice.trackedData.connect(self._checkTrackMapActivation)
+            self._obsDef.maptracks.clicked.connect(self._trackedDataMap.show)
 
     def _checkTrackMapActivation(self, outlist):
         if len(outlist) > 0:

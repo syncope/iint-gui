@@ -733,7 +733,9 @@ class IintGUIProcessingControl():
             self._processParameters["finalize"]["trackedData"] =  ['scannumber', self._fittedSignalName, self._trapintName, self._trapintName+"_stderr"]
         return self._processParameters["finalize"]
 
-    def setTrackedData(self, namelist):
+    def setTrackedData(self, namelist=[]):
+        if namelist is []:
+            return
         self._cleanUpTrackedData()
         self._trackedData = namelist
         self._processParameters["inspection"]["trackedData"] = namelist
