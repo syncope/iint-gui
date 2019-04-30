@@ -173,7 +173,8 @@ class iintGUI(QtGui.QMainWindow):
     def _unresize(self):
         # this is the place any resizing code could/should go
         # i can't seem to get it to work, though
-        self.showNormal()
+        #~ self.showNormal()
+        pass
 
     def _resetInternals(self):
         self._motorname = ""
