@@ -529,46 +529,61 @@ class IintGUIProcessingControl():
         filenamestart = os.path.join(self._outputDirectory, self._outfileName)
         # needs distinction between fio and spec !
         # decompose the scanlist parameters
-        scanlist = str(self._processParameters["specread"]["scanlist"])
-        stride = None
-        retlist = []
-        if scanlist.find(':') != -1:
-            stride = int(scanlist.split(':')[-1])
-            scanlist = scanlist.split(':')[0]
-        scanlist = scanlist.split('[')[-1]
-        scanlist = scanlist.split(']')[0]
-        try:
-            li = scanlist.split(',')
-        except AttributeError:
-            pass
-        for elem in li:
+        if self._readerType == "spec":
+            scanlist = str(self._processParameters["specread"]["scanlist"])
+            stride = None
+            retlist = []
+            if scanlist.find(':') != -1:
+                stride = int(scanlist.split(':')[-1])
+                scanlist = scanlist.split(':')[0]
+            scanlist = scanlist.split('[')[-1]
+            scanlist = scanlist.split(']')[0]
             try:
-                retlist.append(int(elem))
-            except ValueError:
+                li = scanlist.split(',')
+            except AttributeError:
+                pass
+            for elem in li:
                 try:
-                    tmp = elem.split('-')
-                    for i in tmp:
-                        retlist.append(i)
-                except:
-                    pass
-        retlist.sort()
-        startnumber = retlist[0]
-        endnumber = retlist[-1]
-        if stride is not None:
-            stridesuffix = "-s" + str(stride)
-        else:
-            stridesuffix = ''
-        return filenamestart + "_S" + str(startnumber) + "E" + str(endnumber) + stridesuffix + suffix, datetime.datetime.now().strftime("_%Y%m%d-%Hh%M")
+                    retlist.append(int(elem))
+                except ValueError:
+                    try:
+                        tmp = elem.split('-')
+                        for i in tmp:
+                            retlist.append(i)
+                    except:
+                        pass
+            retlist.sort()
+            startnumber = retlist[0]
+            endnumber = retlist[-1]
+            if stride is not None:
+                stridesuffix = "-s" + str(stride)
+            else:
+                stridesuffix = ''
+            return filenamestart + "_S" + str(startnumber) + "E" + str(endnumber) + stridesuffix + suffix, datetime.datetime.now().strftime("_%Y%m%d-%Hh%M")
+        elif self._readerType == "fio":
+            return filenamestart, datetime.datetime.now().strftime("_%Y%m%d-%Hh%M")
 
     def _setOutfileName(self, name):
+        import os.path
         if name == "spec":
             try:
-                import os.path
                 self._outfileName = os.path.basename(self._processParameters["specread"]["filename"]).split('.')[0]
             except:
                 return
         elif name == "fio":
-            self._outfileName = "fiotest"
+            # get the complete file name without the directory
+            bname = os.path.basename(self._processParameters["fioread"]["filenames"][0])
+            bname2 = os.path.basename(self._processParameters["fioread"]["filenames"][-1])
+            # chop off the suffix .fio
+            rawname = os.path.splitext(bname)[0]
+            rawname2 = os.path.splitext(bname2)[0]
+            # determine the last part/number
+            snippet = rawname.split("_")[-1]
+            snippet2 = rawname2.split("_")[-1]
+            start = int(snippet)
+            end = int(snippet2)
+            # and set the final name, remove the last underscore
+            self._outfileName = rawname.strip(snippet)[:-1] + "_S" + str(start) + "E" + str(end)
 
     def getSFRDict(self):
         return self._processParameters["specread"]
