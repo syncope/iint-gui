@@ -465,19 +465,23 @@ class iintGUI(QtGui.QMainWindow):
         self._overlaySelection.overlayscanlist.connect(self._showOverlay)        
 
     def _showOverlay(self, selection):
-        self._overlayView.passData(selection,
-                                       self._control.getDataList(),
-                                       self._control.getMotorName(),
-                                       self._control.getObservableName(),
-                                       self._control.getDespikedObservableName(),
-                                       self._control.getBackgroundName(),
-                                       self._control.getSignalName(),
-                                       self._control.getFittedSignalName(),
-                                       )
-        self.imageTabs.addTab(self._overlayView, "Overlay")
-        self.imageTabs.show()
-        self._overlayView.plot()
-        self._overlayView.show()
+        try:
+            self._overlayView.passData(selection,
+                                           self._control.getDataList(),
+                                           self._control.getMotorName(),
+                                           self._control.getObservableName(),
+                                           self._control.getDespikedObservableName(),
+                                           self._control.getBackgroundName(),
+                                           self._control.getSignalName(),
+                                           self._control.getFittedSignalName(),
+                                           )
+            self.imageTabs.addTab(self._overlayView, "Overlay")
+            self.imageTabs.show()
+            self._overlayView.plot()
+            self._overlayView.show()
+        except KeyError:
+            self.warning("Nothing to plot yet, first define the signal.")
+            pass
 
     def _runScanProfiles(self):
         name, timesuffix = self._control.proposeSaveFileName()
@@ -512,8 +516,16 @@ class iintGUI(QtGui.QMainWindow):
             self.message("... nothing to be done.\n")
             return
         self._control.useBKG(True)
-        self._control.createAndBulkExecute(selDict)
-        self._control.createAndBulkExecute(fitDict)
+        try:
+            self._control.createAndBulkExecute(selDict)
+        except ValueError:
+            self.warning("Can't use the selection of the background points, please recheck.")
+            return
+        try:
+            self._control.createAndBulkExecute(fitDict)
+        except ValueError:
+            self.warning("Can't fit the background; e.g. maybe there are nan values.")
+            return
         self._control.createAndBulkExecute(calcDict)
         self._control.createAndBulkExecute(subtractDict)
         if(self._simpleImageView is not None):
