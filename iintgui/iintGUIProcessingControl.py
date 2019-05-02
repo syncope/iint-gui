@@ -272,14 +272,6 @@ class IintGUIProcessingControl():
 
     def _cleanUpTrackedData(self):
         self._trackedData.clear()
-        # tbr
-        #~ removeNames = ['scannumber', 'signalcurvefitresult', 'trapezoidIntegral', 'trapezoidIntegral_stderr']
-        #~ for name in removeNames:
-            #~ try:
-                #~ self._processParameters["finalize"]["trackedData"].remove(name)
-            #~ except:
-                #~ continue
-        #~ self._processParameters["inspection"]["trackedData"] = self._processParameters["finalize"]["trackedData"]
 
     def getRawDataName(self):
         return self._rawName
