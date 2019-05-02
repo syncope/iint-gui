@@ -240,7 +240,6 @@ class iintGUI(QtGui.QMainWindow):
         self.message("Cleared all data and processing configuration.")
 
     def resetTabs(self, keepSpectra=False):
-        self._control.resetTrackedData()
         if keepSpectra:
             ivtab = self.imageTabs.indexOf(self._simpleImageView)
             while self.imageTabs.count() > 1:
@@ -439,7 +438,6 @@ class iintGUI(QtGui.QMainWindow):
             self._control.resetSIGdata()
             self._signalHandling.setParameterDict(self._control.getSIGDict())
             self._control.resetFITdata()
-            self._control.resetTrackedData()
 
         self.message("Computing the observable...")
         self._control.createAndBulkExecute(obsDict)
@@ -589,6 +587,7 @@ class iintGUI(QtGui.QMainWindow):
         tdv = iintMultiTrackedDataView.iintMultiTrackedDataView(trackinfo)
         self._trackedDataDict[trackinfo.getName()] = trackinfo
         self.imageTabs.addTab(tdv, ("Fit vs." + trackinfo.getName()))
+
         tdv.pickedTrackedDataPoint.connect(self._setFocusToSpectrum)
         self.message(" ... done.\n")
         self._inspectAnalyze.activate()
@@ -737,10 +736,6 @@ class iintGUI(QtGui.QMainWindow):
     def _showTracked(self):
         # prepare the tabs and dict of tracked data for re-display
         self._trackedDataDict.clear()
-        #~ for name in list(self._trackedDataDict.keys()):
-            #~ if name != "ScanNumber":
-                #~ del self._trackedDataDict[name]
-            #~ del self._trackedDataDict[name]
         for index in range(self.imageTabs.__len__(), 1, -1):
             self.imageTabs.removeTab(index)
         namelist = self._control.getTrackedData()

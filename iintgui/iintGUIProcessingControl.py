@@ -461,8 +461,9 @@ class IintGUIProcessingControl():
         # cleaning up, improper handling of save value -- how to really fix?
         if self._processParameters["observabledef"]["attenuationFactor_column"] is None:
             del self._processParameters["observabledef"]["attenuationFactor_column"]
-        if "finalize" in execOrder:
-            self._cleanUpTrackedData()
+        # why is this?? -- comment it out and see what happens (may 02, 2019)
+        #~ if "finalize" in execOrder:
+            #~ self._cleanUpTrackedData()
         return execOrder
 
     def saveConfig(self, filename):
