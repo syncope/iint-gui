@@ -1,0 +1,116 @@
+bkgfit:
+  error: None
+  model:
+    linbkg_:
+      modeltype: linearModel
+  result: bkgfitresult
+  type: curvefitting
+  useguessing: 0
+  usepreviousresult: 0
+  xdata: bkgX
+  ydata: bkgY
+bkgselect:
+  endpointnumber: 3
+  input:
+  - despikedObservable
+  - pth
+  output:
+  - bkgY
+  - bkgX
+  selectors:
+  - selectfromstart
+  - selectfromend
+  sliceend: null
+  slicestart: null
+  slicestride: null
+  startpointnumber: 3
+  type: subsequenceselection
+bkgsubtract:
+  background: bkgPoints
+  input: despikedObservable
+  output: signalObservable
+  type: backgroundsubtraction
+calcbkgpoints:
+  fitresult: bkgfitresult
+  output: bkgPoints
+  type: gendatafromfunction
+  xdata: pth
+despike:
+  input: observable
+  method: p09despiking
+  output: despikedObservable
+  type: filter1d
+execlist:
+- specread
+- observabledef
+- despike
+- bkgselect
+- bkgfit
+- calcbkgpoints
+- bkgsubtract
+- trapint
+- signalcurvefit
+- finalize
+finalize:
+  fitresult: signalcurvefitresult
+  motor: pth
+  observable: signalObservable
+  outfilename: /home/rosem/iintgui/test/test_data/MnCo15_S699E740_20190502-16h28.iint
+  specdataname: rawdata
+  trackedData:
+  - scannumber
+  - signalcurvefitresult
+  - trapezoidIntegral
+  - trapezoidIntegral_stderr
+  - lks340_outputchannela
+  - lks340_outputchannelb
+  - peta
+  - pr1chi
+  - pr2chi
+  - ptth
+  trapintname: trapezoidIntegral
+  type: iintfinalization
+fioread:
+  filenames: null
+  output: rawdata
+  type: fiofilereader
+observabledef:
+  detector_column: exp_c01
+  exposureTime_column: exp_t01
+  id: scannumber
+  input: rawdata
+  monitor_column: sumvfcs_counts
+  motor_column: pth
+  output: observable
+  type: iintdefinition
+signalcurvefit:
+  error: None
+  model:
+    m0_:
+      m0_amplitude:
+        value: 2.0
+      m0_center:
+        value: 1.0
+      m0_fwhm:
+        value: 21.0
+      m0_height:
+        value: 22.0
+      m0_sigma:
+        value: 3.0
+      modeltype: gaussianModel
+  result: signalcurvefitresult
+  type: curvefitting
+  useguessing: 1
+  usepreviousresult: 0
+  xdata: pth
+  ydata: signalObservable
+specread:
+  filename: /home/rosem/iintgui/test/test_data/MnCo15.spc
+  output: default
+  scanlist: 699-740
+  type: specfilereader
+trapint:
+  motor: pth
+  observable: signalObservable
+  output: trapezoidIntegral
+  type: trapezoidintegration

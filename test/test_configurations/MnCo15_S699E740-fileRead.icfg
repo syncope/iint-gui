@@ -1,0 +1,7 @@
+execlist:
+- specread
+specread:
+  filename: /home/rosem/iintgui/test/test_data/MnCo15.spc
+  output: default
+  scanlist: 699-740
+  type: specfilereader
