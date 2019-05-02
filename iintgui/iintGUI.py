@@ -316,6 +316,9 @@ class iintGUI(QtGui.QMainWindow):
         except TypeError:
             self.warning("Nothing to save (yet?).")
             return
+        except AttributeError:
+            self.warning("There is nothing to save (yet?).")
+            return
         self._control.saveConfig(savename + ".icfg")
         self._control.saveConfig(savename + timesuffix + ".icfg")
         self._file = savename + timesuffix + ".icfg"
@@ -755,7 +758,9 @@ class iintGUI(QtGui.QMainWindow):
 
         mtdmd.maperror.connect(self.warning)
         mtdmd.plot()
+        self.message("Displaying " + str(one) + " versus " + str(two) + ".")
         self.imageTabs.addTab(mtdmd, one + " vs. " + two)
+        self.imageTabs.show()
 
     def _saveResultsFile(self):
         name, timesuffix = self._control.proposeSaveFileName()
