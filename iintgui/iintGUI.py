@@ -29,6 +29,7 @@ from . import iintGUIProcessingControl
 try:
     from adapt.processes import specfilereader
     from adapt.processes import fiofilereader
+    from adapt import adaptException
 except ImportError:
     print("[iintGUI]:: adapt is not available; please install or nothing will work.")
     pass
@@ -684,7 +685,11 @@ class iintGUI(QtGui.QMainWindow):
         self.message("Running the polarization analysis ...")
         polanadict = self._control.getPOLANADict()
         filename = polanadict["outputname"] + "_polarizationAnalysis.pdf"
-        self._control.processAll(polanadict)
+        try:
+            self._control.processAll(polanadict)
+        except adaptException.AdaptProcessException:
+            self.warning("Polarization analysis cannot be performed on this dataset. Maybe the dimensions are incorrect?")
+            return
         self.message(" ... done.\n")
         from subprocess import Popen
         Popen(["evince", filename])
