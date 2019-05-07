@@ -34,6 +34,7 @@ try:
     from adapt.processes import subsequenceselection
     from adapt.processes import curvefitting
     from adapt.processes import gendatafromfunction
+    from adapt.processes import integratefitresult
     from adapt.processes import backgroundsubtraction
     from adapt.processes import trapezoidintegration
     from adapt.processes import iintfinalization
@@ -72,6 +73,7 @@ class IintGUIProcessingControl():
         self._observableName = "observable"
         self._despObservableName = "despikedObservable"
         self._backgroundPointsName = "bkgPoints"
+        self._backgroundIntegralName = "bkgIntegral"
         self._signalName = "signalObservable"
         self._fittedSignalName = "signalcurvefitresult"
         self._fitSignalPointsName = "signalFitPoints"
@@ -84,6 +86,7 @@ class IintGUIProcessingControl():
                               "bkgfit",
                               "calcbkgpoints",
                               "bkgsubtract",
+                              "bkgintegration",
                               "signalcurvefit",
                               "calcfitpoints",
                               "trapint",
@@ -99,6 +102,7 @@ class IintGUIProcessingControl():
         self._setupDefaultNames()
         self._outputDirectory = None
         self._trackedData = []
+        self._readerType = ""
 
     def resetAll(self):
         for elem in self._dataList:
@@ -114,6 +118,7 @@ class IintGUIProcessingControl():
         self._observableName = "observable"
         self._despObservableName = "despikedObservable"
         self._backgroundPointsName = "bkgPoints"
+        self._backgroundIntegralName = "bkgIntegral"
         self._signalName = "signalObservable"
         self._fittedSignalName = "signalcurvefitresult"
         self._fitSignalPointsName = "signalFitPoints"
@@ -121,6 +126,7 @@ class IintGUIProcessingControl():
         self._setupProcessParameters()
         self._setupDefaultNames()
         self.resetTrackedData()
+        self._readerType = ""
 
     def resetRAWdata(self):
         for elem in self._dataList:
@@ -178,6 +184,7 @@ class IintGUIProcessingControl():
         self._processParameters["despike"] = filter1d.filter1d().getProcessDictionary()
         self._processParameters["bkgselect"] = subsequenceselection.subsequenceselection().getProcessDictionary()
         self._processParameters["bkgfit"] = curvefitting.curvefitting().getProcessDictionary()
+        self._processParameters["bkgintegral"] = integratefitresult.integratefitresult().getProcessDictionary()
         self._processParameters["calcbkgpoints"] = gendatafromfunction.gendatafromfunction().getProcessDictionary()
         self._processParameters["bkgsubtract"] = backgroundsubtraction.backgroundsubtraction().getProcessDictionary()
         self._processParameters["signalcurvefit"] = curvefitting.curvefitting().getProcessDictionary()
@@ -223,6 +230,10 @@ class IintGUIProcessingControl():
         self._processParameters["bkgfit"]["result"] = "bkgfitresult"
         self._processParameters["bkgfit"]["usepreviousresult"] = 0
         self._processParameters["bkgfit"]["model"] = {"lin_": {"modeltype": "linearModel"}}
+        # bkg integral
+        self._processParameters["bkgintegral"]["fitresult"] = "bkgfitresult"
+        self._processParameters["bkgintegral"]["xdata"] = self._motorName
+        self._processParameters["bkgintegral"]["output"] = self._backgroundIntegralName
         # calc bkg points
         self._processParameters["calcbkgpoints"]["fitresult"] = "bkgfitresult"
         self._processParameters["calcbkgpoints"]["xdata"] = self._motorName
@@ -250,7 +261,7 @@ class IintGUIProcessingControl():
         # finalization: saving files
         self._processParameters["finalize"]["specdataname"] = self._rawName
         self._processParameters["finalize"]["fitresult"] = self._fittedSignalName
-        self._processParameters["finalize"]["trapintname"] = self._trapintName
+        self._processParameters["finalize"]["trackedData"] = []
         # polarization analysis
         self._processParameters["polana"]["specdataname"] = self._rawName
         self._processParameters["polana"]["fitresult"] = self._fittedSignalName
@@ -270,14 +281,6 @@ class IintGUIProcessingControl():
 
     def _cleanUpTrackedData(self):
         self._trackedData.clear()
-        # tbr
-        #~ removeNames = ['scannumber', 'signalcurvefitresult', 'trapezoidIntegral', 'trapezoidIntegral_stderr']
-        #~ for name in removeNames:
-            #~ try:
-                #~ self._processParameters["finalize"]["trackedData"].remove(name)
-            #~ except:
-                #~ continue
-        #~ self._processParameters["inspection"]["trackedData"] = self._processParameters["finalize"]["trackedData"]
 
     def getRawDataName(self):
         return self._rawName
@@ -290,6 +293,7 @@ class IintGUIProcessingControl():
         self._processParameters["observabledef"]["motor_column"] = self._motorName
         self._processParameters["scanprofileplot"]["motor"] = self._motorName
         self._processParameters["bkgselect"]["input"] = [self._despObservableName, self._motorName]
+        self._processParameters["bkgintegral"]["xdata"] = self._motorName
         self._processParameters["calcbkgpoints"]["xdata"] = self._motorName
         self._processParameters["signalcurvefit"]["xdata"] = self._motorName
         self._processParameters["calcfitpoints"]["xdata"] = self._motorName
@@ -361,6 +365,8 @@ class IintGUIProcessingControl():
                 pd.addData("MCA", datum.getMCA())
                 self._mcaDict[datum.getScanNumber()] = datum.getMCA()
             self._dataList.append(pd)
+        # and now create the scan list!
+        self._createScanList()
 
     #~ def checkForMCA(self):
         #~ # search through the list of data and retrieve the indices 
@@ -412,6 +418,19 @@ class IintGUIProcessingControl():
         proc.loopExecute(self._dataList, emitProgress=True)
         proc.finalize(data=None)
 
+    def performBKGIntegration(self):
+        self.createAndBulkExecute(self._processParameters["bkgintegral"])
+        if self._backgroundIntegralName not in self._processParameters["finalize"]["trackedData"]:
+            try:
+                self._processParameters["inspection"]["trackedData"].append(self._backgroundIntegralName)
+            except AttributeError:
+                self._processParameters["inspection"]["trackedData"] = [self._backgroundIntegralName]
+            try:
+                self._processParameters["finalize"]["trackedData"].append(self._backgroundIntegralName)
+            except AttributeError:
+                self._processParameters["finalize"]["trackedData"] = [self._backgroundIntegralName]
+
+
     def processScanProfiles(self, name):
         self._processParameters["scanprofileplot"]["outfilename"] = name
         self.processAll(self._processParameters["scanprofileplot"])
@@ -428,9 +447,16 @@ class IintGUIProcessingControl():
         self._processParameters["inspection"]["outfilename"] = name
         self.processAll(self._processParameters["inspection"])
 
+    def setReaderType(self, rtype=""):
+        self._readerType = rtype
+
     def loadConfig(self, processConfig):
         self._procRunList.clear()
         execOrder = processConfig.getOrderOfExecution()
+        if "fioread" in execOrder:
+            self._readerType = "fio"
+        elif "specread" in execOrder:
+            self._readerType = "spec"
         pDefs = processConfig.getProcessDefinitions()
         for proc in execOrder:
             if proc in self._processNames:
@@ -450,12 +476,18 @@ class IintGUIProcessingControl():
         # cleaning up, improper handling of save value -- how to really fix?
         if self._processParameters["observabledef"]["attenuationFactor_column"] is None:
             del self._processParameters["observabledef"]["attenuationFactor_column"]
-        if "finalize" in execOrder:
-            self._cleanUpTrackedData()
+        # why is this?? -- comment it out and see what happens (may 02, 2019)
+        #~ if "finalize" in execOrder:
+            #~ self._cleanUpTrackedData()
         return execOrder
 
     def saveConfig(self, filename):
-        execlist = ["specread", "observabledef"]
+        if self._readerType == "spec":
+            execlist = ["specread", "observabledef"]
+        elif  self._readerType == "fio":
+            execlist = ["fioread", "observabledef"]
+        else:
+            return
         processDict = {}
         processDict["specread"] = self.getSFRDict()
         processDict["fioread"] = self.getFFRDict()
@@ -509,45 +541,65 @@ class IintGUIProcessingControl():
         self.setOutputDirectory(defpath)
 
     def proposeSaveFileName(self, suffix=''):
-        # use the scanlist entries and the input spec file name
-        try:
-            import os.path
-            # TODO: fix the removal of path!
-            basename = os.path.basename(self._processParameters["specread"]["filename"]).split('.')[0]
-        except:
-            return
-        filenamestart = os.path.join(self._outputDirectory, basename)
+        import os.path
+        filenamestart = os.path.join(self._outputDirectory, self._outfileName)
+        # needs distinction between fio and spec !
         # decompose the scanlist parameters
-        scanlist = str(self._processParameters["specread"]["scanlist"])
-        stride = None
-        retlist = []
-        if scanlist.find(':') != -1:
-            stride = int(scanlist.split(':')[-1])
-            scanlist = scanlist.split(':')[0]
-        scanlist = scanlist.split('[')[-1]
-        scanlist = scanlist.split(']')[0]
-        try:
-            li = scanlist.split(',')
-        except AttributeError:
-            pass
-        for elem in li:
+        if self._readerType == "spec":
+            scanlist = str(self._processParameters["specread"]["scanlist"])
+            stride = None
+            retlist = []
+            if scanlist.find(':') != -1:
+                stride = int(scanlist.split(':')[-1])
+                scanlist = scanlist.split(':')[0]
+            scanlist = scanlist.split('[')[-1]
+            scanlist = scanlist.split(']')[0]
             try:
-                retlist.append(int(elem))
-            except ValueError:
+                li = scanlist.split(',')
+            except AttributeError:
+                pass
+            for elem in li:
                 try:
-                    tmp = elem.split('-')
-                    for i in tmp:
-                        retlist.append(i)
-                except:
-                    pass
-        retlist.sort()
-        startnumber = retlist[0]
-        endnumber = retlist[-1]
-        if stride is not None:
-            stridesuffix = "-s" + str(stride)
-        else:
-            stridesuffix = ''
-        return filenamestart + "_S" + str(startnumber) + "E" + str(endnumber) + stridesuffix + suffix, datetime.datetime.now().strftime("_%Y%m%d-%Hh%M")
+                    retlist.append(int(elem))
+                except ValueError:
+                    try:
+                        tmp = elem.split('-')
+                        for i in tmp:
+                            retlist.append(i)
+                    except:
+                        pass
+            retlist.sort()
+            startnumber = retlist[0]
+            endnumber = retlist[-1]
+            if stride is not None:
+                stridesuffix = "-s" + str(stride)
+            else:
+                stridesuffix = ''
+            return filenamestart + "_S" + str(startnumber) + "E" + str(endnumber) + stridesuffix + suffix, datetime.datetime.now().strftime("_%Y%m%d-%Hh%M")
+        elif self._readerType == "fio":
+            return filenamestart, datetime.datetime.now().strftime("_%Y%m%d-%Hh%M")
+
+    def _setOutfileName(self, name):
+        import os.path
+        if name == "spec":
+            try:
+                self._outfileName = os.path.basename(self._processParameters["specread"]["filename"]).split('.')[0]
+            except:
+                return
+        elif name == "fio":
+            # get the complete file name without the directory
+            bname = os.path.basename(self._processParameters["fioread"]["filenames"][0])
+            bname2 = os.path.basename(self._processParameters["fioread"]["filenames"][-1])
+            # chop off the suffix .fio
+            rawname = os.path.splitext(bname)[0]
+            rawname2 = os.path.splitext(bname2)[0]
+            # determine the last part/number
+            snippet = rawname.split("_")[-1]
+            snippet2 = rawname2.split("_")[-1]
+            start = int(snippet)
+            end = int(snippet2)
+            # and set the final name, remove the last underscore
+            self._outfileName = rawname.strip(snippet)[:-1] + "_S" + str(start) + "E" + str(end)
 
     def getSFRDict(self):
         return self._processParameters["specread"]
@@ -584,15 +636,22 @@ class IintGUIProcessingControl():
     def setSpecFile(self, name, scanlist):
         self._processParameters["specread"]["filename"] = name
         self._processParameters["specread"]["scanlist"] = scanlist
-        self._scanlist = self._expandList(scanlist)
+        #~ self._scanlist = self._expandList(scanlist)
+        self._setOutfileName("spec")
 
     def setFioFile(self, names):
         self._processParameters["fioread"]["filenames"] = names
-        # am i gonna do this?
-        self._scanlist = None #
+        self._setOutfileName("fio")
+        #~ self._createScanList()
 
     def getScanlist(self):
         return self._scanlist
+
+    def _createScanList(self):
+        self._scanlist = []
+        for datum in self._dataList:
+            sn = datum.getData(self.getRawDataName()).getScanNumber()
+            self._scanlist.append(sn)
 
     def _expandList(self, somelist):
         scanlist = str(somelist)
@@ -685,12 +744,16 @@ class IintGUIProcessingControl():
         try:
             if 'scannumber' not in self._processParameters["finalize"]["trackedData"]:
                 self._processParameters["finalize"]["trackedData"] = \
-                    ['scannumber', self._fittedSignalName, self._trapintName, self._trapintName+"_stderr"] +  self._processParameters["finalize"]["trackedData"]
+                    ['scannumber', self._fittedSignalName, self._trapintName, self._trapintName+"_stderr"], \
+                      self._backgroundIntegralName +  self._processParameters["finalize"]["trackedData"]
         except TypeError:
-            self._processParameters["finalize"]["trackedData"] =  ['scannumber', self._fittedSignalName, self._trapintName, self._trapintName+"_stderr"]
+            self._processParameters["finalize"]["trackedData"] = \
+                ['scannumber', self._fittedSignalName, self._trapintName, self._trapintName+"_stderr", self._backgroundIntegralName]
         return self._processParameters["finalize"]
 
-    def setTrackedData(self, namelist):
+    def setTrackedData(self, namelist=[]):
+        if namelist is []:
+            return
         self._cleanUpTrackedData()
         self._trackedData = namelist
         self._processParameters["inspection"]["trackedData"] = namelist

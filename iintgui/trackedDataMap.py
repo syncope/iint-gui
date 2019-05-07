@@ -38,6 +38,8 @@ class TrackedDataMap(QtGui.QDialog):
     def passNames(self, someDict):
         self.reset()
         self._names = [*someDict]
+        self.firstSelection.clear()
+        self.secondSelection.clear()
         self._updateBoxes()
 
     def _updateBoxes(self):

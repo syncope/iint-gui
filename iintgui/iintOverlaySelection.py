@@ -51,15 +51,18 @@ class iintOverlaySelection(QtGui.QWidget):
         self._currentItemScans.clear()
         self._currentItemOverlays.clear()
         self._updateDisplay()
+        self._datalist.clear()
         self.close()
+
+    def passData(self, datalist):
+        self._datalist = list(map(str, datalist))
+        self._fillLists()
 
     def _fillLists(self):
         # two lists: scans and overlays
         self._currentItemScans = sorted(self._datalist)
         self._currentItemOverlays = []
-
         self.listScans.addItems(self._currentItemScans)
-        #~ 
 
     def _updateDisplay(self):
         self.listScans.clear()

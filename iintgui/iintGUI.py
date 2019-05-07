@@ -29,6 +29,7 @@ from . import iintGUIProcessingControl
 try:
     from adapt.processes import specfilereader
     from adapt.processes import fiofilereader
+    from adapt import adaptException
 except ImportError:
     print("[iintGUI]:: adapt is not available; please install or nothing will work.")
     pass
@@ -69,6 +70,7 @@ class iintGUI(QtGui.QMainWindow):
         self.actionSave_file.triggered.connect(self._saveConfig)
         self.actionExit.triggered.connect(self._closeApp)
         self.action_Config_File.triggered.connect(self._showConfig)
+        self.actionFIO_File_s.triggered.connect(self._showFIOFiles)
         self.action_Spec_File.triggered.connect(self._showSpecFile)
         self.action_Fit_Results.triggered.connect(self._showFitResults)
         self.action_Results_File.triggered.connect(self._showResultsFile)
@@ -172,7 +174,8 @@ class iintGUI(QtGui.QMainWindow):
     def _unresize(self):
         # this is the place any resizing code could/should go
         # i can't seem to get it to work, though
-        self.showNormal()
+        #~ self.showNormal()
+        pass
 
     def _resetInternals(self):
         self._motorname = ""
@@ -196,10 +199,14 @@ class iintGUI(QtGui.QMainWindow):
         self._signalHandling.deactivateFitting()
         self._control.resetAll()
         self._sfrGUI.reset()
+        self._ffrGUI.reset()
         self.resetTabs()
         try:
             self._trackedDataChoice.reset()
             self._trackedDataChoice.close()
+        except AttributeError:
+            pass
+        try:
             self._overlaySelection.reset()
             self._overlaySelection.close()
         except AttributeError:
@@ -226,10 +233,14 @@ class iintGUI(QtGui.QMainWindow):
             self._trackedDataChoice = 0
         except AttributeError:
             pass
+        try:
+            self._overlaySelection.reset()
+            self._overlaySelection.close()
+        except AttributeError:
+            pass
         self.message("Cleared all data and processing configuration.")
 
     def resetTabs(self, keepSpectra=False):
-        self._control.resetTrackedData()
         if keepSpectra:
             ivtab = self.imageTabs.indexOf(self._simpleImageView)
             while self.imageTabs.count() > 1:
@@ -260,7 +271,19 @@ class iintGUI(QtGui.QMainWindow):
         try:
             self._widgetList.append(showFileContents.ShowFileContents(open(self._sfrGUI.getParameterDict()["filename"]).read()))
         except TypeError:
-            self.message("Can't show spec file, since none has been selected yet.\nOpen a spec file file first (see File Menu).\n")
+            self.message("Can't show spec file, since none has been selected yet.\nOpen a spec file first (see File Menu).\n")
+        return
+
+    def _showFIOFiles(self):
+        try:
+            text = ''
+            for fiofile in self._ffrGUI.getParameterDict()["filenames"]:
+                text += "Filename: " + str(fiofile)
+                text += open(fiofile).read()
+                text += 80*"*" + "\n" + 80*"*" + "\n" + 80*"*" + "\n\n\n"
+            self._widgetList.append(showFileContents.ShowFileContents(text))
+        except TypeError:
+            self.message("Can't show fio file(s), since none has been selected yet.\nFirst open fio file(s) (see File Menu).\n")
         return
 
     def _showResultsFile(self):
@@ -292,6 +315,9 @@ class iintGUI(QtGui.QMainWindow):
             savename, timesuffix = self._control.proposeSaveFileName('')
         except TypeError:
             self.warning("Nothing to save (yet?).")
+            return
+        except AttributeError:
+            self.warning("There is nothing to save (yet?).")
             return
         self._control.saveConfig(savename + ".icfg")
         self._control.saveConfig(savename + timesuffix + ".icfg")
@@ -333,7 +359,10 @@ class iintGUI(QtGui.QMainWindow):
         if "specread" in runlist:
             # check the type !
             self._sfrGUI.setParameterDict(self._control.getSFRDict())
-            self.runFileReader()
+            self.runFileReader("spec")
+        elif "fioread" in runlist:
+            self._ffrGUI.setParameterDict(self._control.getFFRDict())
+            self.runFileReader("fio")
         else:
             return
         if "observabledef" in runlist:
@@ -361,6 +390,7 @@ class iintGUI(QtGui.QMainWindow):
 
     def runFileReader(self, reader=None):
         if reader == "spec" or reader == None:
+            self._control.setReaderType("spec")
             filereaderdict = self._sfrGUI.getParameterDict()
             self._fileInfo.setNames(filereaderdict["filename"], filereaderdict["scanlist"])
             self._control.setSpecFile(filereaderdict["filename"], filereaderdict["scanlist"])
@@ -369,9 +399,11 @@ class iintGUI(QtGui.QMainWindow):
             self._control.createDataList(sfr.getData(), self._control.getRawDataName())
             self._control.setDefaultOutputDirectory(filereaderdict["filename"])
         elif reader == "fio":
+            self._control.setReaderType("fio")
             filereaderdict = self._ffrGUI.getParameterDict()
             #~ self._fileInfo.setNames(filereaderdict["filename"], filereaderdict["scanlist"])
             self._control.setFioFile(filereaderdict["filenames"])
+            self._fileInfo.setNames(filereaderdict["filenames"][0], "...")
             self.message("Reading fio file(s): " + str(filereaderdict["filenames"]))
             ffr = self._control.createAndBulkExecute(filereaderdict)
             self._control.createDataList(ffr.getData(), self._control.getRawDataName())
@@ -407,7 +439,6 @@ class iintGUI(QtGui.QMainWindow):
             self._control.resetSIGdata()
             self._signalHandling.setParameterDict(self._control.getSIGDict())
             self._control.resetFITdata()
-            self._control.resetTrackedData()
 
         self.message("Computing the observable...")
         self._control.createAndBulkExecute(obsDict)
@@ -427,6 +458,7 @@ class iintGUI(QtGui.QMainWindow):
 
     def doOverlay(self):
         try:
+            self._overlaySelection.passData(self._control.getScanlist())
             self._overlaySelection.show()
         except AttributeError:
             self._overlaySelection = iintOverlaySelection.iintOverlaySelection(datalist=self._control.getScanlist())
@@ -434,19 +466,23 @@ class iintGUI(QtGui.QMainWindow):
         self._overlaySelection.overlayscanlist.connect(self._showOverlay)        
 
     def _showOverlay(self, selection):
-        self._overlayView.passData(selection,
-                                       self._control.getDataList(),
-                                       self._control.getMotorName(),
-                                       self._control.getObservableName(),
-                                       self._control.getDespikedObservableName(),
-                                       self._control.getBackgroundName(),
-                                       self._control.getSignalName(),
-                                       self._control.getFittedSignalName(),
-                                       )
-        self.imageTabs.addTab(self._overlayView, "Overlay")
-        self.imageTabs.show()
-        self._overlayView.plot()
-        self._overlayView.show()
+        try:
+            self._overlayView.passData(selection,
+                                           self._control.getDataList(),
+                                           self._control.getMotorName(),
+                                           self._control.getObservableName(),
+                                           self._control.getDespikedObservableName(),
+                                           self._control.getBackgroundName(),
+                                           self._control.getSignalName(),
+                                           self._control.getFittedSignalName(),
+                                           )
+            self.imageTabs.addTab(self._overlayView, "Overlay")
+            self.imageTabs.show()
+            self._overlayView.plot()
+            self._overlayView.show()
+        except KeyError:
+            self.warning("Nothing to plot yet, first define the signal.")
+            pass
 
     def _runScanProfiles(self):
         name, timesuffix = self._control.proposeSaveFileName()
@@ -481,8 +517,17 @@ class iintGUI(QtGui.QMainWindow):
             self.message("... nothing to be done.\n")
             return
         self._control.useBKG(True)
-        self._control.createAndBulkExecute(selDict)
-        self._control.createAndBulkExecute(fitDict)
+        try:
+            self._control.createAndBulkExecute(selDict)
+        except ValueError:
+            self.warning("Can't use the selection of the background points, please recheck.")
+            return
+        try:
+            self._control.createAndBulkExecute(fitDict)
+            self._control.performBKGIntegration()
+        except ValueError:
+            self.warning("Can't fit the background; e.g. maybe there are nan values.")
+            return
         self._control.createAndBulkExecute(calcDict)
         self._control.createAndBulkExecute(subtractDict)
         if(self._simpleImageView is not None):
@@ -556,6 +601,7 @@ class iintGUI(QtGui.QMainWindow):
         tdv = iintMultiTrackedDataView.iintMultiTrackedDataView(trackinfo)
         self._trackedDataDict[trackinfo.getName()] = trackinfo
         self.imageTabs.addTab(tdv, ("Fit vs." + trackinfo.getName()))
+
         tdv.pickedTrackedDataPoint.connect(self._setFocusToSpectrum)
         self.message(" ... done.\n")
         self._inspectAnalyze.activate()
@@ -640,7 +686,11 @@ class iintGUI(QtGui.QMainWindow):
         self.message("Running the polarization analysis ...")
         polanadict = self._control.getPOLANADict()
         filename = polanadict["outputname"] + "_polarizationAnalysis.pdf"
-        self._control.processAll(polanadict)
+        try:
+            self._control.processAll(polanadict)
+        except adaptException.AdaptProcessException:
+            self.warning("Polarization analysis cannot be performed on this dataset. Maybe the dimensions are incorrect?")
+            return
         self.message(" ... done.\n")
         from subprocess import Popen
         Popen(["evince", filename])
@@ -690,9 +740,9 @@ class iintGUI(QtGui.QMainWindow):
             self._trackedDataChoice = iintTrackedDataChoice.iintTrackedDataChoice(rawScanData, self._control.getTrackedData())
             self._trackedDataMap = trackedDataMap.TrackedDataMap()
             self._trackedDataMap.trackeddatatomap.connect(self._addMappedData)
-        self._trackedDataChoice.trackedData.connect(self._control.setTrackedData)
-        self._trackedDataChoice.trackedData.connect(self._checkTrackMapActivation)
-        self._obsDef.maptracks.clicked.connect(self._trackedDataMap.show)
+            self._trackedDataChoice.trackedData.connect(self._control.setTrackedData)
+            self._trackedDataChoice.trackedData.connect(self._checkTrackMapActivation)
+            self._obsDef.maptracks.clicked.connect(self._trackedDataMap.show)
 
     def _checkTrackMapActivation(self, outlist):
         if len(outlist) > 0:
@@ -704,10 +754,6 @@ class iintGUI(QtGui.QMainWindow):
     def _showTracked(self):
         # prepare the tabs and dict of tracked data for re-display
         self._trackedDataDict.clear()
-        #~ for name in list(self._trackedDataDict.keys()):
-            #~ if name != "ScanNumber":
-                #~ del self._trackedDataDict[name]
-            #~ del self._trackedDataDict[name]
         for index in range(self.imageTabs.__len__(), 1, -1):
             self.imageTabs.removeTab(index)
         namelist = self._control.getTrackedData()
@@ -725,7 +771,9 @@ class iintGUI(QtGui.QMainWindow):
 
         mtdmd.maperror.connect(self.warning)
         mtdmd.plot()
+        self.message("Displaying " + str(one) + " versus " + str(two) + ".")
         self.imageTabs.addTab(mtdmd, one + " vs. " + two)
+        self.imageTabs.show()
 
     def _saveResultsFile(self):
         name, timesuffix = self._control.proposeSaveFileName()
@@ -740,7 +788,6 @@ class iintGUI(QtGui.QMainWindow):
     def runOutputSaving(self):
         self._control.useFinalizing(True)
         finalDict = self._control.getFinalizingDict()
-
         self.message("Saving results files, might take a while ...")
         self._control.processAll(finalDict)
         self._resultFileName = finalDict["outfilename"]
