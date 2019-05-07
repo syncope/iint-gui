@@ -1,3 +1,9 @@
+iintgui (0.9.4-1+deb9u5~fsec) stretch; urgency=low
+
+ * Several additions and bug fixes: most importantly the background integral is now written to the output file.
+
+ -- Christoph Rosemann <christoph.rosemann@desy.de>  Tue, 7 May 2019 18:21:00 +0100
+
 iintgui (0.9.3-1+deb9u5~fsec) stretch; urgency=low
 
   * Feature additions: + fio file reading (still incomplete, though)
