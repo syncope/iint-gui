@@ -34,6 +34,7 @@ try:
     from adapt.processes import subsequenceselection
     from adapt.processes import curvefitting
     from adapt.processes import gendatafromfunction
+    from adapt.processes import integratefitresult
     from adapt.processes import backgroundsubtraction
     from adapt.processes import trapezoidintegration
     from adapt.processes import iintfinalization
@@ -72,6 +73,7 @@ class IintGUIProcessingControl():
         self._observableName = "observable"
         self._despObservableName = "despikedObservable"
         self._backgroundPointsName = "bkgPoints"
+        self._backgroundIntegralName = "bkgIntegral"
         self._signalName = "signalObservable"
         self._fittedSignalName = "signalcurvefitresult"
         self._fitSignalPointsName = "signalFitPoints"
@@ -84,6 +86,7 @@ class IintGUIProcessingControl():
                               "bkgfit",
                               "calcbkgpoints",
                               "bkgsubtract",
+                              "bkgintegration",
                               "signalcurvefit",
                               "calcfitpoints",
                               "trapint",
@@ -115,6 +118,7 @@ class IintGUIProcessingControl():
         self._observableName = "observable"
         self._despObservableName = "despikedObservable"
         self._backgroundPointsName = "bkgPoints"
+        self._backgroundIntegralName = "bkgIntegral"
         self._signalName = "signalObservable"
         self._fittedSignalName = "signalcurvefitresult"
         self._fitSignalPointsName = "signalFitPoints"
@@ -180,6 +184,7 @@ class IintGUIProcessingControl():
         self._processParameters["despike"] = filter1d.filter1d().getProcessDictionary()
         self._processParameters["bkgselect"] = subsequenceselection.subsequenceselection().getProcessDictionary()
         self._processParameters["bkgfit"] = curvefitting.curvefitting().getProcessDictionary()
+        self._processParameters["bkgintegral"] = integratefitresult.integratefitresult().getProcessDictionary()
         self._processParameters["calcbkgpoints"] = gendatafromfunction.gendatafromfunction().getProcessDictionary()
         self._processParameters["bkgsubtract"] = backgroundsubtraction.backgroundsubtraction().getProcessDictionary()
         self._processParameters["signalcurvefit"] = curvefitting.curvefitting().getProcessDictionary()
@@ -225,6 +230,10 @@ class IintGUIProcessingControl():
         self._processParameters["bkgfit"]["result"] = "bkgfitresult"
         self._processParameters["bkgfit"]["usepreviousresult"] = 0
         self._processParameters["bkgfit"]["model"] = {"lin_": {"modeltype": "linearModel"}}
+        # bkg integral
+        self._processParameters["bkgintegral"]["fitresult"] = "bkgfitresult"
+        self._processParameters["bkgintegral"]["xdata"] = self._motorName
+        self._processParameters["bkgintegral"]["output"] = self._backgroundIntegralName
         # calc bkg points
         self._processParameters["calcbkgpoints"]["fitresult"] = "bkgfitresult"
         self._processParameters["calcbkgpoints"]["xdata"] = self._motorName
@@ -252,7 +261,7 @@ class IintGUIProcessingControl():
         # finalization: saving files
         self._processParameters["finalize"]["specdataname"] = self._rawName
         self._processParameters["finalize"]["fitresult"] = self._fittedSignalName
-        self._processParameters["finalize"]["trapintname"] = self._trapintName
+        self._processParameters["finalize"]["trackedData"] = []
         # polarization analysis
         self._processParameters["polana"]["specdataname"] = self._rawName
         self._processParameters["polana"]["fitresult"] = self._fittedSignalName
@@ -284,6 +293,7 @@ class IintGUIProcessingControl():
         self._processParameters["observabledef"]["motor_column"] = self._motorName
         self._processParameters["scanprofileplot"]["motor"] = self._motorName
         self._processParameters["bkgselect"]["input"] = [self._despObservableName, self._motorName]
+        self._processParameters["bkgintegral"]["xdata"] = self._motorName
         self._processParameters["calcbkgpoints"]["xdata"] = self._motorName
         self._processParameters["signalcurvefit"]["xdata"] = self._motorName
         self._processParameters["calcfitpoints"]["xdata"] = self._motorName
@@ -407,6 +417,19 @@ class IintGUIProcessingControl():
         proc.initialize()
         proc.loopExecute(self._dataList, emitProgress=True)
         proc.finalize(data=None)
+
+    def performBKGIntegration(self):
+        self.createAndBulkExecute(self._processParameters["bkgintegral"])
+        if self._backgroundIntegralName not in self._processParameters["finalize"]["trackedData"]:
+            try:
+                self._processParameters["inspection"]["trackedData"].append(self._backgroundIntegralName)
+            except AttributeError:
+                self._processParameters["inspection"]["trackedData"] = [self._backgroundIntegralName]
+            try:
+                self._processParameters["finalize"]["trackedData"].append(self._backgroundIntegralName)
+            except AttributeError:
+                self._processParameters["finalize"]["trackedData"] = [self._backgroundIntegralName]
+
 
     def processScanProfiles(self, name):
         self._processParameters["scanprofileplot"]["outfilename"] = name
@@ -721,9 +744,11 @@ class IintGUIProcessingControl():
         try:
             if 'scannumber' not in self._processParameters["finalize"]["trackedData"]:
                 self._processParameters["finalize"]["trackedData"] = \
-                    ['scannumber', self._fittedSignalName, self._trapintName, self._trapintName+"_stderr"] +  self._processParameters["finalize"]["trackedData"]
+                    ['scannumber', self._fittedSignalName, self._trapintName, self._trapintName+"_stderr"], \
+                      self._backgroundIntegralName +  self._processParameters["finalize"]["trackedData"]
         except TypeError:
-            self._processParameters["finalize"]["trackedData"] =  ['scannumber', self._fittedSignalName, self._trapintName, self._trapintName+"_stderr"]
+            self._processParameters["finalize"]["trackedData"] = \
+                ['scannumber', self._fittedSignalName, self._trapintName, self._trapintName+"_stderr", self._backgroundIntegralName]
         return self._processParameters["finalize"]
 
     def setTrackedData(self, namelist=[]):

@@ -524,6 +524,7 @@ class iintGUI(QtGui.QMainWindow):
             return
         try:
             self._control.createAndBulkExecute(fitDict)
+            self._control.performBKGIntegration()
         except ValueError:
             self.warning("Can't fit the background; e.g. maybe there are nan values.")
             return
@@ -787,7 +788,6 @@ class iintGUI(QtGui.QMainWindow):
     def runOutputSaving(self):
         self._control.useFinalizing(True)
         finalDict = self._control.getFinalizingDict()
-
         self.message("Saving results files, might take a while ...")
         self._control.processAll(finalDict)
         self._resultFileName = finalDict["outfilename"]
