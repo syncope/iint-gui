@@ -1,6 +1,8 @@
 iintgui (0.9.4-1+deb9u5~fsec) stretch; urgency=low
 
- * Several additions and bug fixes: most importantly the background integral is now written to the output file.
+  * Several improvements and bug fixes.
+  
+  * Feature addition: background integral is now written to the output file, if present.
 
  -- Christoph Rosemann <christoph.rosemann@desy.de>  Tue, 7 May 2019 18:21:00 +0100
 
