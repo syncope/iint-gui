@@ -1,10 +1,11 @@
-iintgui (0.9.4-1+deb9u5~fsec) stretch; urgency=low
+iintgui (0.9.4-2+deb9u5~fsec) stretch; urgency=low
 
-  * Several improvements and bug fixes.
+  * Several improvements and bug fixes:
+    eg. wrong actions and options after button clicks, one re-appearing internal name mismatch
   
   * Feature addition: background integral is now written to the output file, if present.
 
- -- Christoph Rosemann <christoph.rosemann@desy.de>  Tue, 7 May 2019 18:21:00 +0100
+ -- Christoph Rosemann <christoph.rosemann@desy.de>  Wed, 8 May 2019 17:15:00 +0100
 
 iintgui (0.9.3-1+deb9u5~fsec) stretch; urgency=low
 
