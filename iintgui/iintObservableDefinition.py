@@ -64,6 +64,14 @@ class iintObservableDefinition(QtGui.QWidget):
         self.maptracks.setToolTip("After tracked data has been selected, choose data to map.")
         #~ self.showMCA.hide()
         #~ self.showMCA.setDisabled(False)
+        # infrastructure for testing whether a value has already been set
+        #~ self._default = "Not set"
+        #~ self.motorCB.currentIndexChanged.connect(self._checkStatus)
+        #~ self.observableDetectorCB.currentIndexChanged.connect(self._checkStatus)
+        #~ self.observableMonitorCB.currentIndexChanged.connect(self._checkStatus)
+        #~ self.observableTimeCB.currentIndexChanged.connect(self._checkStatus)
+        #~ self.observableAttFacCB.currentIndexChanged.connect(self._checkStatus)
+        #~ self.obsDisplayBtn.setDisabled(True)
 
     def _defaultSettings(self):
         self._obsDict = {}
@@ -78,12 +86,29 @@ class iintObservableDefinition(QtGui.QWidget):
         self.deactivateShowScanProfile()
         #~ self.showMCA.setDisabled(False)
         self.trackData.setDisabled(True)
+        self.obsDisplayBtn.setDisabled(True)
+
+    #~ def _checkStatus(self):
+        #~ comboboxes = [self.motorCB, self.observableDetectorCB, self.observableMonitorCB, \
+                      #~ self.observableTimeCB]
+        #~ if self._useAttenuationFactor:
+            #~ comboboxes.append(self.observableAttFacCB)
+        #~ truth = True
+        #~ for box in comboboxes:
+            #~ if box.currentText == self._default:
+                #~ print("it's the default value!?")
+                #~ truth = False
+        #~ if truth:
+            #~ self.obsDisplayBtn.setDisabled(False)
+        #~ else:
+            #~ self.obsDisplayBtn.setDisabled(True)
 
     def reset(self):
         self._defaultSettings()
 
     def activate(self):
         self._notEnabled(False)
+        #~ self._checkStatus()
 
     def activateMapTrack(self):
         self.maptracks.setDisabled(False)
@@ -114,6 +139,13 @@ class iintObservableDefinition(QtGui.QWidget):
         self.observableMonitorCB.clear()
         self.observableTimeCB.clear()
         self.observableAttFacCB.clear()
+        # place the default value first
+        #~ self.motorCB.addItem(self._default)
+        #~ self.observableDetectorCB.addItem(self._default)
+        #~ self.observableMonitorCB.addItem(self._default)
+        #~ self.observableTimeCB.addItem(self._default)
+        #~ self.observableAttFacCB.addItem(self._default)
+        # and now insert the other labels
         self.motorCB.addItems(self._currentdataLabels)
         self.observableDetectorCB.addItems(self._currentdataLabels)
         self.observableMonitorCB.addItems(self._currentdataLabels)
@@ -171,7 +203,9 @@ class iintObservableDefinition(QtGui.QWidget):
 
     def toggleDespiking(self):
         self._despike = not self._despike
-        #~ self.doDespike.emit(self._despike)
+        self.doDespike.emit(self._despike)
+        if self._obsDict != {}:
+            self.emittit()
 
     def emittit(self):
         self._obsDict["type"] = "iintdefinition"

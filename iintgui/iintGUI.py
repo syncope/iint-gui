@@ -298,9 +298,11 @@ class iintGUI(QtGui.QMainWindow):
     def _showIintGuiInfo(self):
         self._widgetList.append(showAboutIintGUI.ShowAboutIintGUI())
 
+    # LOG WINDOW DISPLAY::Messages
     def message(self, text):
         self._loggingBox.addText(text)
 
+    # LOG WINDOW DISPLAY::Warnings!
     def warning(self, text):
         self._loggingBox.addRedText(text)
 
@@ -454,6 +456,7 @@ class iintGUI(QtGui.QMainWindow):
             if(self._simpleImageView is not None):
                 self._simpleImageView.update("des")
         self._bkgHandling.activate()
+        self._signalHandling.deactivateFitting()
         self.message(" done.\n")
 
     def doOverlay(self):
