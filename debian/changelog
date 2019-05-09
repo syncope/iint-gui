@@ -1,11 +1,17 @@
-iintgui (0.9.4-2+deb9u5~fsec) stretch; urgency=low
+iintgui (0.10.0-1+deb9u5~fsec) stretch; urgency=low
 
-  * Several improvements and bug fixes:
-    eg. wrong actions and options after button clicks, one re-appearing internal name mismatch
-  
-  * Feature addition: background integral is now written to the output file, if present.
+  * Several improvements and feature implementations:
+    + background (if present) is integrated and stored in output file
+    + automatic retaining of previous settings in signal defition
+    + clearer setting structure in signal definition
+    + internal stuff: catch more exceptions and write log messages in window
 
- -- Christoph Rosemann <christoph.rosemann@desy.de>  Wed, 8 May 2019 17:15:00 +0100
+  * Bug fixes:
+    - wrong actions and options after button clicks, one re-appearing internal name mismatch
+    - button resets in signal fitting after repeated bkg fits
+    - clear: internal name mismatch when changing from de-spiking to non de-spiking
+
+ -- Christoph Rosemann <christoph.rosemann@desy.de>  Thu, 9 May 2019 11:25:00 +0100
 
 iintgui (0.9.3-1+deb9u5~fsec) stretch; urgency=low
 
