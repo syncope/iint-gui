@@ -11,7 +11,7 @@ iintgui (0.10.0-1+deb9u5~fsec) stretch; urgency=low
     - button resets in signal fitting after repeated bkg fits
     - clear: internal name mismatch when changing from de-spiking to non de-spiking
 
- -- Christoph Rosemann <christoph.rosemann@desy.de>  Thu, 9 May 2019 11:25:00 +0100
+ -- Christoph Rosemann <christoph.rosemann@desy.de>  Thu, 9 May 2019 14:52:00 +0100
 
 iintgui (0.9.3-1+deb9u5~fsec) stretch; urgency=low
 
