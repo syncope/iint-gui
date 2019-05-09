@@ -365,6 +365,10 @@ class IintGUIProcessingControl():
                 pd.addData("MCA", datum.getMCA())
                 self._mcaDict[datum.getScanNumber()] = datum.getMCA()
             self._dataList.append(pd)
+        try:
+            self.setMotorName(self._dataList[0].getData(self.getRawDataName()).getMotorName())
+        except IndexError:
+            pass
         # and now create the scan list!
         self._createScanList()
 

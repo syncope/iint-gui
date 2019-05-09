@@ -131,7 +131,6 @@ class iintObservableDefinition(QtGui.QWidget):
         #~ self.showMCA.setDisabled(False)
 
     def passInfo(self, dataobject, defaultmotor=None):
-        print("passing info to signal definition, def motor is: " + str(defaultmotor))
         if dataobject is None:
             self._notEnabled(True)
             return
@@ -167,11 +166,8 @@ class iintObservableDefinition(QtGui.QWidget):
             self._useAttenuationFactor = False
             self.observableAttFaccheck.setChecked(False)
         if defaultmotor is not None:
-            print(" checking motor index..")
             index = self.motorCB.findText(defaultmotor, QtCore.Qt.MatchExactly)
-            print("found a motor index in the motorCB: " + str(index))
             if index >= 0:
-                print("setting the index to : " + str(index))
                 self.motorCB.setCurrentIndex(index)
 
         if self._previousObsDict != {}:
