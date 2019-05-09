@@ -65,13 +65,13 @@ class iintObservableDefinition(QtGui.QWidget):
         #~ self.showMCA.hide()
         #~ self.showMCA.setDisabled(False)
         # infrastructure for testing whether a value has already been set
-        #~ self._default = "Not set"
-        #~ self.motorCB.currentIndexChanged.connect(self._checkStatus)
-        #~ self.observableDetectorCB.currentIndexChanged.connect(self._checkStatus)
-        #~ self.observableMonitorCB.currentIndexChanged.connect(self._checkStatus)
-        #~ self.observableTimeCB.currentIndexChanged.connect(self._checkStatus)
-        #~ self.observableAttFacCB.currentIndexChanged.connect(self._checkStatus)
-        #~ self.obsDisplayBtn.setDisabled(True)
+        self._default = "Not set"
+        self.motorCB.currentIndexChanged.connect(self._checkStatus)
+        self.observableDetectorCB.currentIndexChanged.connect(self._checkStatus)
+        self.observableMonitorCB.currentIndexChanged.connect(self._checkStatus)
+        self.observableTimeCB.currentIndexChanged.connect(self._checkStatus)
+        self.observableAttFacCB.currentIndexChanged.connect(self._checkStatus)
+        self.obsDisplayBtn.setDisabled(True)
 
     def _defaultSettings(self):
         self._obsDict = {}
@@ -88,20 +88,23 @@ class iintObservableDefinition(QtGui.QWidget):
         self.trackData.setDisabled(True)
         self.obsDisplayBtn.setDisabled(True)
 
-    #~ def _checkStatus(self):
-        #~ comboboxes = [self.motorCB, self.observableDetectorCB, self.observableMonitorCB, \
-                      #~ self.observableTimeCB]
-        #~ if self._useAttenuationFactor:
-            #~ comboboxes.append(self.observableAttFacCB)
-        #~ truth = True
-        #~ for box in comboboxes:
-            #~ if box.currentText == self._default:
-                #~ print("it's the default value!?")
-                #~ truth = False
-        #~ if truth:
-            #~ self.obsDisplayBtn.setDisabled(False)
-        #~ else:
-            #~ self.obsDisplayBtn.setDisabled(True)
+    def _checkStatus(self):
+        comboboxes = [self.motorCB, self.observableDetectorCB, self.observableMonitorCB, \
+                      self.observableTimeCB]
+        if self._useAttenuationFactor:
+            comboboxes.append(self.observableAttFacCB)
+        truth = True
+        for box in comboboxes:
+            if box.currentText() == self._default:
+                truth = False
+        if truth:
+            self.obsDisplayBtn.setDisabled(False)
+            self.despikeCheckBox.setDisabled(False)
+            self.overlayBtn.setDisabled(False)
+        else:
+            self.obsDisplayBtn.setDisabled(True)
+            self.despikeCheckBox.setDisabled(True)
+            self.overlayBtn.setDisabled(True)
 
     def reset(self):
         self._defaultSettings()
@@ -140,12 +143,12 @@ class iintObservableDefinition(QtGui.QWidget):
         self.observableTimeCB.clear()
         self.observableAttFacCB.clear()
         # place the default value first
-        #~ self.motorCB.addItem(self._default)
-        #~ self.observableDetectorCB.addItem(self._default)
-        #~ self.observableMonitorCB.addItem(self._default)
-        #~ self.observableTimeCB.addItem(self._default)
-        #~ self.observableAttFacCB.addItem(self._default)
-        # and now insert the other labels
+        self.motorCB.addItem(self._default)
+        self.observableDetectorCB.addItem(self._default)
+        self.observableMonitorCB.addItem(self._default)
+        self.observableTimeCB.addItem(self._default)
+        self.observableAttFacCB.addItem(self._default)
+        #~ # and now insert the other labels
         self.motorCB.addItems(self._currentdataLabels)
         self.observableDetectorCB.addItems(self._currentdataLabels)
         self.observableMonitorCB.addItems(self._currentdataLabels)
@@ -184,22 +187,28 @@ class iintObservableDefinition(QtGui.QWidget):
         self._useAttenuationFactor = not self._useAttenuationFactor
 
     def setMotor(self, motorindex):
-        self._motorname = self._currentdataLabels[motorindex]
+        self._motorname = self._currentdataLabels[self._correctIndex(motorindex)]
         self.motorName.emit(self._motorname)
 
     def setObservable(self, obsindex):
-        self._detname = self._currentdataLabels[obsindex]
+        self._detname = self._currentdataLabels[self._correctIndex(obsindex)]
 
     def setMonitor(self, monindex):
-        self._monname = self._currentdataLabels[monindex]
+        self._monname = self._currentdataLabels[self._correctIndex(monindex)]
 
     def setTime(self, timeindex):
-        self._timename = self._currentdataLabels[timeindex]
+        self._timename = self._currentdataLabels[self._correctIndex(timeindex)]
 
     def setAttFac(self, attfacindex):
         # need to sort out the pre-condition
         #~ if(self._useAttenuationFactor):
-        self._attenfname = self._currentdataLabels[attfacindex]
+        self._attenfname = self._currentdataLabels[self._correctIndex(attfacindex)]
+
+    def _correctIndex(self, index):
+        # since a default element was added in front of the list
+        # the correct index in the list of names is one larger
+        # than the value returned from the combobox
+        return index - 1
 
     def toggleDespiking(self):
         self._despike = not self._despike
