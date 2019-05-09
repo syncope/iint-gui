@@ -545,8 +545,11 @@ class iintGUI(QtGui.QMainWindow):
             if(self._simpleImageView is not None):
                 self._simpleImageView.update("nobkg")
             self._signalHandling.deactivateFitting()
+            self._inspectAnalyze.deactivate()
+            self._control.removeBKGparts()
         else:
             self._signalHandling.deactivateFitting()
+            self._inspectAnalyze.deactivate()
             try:
                 self._simpleImageView.update("unplotfit")
             except:
