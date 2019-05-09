@@ -2,7 +2,8 @@ iintgui (0.10.1-1+deb9u5~fsec) stretch; urgency=low
 
   * More bug fixes:
     - button resets in signal fitting after repeated bkg fits
-    - toggling "Use Bkg" actually changes the display and has correct effects.
+    - toggling "Use Bkg" actually changes the display, and button availability
+    - bkg integral not included when no bkg is fitted/used/present
 
  -- Christoph Rosemann <christoph.rosemann@desy.de>  Thu, 9 May 2019 14:52:00 +0100
 
