@@ -38,6 +38,12 @@ class iintInspectAnalyze(QtGui.QWidget):
         self.polAnalysis.setDisabled(False)
         self.saveResults.setDisabled(False)
 
+    def deactivate(self):
+        self.trackedColumnsPlot.setDisabled(True)
+        self.showScanFits.setDisabled(True)
+        self.polAnalysis.setDisabled(True)
+        self.saveResults.setDisabled(True)
+
     def reset(self):
         self.trackedColumnsPlot.setDisabled(True)
         self.showScanFits.setDisabled(True)
