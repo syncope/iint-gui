@@ -72,6 +72,9 @@ class iintObservableDefinition(QtGui.QWidget):
         self.observableTimeCB.currentIndexChanged.connect(self._checkStatus)
         self.observableAttFacCB.currentIndexChanged.connect(self._checkStatus)
         self.obsDisplayBtn.setDisabled(True)
+        # introduce a "memory" object for setting initial values for the combo boxes
+        self._previousObsDict = {}
+        self._previousDespDict = {}
 
     def _defaultSettings(self):
         self._obsDict = {}
@@ -89,6 +92,10 @@ class iintObservableDefinition(QtGui.QWidget):
         self.obsDisplayBtn.setDisabled(True)
 
     def _checkStatus(self):
+        # automatic check for the values in the combo boxes, run at every change
+        # will fail if *any* relevant combo box value is invalid
+        # at fail: no display/overlay/despike button is available
+        # at success: enables all three actions
         comboboxes = [self.motorCB, self.observableDetectorCB, self.observableMonitorCB, \
                       self.observableTimeCB]
         if self._useAttenuationFactor:
@@ -124,6 +131,7 @@ class iintObservableDefinition(QtGui.QWidget):
         #~ self.showMCA.setDisabled(False)
 
     def passInfo(self, dataobject, defaultmotor=None):
+        print("passing info to signal definition, def motor is: " + str(defaultmotor))
         if dataobject is None:
             self._notEnabled(True)
             return
@@ -159,9 +167,15 @@ class iintObservableDefinition(QtGui.QWidget):
             self._useAttenuationFactor = False
             self.observableAttFaccheck.setChecked(False)
         if defaultmotor is not None:
+            print(" checking motor index..")
             index = self.motorCB.findText(defaultmotor, QtCore.Qt.MatchExactly)
+            print("found a motor index in the motorCB: " + str(index))
             if index >= 0:
+                print("setting the index to : " + str(index))
                 self.motorCB.setCurrentIndex(index)
+
+        if self._previousObsDict != {}:
+            self.setParameterDicts(self._previousObsDict, self._previousDespDict)
 
     def _notEnabled(self, state):
         self.motorCB.setDisabled(state)
@@ -245,6 +259,9 @@ class iintObservableDefinition(QtGui.QWidget):
         self._trapintDict["motor"] = self._motorname
         self._trapintDict["observable"] = "signalObservable"
         self._trapintDict["output"] = "trapezoidIntegral"
+
+        self._previousObsDict = self._obsDict.copy()
+        self._previousDespDict = self._despikeDict.copy()
 
         self.observableDicts.emit(self._obsDict, self._despikeDict)
 
