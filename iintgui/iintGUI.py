@@ -163,6 +163,7 @@ class iintGUI(QtGui.QMainWindow):
         self._ffrGUI.valuesSet.connect(self.runFileReader)
         self._obsDef.observableDicts.connect(self.runObservable)
         self._bkgHandling.bkgDicts.connect(self.runBkgProcessing)
+        self._bkgHandling.noBKG.connect(self._noBackgroundToggle)
         self._simpleImageView.printButton.clicked.connect(self._printDisplayedData)
 
         self._initialGeometry = self.geometry()
@@ -537,6 +538,19 @@ class iintGUI(QtGui.QMainWindow):
             self._simpleImageView.update("bkg")
         self.message(" ... done.\n")
         self._signalHandling.activateConfiguration()
+
+    def _noBackgroundToggle(self, nobkg):
+        self._control.resetBKGdata()
+        if nobkg is 1:
+            if(self._simpleImageView is not None):
+                self._simpleImageView.update("nobkg")
+            self._signalHandling.deactivateFitting()
+        else:
+            self._signalHandling.deactivateFitting()
+            try:
+                self._simpleImageView.update("unplotfit")
+            except:
+                self.warning("Please inform the developer; this is a new issue.")
 
     def _checkBkgState(self, i):
         self._control.useBKG(i)

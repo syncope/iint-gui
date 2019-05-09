@@ -25,6 +25,7 @@ from . import getUIFile
 class iintBackgroundHandling(QtGui.QWidget):
     bkgDicts = QtCore.pyqtSignal(dict, dict, dict, dict)
     bkgmodel = QtCore.pyqtSignal(str)
+    noBKG= QtCore.pyqtSignal(int)
 
     def __init__(self, pDicts, parent=None):
         super(iintBackgroundHandling, self).__init__(parent)
@@ -77,6 +78,10 @@ class iintBackgroundHandling(QtGui.QWidget):
     def _toggle(self):
         self._noBKG = not self._noBKG
         self.fitBkg.setDisabled(self._noBKG)
+        if self._noBKG:
+            self.noBKG.emit(1)
+        else:
+            self.noBKG.emit(0)
 
     def _setModel(self):
         if self.linearBkg.isChecked():

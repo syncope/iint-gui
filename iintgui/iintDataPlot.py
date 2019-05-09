@@ -104,8 +104,16 @@ class iintDataPlot(QtGui.QDialog):
         if(action == "bkg"):
             self.showBKG.setChecked(True)
             self.showSIG.setChecked(True)
+        if(action == "nobkg"):
+            self.showBKG.setChecked(False)
+            self.showBKG.setDisabled(True)
+            self.showFIT.setChecked(False)
+            self.showFIT.setDisabled(True)
         if(action == "plotfit"):
             self.showFIT.setChecked(True)
+        if(action == "unplotfit"):
+            self.showFIT.setChecked(False)
+            self.showFIT.setDisabled(True)
         self.plot()
 
     def passData(self, datalist, motorname, obsname, despobsname, bkgname, signalname, fittedsignalname):
