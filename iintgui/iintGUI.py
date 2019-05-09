@@ -576,6 +576,7 @@ class iintGUI(QtGui.QMainWindow):
         self.imageTabs.addTab(self._simpleImageView, "Scan display")
         self.imageTabs.show()
         self._simpleImageView.show()
+        self._simpleImageView.plot()
 
     def openFitDialog(self, modelname, index):
         self._fitWidget = self._control.getFitModel(modelname, self._simpleImageView.getCurrentSignal(), index=index)
