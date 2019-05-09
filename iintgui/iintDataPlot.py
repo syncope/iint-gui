@@ -115,6 +115,7 @@ class iintDataPlot(QtGui.QDialog):
             self.showFIT.setChecked(False)
             self.showFIT.setDisabled(True)
         self.plot()
+        self.viewPart.autoRange()
 
     def passData(self, datalist, motorname, obsname, despobsname, bkgname, signalname, fittedsignalname):
         self._dataList = datalist
