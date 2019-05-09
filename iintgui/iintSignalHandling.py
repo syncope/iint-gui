@@ -76,13 +76,14 @@ class iintSignalHandling(QtGui.QWidget):
 
     def activateConfiguration(self):
         self.firstModelCB.setDisabled(False)
-        self.configureFirst.setDisabled(False)
+        self.configureFirst.setDisabled(True)
         self.guessMode.setDisabled(False)
         #~ self.useFirst.setDisabled(False)
         self.useSecond.setDisabled(False)
         self.useThird.setDisabled(False)
         self.useFourth.setDisabled(False)
         self.guessMode.setChecked(True)
+        self.performFitPushBtn.setDisabled(False)
 
     def deactivateConfiguration(self):
         self.firstModelCB.setDisabled(True)
