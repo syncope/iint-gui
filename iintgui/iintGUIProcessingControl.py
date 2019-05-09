@@ -434,6 +434,21 @@ class IintGUIProcessingControl():
             except AttributeError:
                 self._processParameters["finalize"]["trackedData"] = [self._backgroundIntegralName]
 
+    def removeBKGparts(self):
+        # if there was some bkg information present/processed
+        # now it's the time to remove all traces:
+        try:
+            while(1):
+                self._processParameters["inspection"]["trackedData"].remove(self._backgroundIntegralName)
+        except ValueError:
+            # all values removed
+            pass
+        try:
+            while(1):
+                self._processParameters["finalize"]["trackedData"].remove(self._backgroundIntegralName)
+        except ValueError:
+            # all values removed
+            pass
 
     def processScanProfiles(self, name):
         self._processParameters["scanprofileplot"]["outfilename"] = name
@@ -748,11 +763,11 @@ class IintGUIProcessingControl():
         try:
             if 'scannumber' not in self._processParameters["finalize"]["trackedData"]:
                 self._processParameters["finalize"]["trackedData"] = \
-                    ['scannumber', self._fittedSignalName, self._trapintName, self._trapintName+"_stderr"], \
-                      self._backgroundIntegralName +  self._processParameters["finalize"]["trackedData"]
+                    ['scannumber', self._fittedSignalName, self._trapintName, self._trapintName+"_stderr"] + \
+                     self._processParameters["finalize"]["trackedData"]
         except TypeError:
             self._processParameters["finalize"]["trackedData"] = \
-                ['scannumber', self._fittedSignalName, self._trapintName, self._trapintName+"_stderr", self._backgroundIntegralName]
+                ['scannumber', self._fittedSignalName, self._trapintName, self._trapintName+"_stderr"]
         return self._processParameters["finalize"]
 
     def setTrackedData(self, namelist=[]):
