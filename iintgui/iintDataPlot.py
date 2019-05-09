@@ -46,6 +46,8 @@ class iintDataPlot(QtGui.QDialog):
         self.showFIT.stateChanged.connect(self.plot)
         self.logScale.stateChanged.connect(self.plot)
         self.viewPart.scene().sigMouseClicked.connect(self.mouse_click)
+        self.viewPart.enableAutoRange()
+        self.viewPart.autoRange()
         self.blacklistButton.clicked.connect(self._blacklisting)
         self._setBLB2Add()
         self._blacklist = []
@@ -83,6 +85,7 @@ class iintDataPlot(QtGui.QDialog):
         self.showBKG.setDisabled(True)
         self.showSIG.setDisabled(True)
         self.showFIT.setDisabled(True)
+        self.viewPart.autoRange()
         self._currentIndex = 0
         self._showraw = True
         self._showdespike = False
@@ -95,6 +98,7 @@ class iintDataPlot(QtGui.QDialog):
 
     def update(self, action=None):
         self._checkDataAvailability()
+        self.viewPart.autoRange()
         if(action == "des"):
             self.showDES.setChecked(True)
         if(action == "bkg"):
@@ -158,6 +162,7 @@ class iintDataPlot(QtGui.QDialog):
         self.showID.setText(str(datum.getData("scannumber")))
         xdata = datum.getData(self._motorName)
         ydata = datum.getData(self._observableName)
+        self.viewPart.autoRange()
         if (self._logScale):
             ydata = np.log10(np.clip(ydata, 10e-3, np.inf))
         self.viewPart.clear()
@@ -187,6 +192,7 @@ class iintDataPlot(QtGui.QDialog):
             self._yaxisname = "Signal intensity (log-Scale)"
         else:
             self._yaxisname = "Signal intensity"
+        self.viewPart.autoRange()
         self._xaxisname = str(self._motorName)
         self.viewPart.setLabel('left', self._yaxisname)
         self.viewPart.setLabel('bottom', self._xaxisname)
