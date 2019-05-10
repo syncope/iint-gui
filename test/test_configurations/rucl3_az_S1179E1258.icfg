@@ -1,47 +1,6 @@
-bkgfit:
-  error: None
-  model:
-    lin_:
-      modeltype: linearModel
-  result: bkgfitresult
-  type: curvefitting
-  useguessing: 0
-  usepreviousresult: 0
-  xdata: bkgX
-  ydata: bkgY
-bkgselect:
-  endpointnumber: 3
-  input:
-  - observable
-  - del
-  output:
-  - bkgY
-  - bkgX
-  selectors:
-  - selectfromstart
-  - selectfromend
-  sliceend: null
-  slicestart: null
-  slicestride: null
-  startpointnumber: 3
-  type: subsequenceselection
-bkgsubtract:
-  background: bkgPoints
-  input: observable
-  output: signalObservable
-  type: backgroundsubtraction
-calcbkgpoints:
-  fitresult: bkgfitresult
-  output: bkgPoints
-  type: gendatafromfunction
-  xdata: del
 execlist:
 - specread
 - observabledef
-- bkgselect
-- bkgfit
-- calcbkgpoints
-- bkgsubtract
 fioread:
   filenames: null
   output: rawdata
@@ -51,7 +10,7 @@ observabledef:
   exposureTime_column: dt
   id: scannumber
   input: rawdata
-  monitor_column: exp_vfc01
+  monitor_column: exp_vfc02
   motor_column: del
   output: observable
   type: iintdefinition
