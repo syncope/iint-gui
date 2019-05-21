@@ -708,6 +708,8 @@ class IintGUIProcessingControl():
             self._processParameters["bkgfit"]["model"] = {"linbkg_": {"modeltype": modelname}}
         elif modelname == "constantModel":
             self._processParameters["bkgfit"]["model"] = {"constbkg_": {"modeltype": modelname}}
+        elif modelname == "shiftedhyperbolaModel":
+            self._processParameters["bkgfit"]["model"] = {"hyperbolicbkg_": {"modeltype": modelname}}
         else:
             print("Unknown model for background. Check.")
 

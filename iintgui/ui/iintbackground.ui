@@ -6,7 +6,7 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>757</width>
+    <width>815</width>
     <height>90</height>
    </rect>
   </property>
@@ -59,6 +59,16 @@
           </property>
           <property name="text">
            <string>Const</string>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <widget class="QRadioButton" name="hyperbolicBkg">
+          <property name="enabled">
+           <bool>false</bool>
+          </property>
+          <property name="text">
+           <string>1/x</string>
           </property>
          </widget>
         </item>

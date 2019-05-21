@@ -40,6 +40,8 @@ class iintBackgroundHandling(QtGui.QWidget):
         self._subtractParDict = {}
         # if there are just two options, only one toggle needs to be connected
         self.constBkg.toggled.connect(self._setModel)
+        self.linearBkg.toggled.connect(self._setModel)
+        self.hyperbolicBkg.toggled.connect(self._setModel)
         self.fitBkg.clicked.connect(self.emittem)
         self._noBKG = True
         self.useBkg.stateChanged.connect(self._toggle)
@@ -65,6 +67,7 @@ class iintBackgroundHandling(QtGui.QWidget):
         self.bkgStartPointsSB.setDisabled(True)
         self.linearBkg.setDisabled(True)
         self.constBkg.setDisabled(True)
+        self.hyperbolicBkg.setDisabled(True)
         self.useBkg.setDisabled(True)
 
     def activate(self):
@@ -72,6 +75,7 @@ class iintBackgroundHandling(QtGui.QWidget):
         self.bkgStartPointsSB.setDisabled(False)
         self.linearBkg.setDisabled(False)
         self.constBkg.setDisabled(False)
+        self.hyperbolicBkg.setDisabled(False)
         self.useBkg.setDisabled(False)
         self.fitBkg.setDisabled(False)
 
@@ -88,6 +92,8 @@ class iintBackgroundHandling(QtGui.QWidget):
             self._model = "linearModel"
         elif self.constBkg.isChecked():
             self._model = "constantModel"
+        elif self.hyperbolicBkg.isChecked():
+            self._model = "shiftedhyperbolaModel"
         self.bkgmodel.emit(self._model)
 
     def setParameterDicts(self, dicts):
