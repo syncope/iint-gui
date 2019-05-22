@@ -164,6 +164,7 @@ class iintGUI(QtGui.QMainWindow):
         self._obsDef.observableDicts.connect(self.runObservable)
         self._bkgHandling.bkgDicts.connect(self.runBkgProcessing)
         self._bkgHandling.noBKG.connect(self._noBackgroundToggle)
+        self._bkgHandling.noBKG.connect(self._control.useBKG)
         self._simpleImageView.printButton.clicked.connect(self._printDisplayedData)
 
         self._initialGeometry = self.geometry()

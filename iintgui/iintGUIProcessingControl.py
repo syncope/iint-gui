@@ -435,6 +435,10 @@ class IintGUIProcessingControl():
                 self._processParameters["finalize"]["trackedData"] = [self._backgroundIntegralName]
 
     def removeBKGparts(self):
+        for datum in self._dataList:
+            datum.clearCurrent(self._signalName)
+            datum.clearCurrent(self._fittedSignalName)
+            datum.clearCurrent(self._fitSignalPointsName)
         # if there was some bkg information present/processed
         # now it's the time to remove all traces:
         try:
