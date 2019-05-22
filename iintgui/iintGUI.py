@@ -406,11 +406,11 @@ class iintGUI(QtGui.QMainWindow):
             filereaderdict = self._ffrGUI.getParameterDict()
             #~ self._fileInfo.setNames(filereaderdict["filename"], filereaderdict["scanlist"])
             self._control.setFioFile(filereaderdict["filenames"])
-            self._fileInfo.setNames(filereaderdict["filenames"][0], "...")
             self.message("Reading fio file(s): " + str(filereaderdict["filenames"]))
             ffr = self._control.createAndBulkExecute(filereaderdict)
             self._control.createDataList(ffr.getData(), self._control.getRawDataName())
             self._control.setDefaultOutputDirectory(filereaderdict["filenames"][0])
+            self._fileInfo.setNames(filereaderdict["filenames"][0] + ", ...", str(self._control.getScanlist()))
         self._outDir.setOutputDirectory(self._control.getOutputDirectory())
         # check for MCA! 
         #~ mcaDict = self._control.getMCA()
