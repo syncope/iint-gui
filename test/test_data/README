@@ -15,5 +15,9 @@ rucl3_az.spc 1179-1258
 # only test file with incorrect (?) MCA data from KROMO
 EuPtIn4_remeasured_scans-WITHKROMO.spc  
 
+cro05_2.spc 383-471
+
 # no further info
 maxmags.spc
+
+
