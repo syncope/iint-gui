@@ -122,7 +122,6 @@ class iintGUI(QtGui.QMainWindow):
 
         self._bkgHandling = iintBackgroundHandling.iintBackgroundHandling(self._control.getBKGDicts())
         self._bkgHandling.bkgmodel.connect(self._control.setBkgModel)
-        self._bkgHandling.useBkg.stateChanged.connect(self._checkBkgState)
 
         self._signalHandling = iintSignalHandling.iintSignalHandling(self._control.getSIGDict())
         self._signalHandling.passModels(self._control.getFitModels())
@@ -164,7 +163,7 @@ class iintGUI(QtGui.QMainWindow):
         self._obsDef.observableDicts.connect(self.runObservable)
         self._bkgHandling.bkgDicts.connect(self.runBkgProcessing)
         self._bkgHandling.noBKG.connect(self._noBackgroundToggle)
-        self._bkgHandling.noBKG.connect(self._control.useBKG)
+        #~ self._bkgHandling.noBKG.connect(self._control.useBKG)
         self._simpleImageView.printButton.clicked.connect(self._printDisplayedData)
 
         self._initialGeometry = self.geometry()
@@ -376,7 +375,7 @@ class iintGUI(QtGui.QMainWindow):
         else:
             return
         if "bkgsubtract" in runlist:
-            self._bkgHandling.setParameterDicts(self._control.getBKGDicts())
+            self._bkgHandling.setParameterDicts(self._control.getBKGDicts(), active=True)
             self.runBkgProcessing(self._control.getBKGDicts()[0], self._control.getBKGDicts()[1], self._control.getBKGDicts()[2], self._control.getBKGDicts()[3], reset=False)
         else:
             return
@@ -542,10 +541,11 @@ class iintGUI(QtGui.QMainWindow):
 
     def _noBackgroundToggle(self, nobkg):
         self._control.resetBKGdata()
+        self._control.useBKG(nobkg)
         if nobkg is 1:
             if(self._simpleImageView is not None):
                 self._simpleImageView.update("nobkg")
-            self._signalHandling.deactivateFitting()
+            self._signalHandling.activateFitting()
             self._inspectAnalyze.deactivate()
             self._control.removeBKGparts()
         else:
@@ -555,13 +555,6 @@ class iintGUI(QtGui.QMainWindow):
                 self._simpleImageView.update("unplotfit")
             except:
                 self.warning("Please inform the developer; this is a new issue.")
-
-    def _checkBkgState(self, i):
-        self._control.useBKG(i)
-        if i is 2:
-            self._signalHandling.deactivateConfiguration()
-        elif i is 0:
-            self._signalHandling.activateConfiguration()
 
     def plotit(self):
         # pyqt helper stuff
