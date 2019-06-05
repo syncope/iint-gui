@@ -37,12 +37,13 @@ try:
     from adapt.processes import integratefitresult
     from adapt.processes import backgroundsubtraction
     from adapt.processes import trapezoidintegration
-    from adapt.processes import iintfinalization
-    from adapt.processes import iintpolarization
-    from adapt.processes import iintcontrolplots
-    from adapt.processes import iintscanprofileplot
-    from adapt.processes import iintmcaplot
-    from adapt.processes import iintscanplot
+
+    from .processes import iintfinalization
+    from .processes import iintpolarization
+    from .processes import iintcontrolplots
+    from .processes import iintscanprofileplot
+    from .processes import iintmcaplot
+    from .processes import iintscanplot
 except ImportError:
     print("[iintGUIProcessingControl]:: adapt is not available, nothing can be instantiated.")
     pass
