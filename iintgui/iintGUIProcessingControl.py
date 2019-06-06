@@ -303,24 +303,20 @@ class IintGUIProcessingControl():
         self._processParameters["scanplot"]["motor"] = self._motorName
 
     def settingChoiceDesBkg(self):
-        print("updating bkg/des choice!::")
         # four cases des-bkg: no-no yes-no no-yes and yes-yes
         if self._nodespike and self._nobkg:
-            print("   no des -- no bkg ")
             self._processParameters["trapint"]["observable"] = self._observableName
             self._processParameters["signalcurvefit"]["ydata"] = self._observableName
             self._processParameters["inspection"]["observable"] = self._observableName
             self._processParameters["finalize"]["observable"] = self._observableName
             self._processParameters["scanplot"]["observable"] = self._observableName
         if not self._nodespike and self._nobkg:
-            print("   des -- no bkg ")
             self._processParameters["trapint"]["observable"] = self._despObservableName
             self._processParameters["signalcurvefit"]["ydata"] = self._despObservableName
             self._processParameters["inspection"]["observable"] = self._despObservableName
             self._processParameters["finalize"]["observable"] = self._despObservableName
             self._processParameters["scanplot"]["observable"] = self._despObservableName
         if self._nodespike and not self._nobkg:
-            print("   no des -- bkg ")
             self._processParameters["bkgselect"]["input"] = [self._observableName, self._motorName]
             self._processParameters["bkgsubtract"]["input"] = self._observableName
             self._processParameters["trapint"]["observable"] = self._signalName
@@ -329,7 +325,6 @@ class IintGUIProcessingControl():
             self._processParameters["finalize"]["observable"] = self._signalName
             self._processParameters["scanplot"]["observable"] = self._signalName
         if not self._nodespike and not self._nobkg:
-            print("   des -- bkg ")
             self._processParameters["bkgselect"]["input"] = [self._despObservableName, self._motorName]
             self._processParameters["bkgsubtract"]["input"] = self._despObservableName
             self._processParameters["trapint"]["observable"] = self._signalName
@@ -796,10 +791,7 @@ class IintGUIProcessingControl():
         self._trackedData.clear()
 
     def useBKG(self, value):
-        print("[ctrl::useBKG] called with : " + str(value))
-        
         self._nobkg = not value
-        print("[ctrl::useBKG] nobkg is : " + str(self._nobkg))
         self.settingChoiceDesBkg()
 
     def useDespike(self, value):

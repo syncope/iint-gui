@@ -91,7 +91,6 @@ class iintBackgroundHandling(QtGui.QWidget):
             self.noBKG.emit(1)
 
     def _setModel(self):
-        print("CALLING ALL MODELS")
         if self.linearBkg.isChecked():
             self._model = "linearModel"
         elif self.constBkg.isChecked():

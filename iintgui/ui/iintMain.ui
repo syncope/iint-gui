@@ -22,14 +22,14 @@
       </property>
       <widget class="QScrollArea" name="scrollArea">
        <property name="sizePolicy">
-        <sizepolicy hsizetype="MinimumExpanding" vsizetype="Expanding">
+        <sizepolicy hsizetype="Preferred" vsizetype="Expanding">
          <horstretch>255</horstretch>
          <verstretch>0</verstretch>
         </sizepolicy>
        </property>
        <property name="minimumSize">
         <size>
-         <width>480</width>
+         <width>540</width>
          <height>1</height>
         </size>
        </property>

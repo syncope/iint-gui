@@ -541,7 +541,10 @@ class iintGUI(QtGui.QMainWindow):
 
     def _noBackgroundToggle(self, nobkg):
         self._control.resetBKGdata()
-        self._control.useBKG(nobkg)
+        if nobkg is 1:
+            self._control.useBKG(False)
+        elif nobkg is 0:
+            self._control.useBKG(True)
         if nobkg is 1:
             if(self._simpleImageView is not None):
                 self._simpleImageView.update("nobkg")
