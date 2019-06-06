@@ -45,9 +45,6 @@ class iintObservableDefinition(QtGui.QWidget):
         self.despikeCheckBox.stateChanged.connect(self.toggleDespiking)
         self._despike = False
         self._notEnabled(True)
-        self.obsDisplayBtn.clicked.connect(self.emittit)
-        self.obsDisplayBtn.clicked.connect(self.activateShowScanProfile)
-        #~ self.obsDisplayBtn.clicked.connect(self.activateMCA)
         self._observableName = 'observable'
         self.motorCB.setToolTip("Choose the independent axis of the scan display (the 'motor'), e.g. from the scan command.")
         self.label.setToolTip("The shorthand notation for the used formula to calculate\nthe number of counts at the given motor position.")
@@ -58,7 +55,6 @@ class iintObservableDefinition(QtGui.QWidget):
         self.observableAttFacCB.setToolTip("Check the box to enable the choice of an attenuation factor entry.")
         self.despikeCheckBox.setToolTip("Check the box to run a despiking/filtering algorithm\non the scan data to dampen spikes/noise fluctuation.")
         self.overlayBtn.setToolTip("Open an overlay plot window to select scans to view at the same time.")
-        self.obsDisplayBtn.setToolTip("Once everything is set, click this button to perform\nthe calculation of the observable data and open a display.")
         self.showScanProfile.setToolTip("Creates a stack of all scans as matrix, creating an image.\nThe result is stored in a file, which is shown in an external viewer.")
         self.trackData.setToolTip("Open a dialog to select column and header\ndata to be included in the output file.")
         self.maptracks.setToolTip("After tracked data has been selected, choose data to map.")
@@ -71,7 +67,6 @@ class iintObservableDefinition(QtGui.QWidget):
         self.observableMonitorCB.currentIndexChanged.connect(self._checkStatus)
         self.observableTimeCB.currentIndexChanged.connect(self._checkStatus)
         self.observableAttFacCB.currentIndexChanged.connect(self._checkStatus)
-        self.obsDisplayBtn.setDisabled(True)
         # introduce a "memory" object for setting initial values for the combo boxes
         self._previousObsDict = {}
         self._previousDespDict = {}
@@ -89,13 +84,12 @@ class iintObservableDefinition(QtGui.QWidget):
         self.deactivateShowScanProfile()
         #~ self.showMCA.setDisabled(False)
         self.trackData.setDisabled(True)
-        self.obsDisplayBtn.setDisabled(True)
 
     def _checkStatus(self):
         # automatic check for the values in the combo boxes, run at every change
         # will fail if *any* relevant combo box value is invalid
         # at fail: no display/overlay/despike button is available
-        # at success: enables all three actions
+        # at success: enables all actions and draw the current selection!
         comboboxes = [self.motorCB, self.observableDetectorCB, self.observableMonitorCB, \
                       self.observableTimeCB]
         if self._useAttenuationFactor:
@@ -105,11 +99,10 @@ class iintObservableDefinition(QtGui.QWidget):
             if box.currentText() == self._default:
                 truth = False
         if truth:
-            self.obsDisplayBtn.setDisabled(False)
             self.despikeCheckBox.setDisabled(False)
             self.overlayBtn.setDisabled(False)
+            self.emittit()
         else:
-            self.obsDisplayBtn.setDisabled(True)
             self.despikeCheckBox.setDisabled(True)
             self.overlayBtn.setDisabled(True)
 
@@ -182,7 +175,6 @@ class iintObservableDefinition(QtGui.QWidget):
         self.observableAttFacCB.setDisabled(state)
         self.despikeCheckBox.setDisabled(state)
         self.overlayBtn.setDisabled(state)
-        self.obsDisplayBtn.setDisabled(state)
         self.trackData.setDisabled(state)
 
     def activateShowScanProfile(self):
@@ -227,6 +219,7 @@ class iintObservableDefinition(QtGui.QWidget):
             self.emittit()
 
     def emittit(self):
+        self.activateShowScanProfile()
         self._obsDict["type"] = "iintdefinition"
         self._obsDict["input"] = "rawdata"
         self._obsDict["motor_column"] = self._motorname
