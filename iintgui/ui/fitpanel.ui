@@ -6,7 +6,7 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>568</width>
+    <width>478</width>
     <height>220</height>
    </rect>
   </property>
@@ -142,7 +142,7 @@
           <item>
            <widget class="QCheckBox" name="guessMode">
             <property name="text">
-             <string>guess Parameters (single gaussian)</string>
+             <string>guess (single gaussian)</string>
             </property>
             <property name="checked">
              <bool>false</bool>

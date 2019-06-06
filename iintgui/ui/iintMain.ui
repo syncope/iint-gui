@@ -6,7 +6,7 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>1014</width>
+    <width>1044</width>
     <height>781</height>
    </rect>
   </property>
@@ -22,16 +22,19 @@
       </property>
       <widget class="QScrollArea" name="scrollArea">
        <property name="sizePolicy">
-        <sizepolicy hsizetype="Preferred" vsizetype="Expanding">
+        <sizepolicy hsizetype="Fixed" vsizetype="Expanding">
          <horstretch>255</horstretch>
          <verstretch>0</verstretch>
         </sizepolicy>
        </property>
        <property name="minimumSize">
         <size>
-         <width>540</width>
+         <width>580</width>
          <height>1</height>
         </size>
+       </property>
+       <property name="horizontalScrollBarPolicy">
+        <enum>Qt::ScrollBarAlwaysOff</enum>
        </property>
        <property name="widgetResizable">
         <bool>true</bool>
@@ -41,18 +44,42 @@
          <rect>
           <x>0</x>
           <y>0</y>
-          <width>904</width>
+          <width>568</width>
           <height>712</height>
          </rect>
+        </property>
+        <property name="sizePolicy">
+         <sizepolicy hsizetype="Fixed" vsizetype="Preferred">
+          <horstretch>0</horstretch>
+          <verstretch>0</verstretch>
+         </sizepolicy>
+        </property>
+        <property name="minimumSize">
+         <size>
+          <width>568</width>
+          <height>0</height>
+         </size>
+        </property>
+        <property name="maximumSize">
+         <size>
+          <width>568</width>
+          <height>16777215</height>
+         </size>
         </property>
        </widget>
       </widget>
       <widget class="QScrollArea" name="scrollArea2">
        <property name="sizePolicy">
-        <sizepolicy hsizetype="Preferred" vsizetype="Expanding">
+        <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
          <horstretch>0</horstretch>
          <verstretch>0</verstretch>
         </sizepolicy>
+       </property>
+       <property name="minimumSize">
+        <size>
+         <width>480</width>
+         <height>0</height>
+        </size>
        </property>
        <property name="widgetResizable">
         <bool>true</bool>
@@ -65,7 +92,7 @@
          <rect>
           <x>0</x>
           <y>0</y>
-          <width>82</width>
+          <width>478</width>
           <height>712</height>
          </rect>
         </property>
@@ -80,7 +107,7 @@
     <rect>
      <x>0</x>
      <y>0</y>
-     <width>1014</width>
+     <width>1044</width>
      <height>26</height>
     </rect>
    </property>
