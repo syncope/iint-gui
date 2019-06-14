@@ -94,11 +94,11 @@ class iintObservableDefinition(QtGui.QWidget):
                       self.observableTimeCB]
         if self._useAttenuationFactor:
             comboboxes.append(self.observableAttFacCB)
-        truth = True
+        check = True
         for box in comboboxes:
             if box.currentText() == self._default:
-                truth = False
-        if truth:
+                check = False
+        if check:
             self.despikeCheckBox.setDisabled(False)
             self.overlayBtn.setDisabled(False)
             self.emittit()
@@ -137,6 +137,7 @@ class iintObservableDefinition(QtGui.QWidget):
         self._scanmotorname = dataobject.getMotorName()
 
         # now set the texts and labels
+        self._blockSignals()
         self.motorCB.clear()
         self.observableDetectorCB.clear()
         self.observableMonitorCB.clear()
@@ -154,6 +155,7 @@ class iintObservableDefinition(QtGui.QWidget):
         self.observableMonitorCB.addItems(self._currentdataLabels)
         self.observableTimeCB.addItems(self._currentdataLabels)
         self.observableAttFacCB.addItems(self._currentdataLabels)
+        self._unblockSignals()
         if not self._useAttenuationFactor:
             self.observableAttFacCB.setDisabled(True)
             self._useAttenuationFactor = False
@@ -161,7 +163,9 @@ class iintObservableDefinition(QtGui.QWidget):
         if defaultmotor is not None:
             index = self.motorCB.findText(defaultmotor, QtCore.Qt.MatchExactly)
             if index >= 0:
+                #~ print(" trigger??")
                 self.motorCB.setCurrentIndex(index)
+                #~ print(" triggered??")
 
         if self._previousObsDict != {}:
             self.setParameterDicts(self._previousObsDict, self._previousDespDict)
@@ -251,6 +255,7 @@ class iintObservableDefinition(QtGui.QWidget):
 
         self._previousObsDict = self._obsDict.copy()
         self._previousDespDict = self._despikeDict.copy()
+        #~ print("emitting, the obsdict is: " + str(self._previousObsDict))
 
         self.observableDicts.emit(self._obsDict, self._despikeDict)
 
@@ -286,3 +291,21 @@ class iintObservableDefinition(QtGui.QWidget):
 
         if (despDict != {}):
             self.despikeCheckBox.setChecked(True)
+
+    def _blockSignals(self):
+        self.motorCB.blockSignals(True)
+        self.observableDetectorCB.blockSignals(True)
+        self.observableMonitorCB.blockSignals(True)
+        self.observableTimeCB.blockSignals(True)
+        self.observableAttFacCB.blockSignals(True)
+        self.observableAttFaccheck.blockSignals(True)
+        self.despikeCheckBox.blockSignals(True)
+
+    def _unblockSignals(self):
+        self.motorCB.blockSignals(False)
+        self.observableDetectorCB.blockSignals(False)
+        self.observableMonitorCB.blockSignals(False)
+        self.observableTimeCB.blockSignals(False)
+        self.observableAttFacCB.blockSignals(False)
+        self.observableAttFaccheck.blockSignals(False)
+        self.despikeCheckBox.blockSignals(False)
