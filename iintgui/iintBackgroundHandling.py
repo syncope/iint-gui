@@ -80,6 +80,8 @@ class iintBackgroundHandling(QtGui.QWidget):
         self.hyperbolicBkg.setDisabled(False)
         self.groupBox.setDisabled(False)
         #~ self.fitBkg.setDisabled(False)
+        # if it is already active, then do the magic
+        self._clicktoggle(self.groupBox.isChecked())
 
     def _clicktoggle(self, checked):
         if checked:

@@ -79,7 +79,6 @@ class iintSignalHandling(QtGui.QWidget):
         self.firstModelCB.setDisabled(False)
         self.configureFirst.setDisabled(True)
         self.guessMode.setDisabled(False)
-        #~ self.useFirst.setDisabled(False)
         self.useSecond.setDisabled(False)
         self.useThird.setDisabled(False)
         self.useFourth.setDisabled(False)
@@ -93,10 +92,11 @@ class iintSignalHandling(QtGui.QWidget):
 
     def activateFitting(self):
         self.performFitPushBtn.setDisabled(False)
-        #~ self.useFirst.setDisabled(False)
+        self.firstModelCB.setDisabled(False)
         self.useSecond.setDisabled(False)
         self.useThird.setDisabled(False)
         self.useFourth.setDisabled(False)
+        self._checkForGauss()
 
     def deactivateFitting(self):
         self.guessMode.setDisabled(True)
@@ -109,7 +109,6 @@ class iintSignalHandling(QtGui.QWidget):
         self.configureThird.setDisabled(True)
         self.fourthModelCB.setDisabled(True)
         self.configureFourth.setDisabled(True)
-        #~ self.useFirst.setDisabled(True)
         self.useSecond.setDisabled(True)
         self.useThird.setDisabled(True)
         self.useFourth.setDisabled(True)
@@ -136,9 +135,8 @@ class iintSignalHandling(QtGui.QWidget):
         #~ self.firstModelCB.setDisabled(self._inactive[0])
         #~ self.configureFirst.setDisabled(self._inactive[0])
 
-    def _checkForGauss(self, signal):
-        # signal is always the current index
-        # so: get the model name:
+    def _checkForGauss(self):
+        # get the model name:
         currentModel = self._modelnames[self.firstModelCB.currentIndex()]
         if currentModel != "gaussianModel":
             self.guessMode.setCheckState(0)

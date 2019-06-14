@@ -457,7 +457,7 @@ class iintGUI(QtGui.QMainWindow):
             if(self._simpleImageView is not None):
                 self._simpleImageView.update("des")
         self._bkgHandling.activate()
-        self._signalHandling.deactivateFitting()
+        self._signalHandling.activateConfiguration()
         self.message(" done.\n")
 
     def doOverlay(self):
