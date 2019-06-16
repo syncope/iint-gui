@@ -56,12 +56,15 @@ from . import iintInspectAnalyze
 from . import iintMCADialog
 from . import selectResultOutput
 
+# expandable/collapsible widget/group box:
+# https://stackoverflow.com/questions/52615115/how-to-create-collapsible-box-in-pyqt
+
 
 class iintGUI(QtGui.QMainWindow):
 
     def __init__(self, parent=None):
         super(iintGUI, self).__init__(parent)
-        uic.loadUi(getUIFile.getUIFile("iintMain.ui"), self)
+        uic.loadUi(getUIFile.getUIFile("iintMain2.ui"), self)
 
         self.actionNew.triggered.connect(self._askReset)
         self.action_Open_SPEC_file.triggered.connect(self.showSFRGUI)
