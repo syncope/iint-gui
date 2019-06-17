@@ -176,6 +176,7 @@ class iintGUI(QtGui.QMainWindow):
         self._initialGeometry = self.geometry()
         self._widgetList = []
         self._trackedDataDict = {}
+        self._resultTabIndices = []
         self._resultFileName = None
         self._outDir.newdirectory.connect(self._control.setOutputDirectory)
 
@@ -261,6 +262,19 @@ class iintGUI(QtGui.QMainWindow):
                 for tab in range(self.imageTabs.count()):
                     self.imageTabs.removeTab(tab)
             self.imageTabs.hide()
+
+    def resetResultTabs(self, keepSpectra=False):
+        self._resultTabIndices = list(set(self._resultTabIndices))
+        self._resultTabIndices.sort(reverse=True)
+        if keepSpectra:
+            for index in self._resultTabIndices:
+                self.imageTabs.removeTab(index)
+        else:
+            while self.imageTabs.count() >= 1:
+                for tab in range(self.imageTabs.count()):
+                    self.imageTabs.removeTab(tab)
+            self.imageTabs.hide()
+        self._resultTabIndices.clear()
 
     def closeEvent(self, event):
         event.ignore()
@@ -515,7 +529,7 @@ class iintGUI(QtGui.QMainWindow):
 
     def runBkgProcessing(self, selDict, fitDict, calcDict, subtractDict, reset=True):
         if reset:
-            self.resetTabs(keepSpectra=True)
+            self.resetResultTabs(keepSpectra=True)
             self._inspectAnalyze.reset()
             self._control.resetSIGdata()
             self._signalHandling.setParameterDict(self._control.getSIGDict())
@@ -535,6 +549,8 @@ class iintGUI(QtGui.QMainWindow):
             self.warning("Can't use the selection of the background points, please recheck.")
             return
         try:
+            self.message("... doing the right thing?...")
+            
             self._control.createAndBulkExecute(fitDict)
             self._control.performBKGIntegration()
         except ValueError:
@@ -549,7 +565,7 @@ class iintGUI(QtGui.QMainWindow):
 
     def _noBackgroundToggle(self, nobkg):
         self._control.resetBKGdata()
-        self.resetTabs(keepSpectra=True)
+        self.resetResultTabs(keepSpectra=True)
         if nobkg is 1:
             self._control.useBKG(False)
         elif nobkg is 0:
@@ -627,7 +643,7 @@ class iintGUI(QtGui.QMainWindow):
         trackinfo = self._control.getDefaultTrackInformation()
         tdv = iintMultiTrackedDataView.iintMultiTrackedDataView(trackinfo)
         self._trackedDataDict[trackinfo.getName()] = trackinfo
-        self.imageTabs.addTab(tdv, ("Fit vs." + trackinfo.getName()))
+        self._resultTabIndices.append(self.imageTabs.addTab(tdv, ("Fit vs." + trackinfo.getName())))
 
         tdv.pickedTrackedDataPoint.connect(self._setFocusToSpectrum)
         self.message(" ... done.\n")
@@ -788,7 +804,7 @@ class iintGUI(QtGui.QMainWindow):
             trackinfo = self._control.getTrackInformation(name)
             tdv = iintMultiTrackedDataView.iintMultiTrackedDataView(trackinfo, self._blacklist)
             self._trackedDataDict[trackinfo.getName()] = trackinfo
-            self.imageTabs.addTab(tdv, trackinfo.getName())
+            self._resultTabIndices.append(self.imageTabs.addTab(tdv, trackinfo.getName()))
             tdv.pickedTrackedDataPoint.connect(self._setFocusToSpectrum)
 
     def _addMappedData(self, one, two):
@@ -838,7 +854,7 @@ class iintGUI(QtGui.QMainWindow):
         for k, v in self._trackedDataDict.items():
             tdv = iintMultiTrackedDataView.iintMultiTrackedDataView(v, blacklist)
             tdv.pickedTrackedDataPoint.connect(self._setFocusToSpectrum)
-            self.imageTabs.addTab(tdv, k)
+            self._resultTabIndices.append(self.imageTabs.addTab(tdv, k))
 
     def _showInspectionPlots(self):
         tempDict = self._control.getInspectionDict()
