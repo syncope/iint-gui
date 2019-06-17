@@ -515,6 +515,7 @@ class iintGUI(QtGui.QMainWindow):
 
     def runBkgProcessing(self, selDict, fitDict, calcDict, subtractDict, reset=True):
         if reset:
+            self.resetTabs(keepSpectra=True)
             self._inspectAnalyze.reset()
             self._control.resetSIGdata()
             self._signalHandling.setParameterDict(self._control.getSIGDict())
@@ -548,6 +549,7 @@ class iintGUI(QtGui.QMainWindow):
 
     def _noBackgroundToggle(self, nobkg):
         self._control.resetBKGdata()
+        self.resetTabs(keepSpectra=True)
         if nobkg is 1:
             self._control.useBKG(False)
         elif nobkg is 0:
