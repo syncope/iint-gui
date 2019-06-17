@@ -56,15 +56,14 @@ from . import iintInspectAnalyze
 from . import iintMCADialog
 from . import selectResultOutput
 
-# expandable/collapsible widget/group box:
-# https://stackoverflow.com/questions/52615115/how-to-create-collapsible-box-in-pyqt
+from . import collapsibleBox
 
 
 class iintGUI(QtGui.QMainWindow):
 
     def __init__(self, parent=None):
         super(iintGUI, self).__init__(parent)
-        uic.loadUi(getUIFile.getUIFile("iintMain2.ui"), self)
+        uic.loadUi(getUIFile.getUIFile("iintMain.ui"), self)
 
         self.actionNew.triggered.connect(self._askReset)
         self.action_Open_SPEC_file.triggered.connect(self.showSFRGUI)
@@ -110,6 +109,11 @@ class iintGUI(QtGui.QMainWindow):
         self._sfrGUI = specfilereader.specfilereaderGUI()
         self._ffrGUI = fiofilereader.fiofilereaderGUI()
         self._obsDef = iintObservableDefinition.iintObservableDefinition()
+        templayout = QtGui.QVBoxLayout()
+        templayout.addWidget(self._obsDef)
+        self._obsDefBox = collapsibleBox.CollapsibleBox("Signal definition")
+        self._obsDefBox.setContentLayout(templayout)
+
         self._obsDef.doDespike.connect(self._control.useDespike)
         self._obsDef.showScanProfile.clicked.connect(self._runScanProfiles)
         self._obsDef.motorName.connect(self.setMotorName)
@@ -153,7 +157,7 @@ class iintGUI(QtGui.QMainWindow):
 
         self.verticalLayout.addWidget(self._fileInfo)
         self.verticalLayout.addWidget(self._outDir)
-        self.verticalLayout.addWidget(self._obsDef)
+        self.verticalLayout.addWidget(self._obsDefBox)
         self.verticalLayout.addWidget(self._bkgHandling)
         self.verticalLayout.addWidget(self._signalHandling)
         self.verticalLayout.addWidget(self._inspectAnalyze)

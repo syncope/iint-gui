@@ -30,7 +30,8 @@ class iintObservableDefinition(QtGui.QWidget):
     def __init__(self, parent=None):
         super(iintObservableDefinition, self).__init__(parent)
         self.setWindowTitle("Observable definition")
-        uic.loadUi(getUIFile.getUIFile("iintobservable.ui"), self)
+        #~ uic.loadUi(getUIFile.getUIFile("iintobservable.ui"), self)
+        uic.loadUi(getUIFile.getUIFile("iintSignalDefinition.ui"), self)
         self._obsDict = {}
         self._despikeDict = {}
         self._trapintDict = {}
