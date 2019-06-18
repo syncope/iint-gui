@@ -538,6 +538,7 @@ class iintGUI(QtGui.QMainWindow):
             self._bkgHandling.setParameterDicts(self._control.getBKGDicts())
             self._signalHandling.deactivateFitting()
         self.message("Fitting background ...")
+
         if selDict == {}:
             self._control.useBKG(False)
             self.message("... nothing to be done.\n")
@@ -549,8 +550,6 @@ class iintGUI(QtGui.QMainWindow):
             self.warning("Can't use the selection of the background points, please recheck.")
             return
         try:
-            self.message("... doing the right thing?...")
-            
             self._control.createAndBulkExecute(fitDict)
             self._control.performBKGIntegration()
         except ValueError:

@@ -437,6 +437,7 @@ class IintGUIProcessingControl():
     def removeBKGparts(self):
         for datum in self._dataList:
             datum.clearCurrent(self._signalName)
+            datum.clearCurrent(self._backgroundIntegralName)
             datum.clearCurrent(self._fittedSignalName)
             datum.clearCurrent(self._fitSignalPointsName)
         # if there was some bkg information present/processed
@@ -781,8 +782,9 @@ class IintGUIProcessingControl():
             return
         self._cleanUpTrackedData()
         self._trackedData = namelist
-        self._processParameters["inspection"]["trackedData"] = namelist
-        self._processParameters["finalize"]["trackedData"] = namelist
+        # hard lesson learned: shared lists are the same!
+        self._processParameters["inspection"]["trackedData"] = namelist.copy()
+        self._processParameters["finalize"]["trackedData"] = namelist.copy()
 
     def getTrackedData(self):
         return self._trackedData
@@ -808,6 +810,7 @@ class IintGUIProcessingControl():
         '''Collect the tracked data given by name.
            Returns the name, value and error of the tracked parameter,
            plus a dictionary of the fitted parameters including their error.'''
+
         value, error = [], []
         infoholder = {}
         for datum in self._dataList:
