@@ -43,6 +43,7 @@ from . import outputDir
 from . import iintObservableDefinition
 from . import iintBackgroundHandling
 from . import iintSignalHandling
+from . import iintSignalFitting
 from . import iintTrackedDataChoice
 from . import trackedDataMap
 from . import iintTrackedDataMapDisplay
@@ -138,6 +139,9 @@ class iintGUI(QtGui.QMainWindow):
         self._signalHandling.performFitPushBtn.clicked.connect(self._prepareSignalFitting)
         self._fitList = []
 
+        self._signalFitting = iintSignalFitting.iintSignalFitting(self._control.getSIGDict())
+
+
         self._inspectAnalyze = iintInspectAnalyze.iintInspectAnalyze()
         self._inspectAnalyze.trackedColumnsPlot.clicked.connect(self._runTrackedControlPlots)
         self._inspectAnalyze.showScanFits.clicked.connect(self._runScanControlPlots)
@@ -159,7 +163,8 @@ class iintGUI(QtGui.QMainWindow):
         self.verticalLayout.addWidget(self._outDir)
         self.verticalLayout.addWidget(self._obsDefBox)
         self.verticalLayout.addWidget(self._bkgHandling)
-        self.verticalLayout.addWidget(self._signalHandling)
+        #~ self.verticalLayout.addWidget(self._signalHandling)
+        self.verticalLayout.addWidget(self._signalFitting)
         self.verticalLayout.addWidget(self._inspectAnalyze)
         self.verticalLayout.addWidget(self._loggingBox)
 
