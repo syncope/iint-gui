@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>252</width>
-    <height>169</height>
+    <width>350</width>
+    <height>182</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -17,7 +17,7 @@
    <item row="0" column="0">
     <widget class="QGroupBox" name="FitPanel">
      <property name="title">
-      <string>Fitting</string>
+      <string>Signal fitting</string>
      </property>
      <layout class="QGridLayout" name="gridLayout_2">
       <item row="0" column="0">
@@ -32,50 +32,43 @@
            </widget>
           </item>
           <item row="3" column="0">
-           <widget class="QListView" name="listView"/>
-          </item>
-          <item row="4" column="1">
-           <widget class="QPushButton" name="pushButton_2">
-            <property name="text">
-             <string>Fit</string>
-            </property>
-           </widget>
+           <widget class="QListView" name="currentModelList"/>
           </item>
           <item row="3" column="1">
            <layout class="QVBoxLayout" name="verticalLayout_3">
             <item>
              <layout class="QHBoxLayout" name="horizontalLayout_2">
               <item>
-               <widget class="QLabel" name="label_2">
+               <widget class="QPushButton" name="addButton">
                 <property name="text">
                  <string>Add</string>
                 </property>
                </widget>
               </item>
               <item>
-               <widget class="QComboBox" name="comboBox"/>
+               <widget class="QComboBox" name="modelList"/>
               </item>
              </layout>
             </item>
             <item>
-             <widget class="QPushButton" name="pushButton_3">
+             <widget class="QPushButton" name="removeButton">
+              <property name="enabled">
+               <bool>false</bool>
+              </property>
               <property name="text">
                <string>Remove </string>
               </property>
              </widget>
             </item>
             <item>
-             <spacer name="verticalSpacer">
-              <property name="orientation">
-               <enum>Qt::Vertical</enum>
+             <widget class="QPushButton" name="fitButton">
+              <property name="enabled">
+               <bool>false</bool>
               </property>
-              <property name="sizeHint" stdset="0">
-               <size>
-                <width>20</width>
-                <height>40</height>
-               </size>
+              <property name="text">
+               <string>Fit</string>
               </property>
-             </spacer>
+             </widget>
             </item>
            </layout>
           </item>
