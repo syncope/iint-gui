@@ -625,6 +625,7 @@ class iintGUI(QtGui.QMainWindow):
             self._inspectAnalyze.reset()
         rundict = self._control.getSIGDict()
         self.message("Fitting the signal, this can take a while ...")
+        # this is a bad idea; this is specific code and needs to be put into the control part!!
         if self._control.guessSignalFit():
             rundict['model'] = { "m0_": { 'modeltype': "gaussianModel",
                   'm0_center' : {'value':1.},
