@@ -1,3 +1,12 @@
+iintgui (0.11.0-1+deb9u5~fsec) stretch; urgency=low
+
+  * Lots of bug fixes: config propagation, types, call logic, draw logic.
+  * New features: + auto-draw signal as soon as values exist.
+                  + auto perform bkg subtraction and settings when toggled.
+                  + re-setting all values properly at config changes.
+
+ -- Christoph Rosemann <christoph.rosemann@desy.de>  Thu, 20 Jun 2019 10:18:00 +0100
+
 iintgui (0.10.3-1+deb9u5~fsec) stretch; urgency=low
 
   * Fixed annoying scaling bug when plotting for the first time.
