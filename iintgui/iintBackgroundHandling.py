@@ -70,7 +70,7 @@ class iintBackgroundHandling(QtGui.QWidget):
         self.constBkg.setDisabled(True)
         self.hyperbolicBkg.setDisabled(True)
         self.groupBox.setDisabled(True)
-        #~ self.groupBox.setChecked(False)
+        self.groupBox.setChecked(False)
 
     def activate(self):
         self.bkgEndPointsSB.setDisabled(False)
