@@ -27,13 +27,16 @@ class iintSignalFitting(QtGui.QWidget):
     #~ removeIndex = QtCore.pyqtSignal(int)
     #~ guesspeak = QtCore.pyqtSignal(int)
 
-    def __init__(self, pDict, modellist=None, parent=None):
+    def __init__(self, pDict, modellist, parent=None):
         super(iintSignalFitting, self).__init__(parent)
         uic.loadUi(getUIFile.getUIFile("fitpanel2.ui"), self)
         #~ self._hiddencblist = [self.firstModelCB, self.secondModelCB, self.thirdModelCB, self.fourthModelCB]
         #~ self._dummy = True
         #~ self._hiddenuselist = [self._dummy, self.useSecond, self.useThird, self.useFourth]
         self.setParameterDict(pDict)
+        self.modelList.addItems(sorted(modellist))
+        self.currentModelList.itemClicked.connect(self._currentFunctionClicked)
+        self.removeButton.clicked.connect(self._removeCurrentFunction)
         #~ self.performFitPushBtn.setDisabled(True)
         #~ self.guessMode.setDisabled(True)
         #~ self.guessMode.stateChanged.connect(self.doGuessing)
@@ -50,21 +53,6 @@ class iintSignalFitting(QtGui.QWidget):
         self.addButton.setDisabled(True)
         self.removeButton.setDisabled(True)
         self.fitButton.setDisabled(True)
-
-    #~ def activateConfiguration(self):
-        #~ self.firstModelCB.setDisabled(False)
-        #~ self.configureFirst.setDisabled(True)
-        #~ self.guessMode.setDisabled(False)
-        #~ self.useSecond.setDisabled(False)
-        #~ self.useThird.setDisabled(False)
-        #~ self.useFourth.setDisabled(False)
-        #~ self.guessMode.setChecked(True)
-        #~ self.performFitPushBtn.setDisabled(False)
-
-    #~ def deactivateConfiguration(self):
-        #~ self.firstModelCB.setDisabled(True)
-        #~ self.configureFirst.setDisabled(True)
-        #~ self.guessMode.setDisabled(True)
 
     def setParameterDict(self, pDict):
         self._parDict = pDict
@@ -84,6 +72,15 @@ class iintSignalFitting(QtGui.QWidget):
         self.addButton.setDisabled(True)
         self.removeButton.setDisabled(True)
         self.fitButton.setDisabled(True)
+
+    def _currentFunctionClicked(self, item):
+        self._currentSelected = item
+        self.removeButton.setDisabled(False)
+
+    def _removeCurrentFunction(self):
+        self.removeButton.setDisabled(True)
+        pass
+        #self._currentModel.
 
     #~ def doGuessing(self, state):
         #~ if state is 2:

@@ -139,7 +139,7 @@ class iintGUI(QtGui.QMainWindow):
         self._signalHandling.performFitPushBtn.clicked.connect(self._prepareSignalFitting)
         self._fitList = []
 
-        self._signalFitting = iintSignalFitting.iintSignalFitting(self._control.getSIGDict())
+        self._signalFitting = iintSignalFitting.iintSignalFitting(self._control.getSIGDict(), self._control.getFitModels())
 
 
         self._inspectAnalyze = iintInspectAnalyze.iintInspectAnalyze()
