@@ -1,3 +1,9 @@
+iintgui (0.10.3-1+deb9u5~fsec) stretch; urgency=low
+
+  * Fixed annoying scaling bug when plotting for the first time.
+
+ -- Christoph Rosemann <christoph.rosemann@desy.de>  Thu, 9 May 2019 16:24:00 +0100
+
 iintgui (0.10.2-1+deb9u5~fsec) stretch; urgency=low
 
   * More bug fixes.
