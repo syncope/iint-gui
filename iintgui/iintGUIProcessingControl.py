@@ -26,10 +26,9 @@ try:
     from adapt import processData
     from adapt import processBuilder
     from adapt import processingConfiguration
-    
+
     from adapt.processes import specfilereader
     from adapt.processes import fiofilereader
-    from adapt.processes import iintdefinition
     from adapt.processes import filter1d
     from adapt.processes import subsequenceselection
     from adapt.processes import curvefitting
@@ -37,6 +36,7 @@ try:
     from adapt.processes import integratefitresult
     from adapt.processes import backgroundsubtraction
     from adapt.processes import trapezoidintegration
+    from adapt.processes import iintdefinition
     from adapt.processes import iintfinalization
     from adapt.processes import iintpolarization
     from adapt.processes import iintcontrolplots
@@ -435,6 +435,11 @@ class IintGUIProcessingControl():
                 self._processParameters["finalize"]["trackedData"] = [self._backgroundIntegralName]
 
     def removeBKGparts(self):
+        for datum in self._dataList:
+            datum.clearCurrent(self._signalName)
+            datum.clearCurrent(self._backgroundIntegralName)
+            datum.clearCurrent(self._fittedSignalName)
+            datum.clearCurrent(self._fitSignalPointsName)
         # if there was some bkg information present/processed
         # now it's the time to remove all traces:
         try:
@@ -708,6 +713,8 @@ class IintGUIProcessingControl():
             self._processParameters["bkgfit"]["model"] = {"linbkg_": {"modeltype": modelname}}
         elif modelname == "constantModel":
             self._processParameters["bkgfit"]["model"] = {"constbkg_": {"modeltype": modelname}}
+        elif modelname == "shiftedhyperbolaModel":
+            self._processParameters["bkgfit"]["model"] = {"hyperbolicbkg_": {"modeltype": modelname}}
         else:
             print("Unknown model for background. Check.")
 
@@ -775,8 +782,9 @@ class IintGUIProcessingControl():
             return
         self._cleanUpTrackedData()
         self._trackedData = namelist
-        self._processParameters["inspection"]["trackedData"] = namelist
-        self._processParameters["finalize"]["trackedData"] = namelist
+        # hard lesson learned: shared lists are the same!
+        self._processParameters["inspection"]["trackedData"] = namelist.copy()
+        self._processParameters["finalize"]["trackedData"] = namelist.copy()
 
     def getTrackedData(self):
         return self._trackedData
@@ -802,6 +810,7 @@ class IintGUIProcessingControl():
         '''Collect the tracked data given by name.
            Returns the name, value and error of the tracked parameter,
            plus a dictionary of the fitted parameters including their error.'''
+
         value, error = [], []
         infoholder = {}
         for datum in self._dataList:

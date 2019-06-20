@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>493</width>
-    <height>313</height>
+    <width>478</width>
+    <height>359</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -92,7 +92,14 @@
            </widget>
           </item>
           <item>
-           <widget class="QComboBox" name="motorCB"/>
+           <widget class="QComboBox" name="motorCB">
+            <property name="sizePolicy">
+             <sizepolicy hsizetype="Minimum" vsizetype="Fixed">
+              <horstretch>0</horstretch>
+              <verstretch>0</verstretch>
+             </sizepolicy>
+            </property>
+           </widget>
           </item>
          </layout>
         </item>
@@ -106,7 +113,14 @@
            </widget>
           </item>
           <item>
-           <widget class="QComboBox" name="observableDetectorCB"/>
+           <widget class="QComboBox" name="observableDetectorCB">
+            <property name="sizePolicy">
+             <sizepolicy hsizetype="Minimum" vsizetype="Fixed">
+              <horstretch>0</horstretch>
+              <verstretch>0</verstretch>
+             </sizepolicy>
+            </property>
+           </widget>
           </item>
          </layout>
         </item>
@@ -120,7 +134,14 @@
            </widget>
           </item>
           <item>
-           <widget class="QComboBox" name="observableMonitorCB"/>
+           <widget class="QComboBox" name="observableMonitorCB">
+            <property name="sizePolicy">
+             <sizepolicy hsizetype="Preferred" vsizetype="Minimum">
+              <horstretch>0</horstretch>
+              <verstretch>0</verstretch>
+             </sizepolicy>
+            </property>
+           </widget>
           </item>
          </layout>
         </item>
@@ -134,7 +155,14 @@
            </widget>
           </item>
           <item>
-           <widget class="QComboBox" name="observableTimeCB"/>
+           <widget class="QComboBox" name="observableTimeCB">
+            <property name="sizePolicy">
+             <sizepolicy hsizetype="Preferred" vsizetype="Minimum">
+              <horstretch>0</horstretch>
+              <verstretch>0</verstretch>
+             </sizepolicy>
+            </property>
+           </widget>
           </item>
          </layout>
         </item>
@@ -148,7 +176,14 @@
            </widget>
           </item>
           <item>
-           <widget class="QComboBox" name="observableAttFacCB"/>
+           <widget class="QComboBox" name="observableAttFacCB">
+            <property name="sizePolicy">
+             <sizepolicy hsizetype="Preferred" vsizetype="Minimum">
+              <horstretch>0</horstretch>
+              <verstretch>0</verstretch>
+             </sizepolicy>
+            </property>
+           </widget>
           </item>
          </layout>
         </item>
@@ -250,29 +285,6 @@
            <widget class="QPushButton" name="overlayBtn">
             <property name="text">
              <string>Overlay</string>
-            </property>
-           </widget>
-          </item>
-          <item>
-           <spacer name="horizontalSpacer_4">
-            <property name="orientation">
-             <enum>Qt::Horizontal</enum>
-            </property>
-            <property name="sizeHint" stdset="0">
-             <size>
-              <width>40</width>
-              <height>20</height>
-             </size>
-            </property>
-           </spacer>
-          </item>
-          <item>
-           <widget class="QPushButton" name="obsDisplayBtn">
-            <property name="text">
-             <string>Display</string>
-            </property>
-            <property name="default">
-             <bool>true</bool>
             </property>
            </widget>
           </item>

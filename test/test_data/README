@@ -1,0 +1,23 @@
+Info for file reading into iint-gui
+___________________________________
+
+FIO files -> just load
+# standard test file, a polarization analysis
+MnCo15.spc 699-740 
+
+# test file for different scan positions
+EuPtIn4_remeasured_clean.spc 349, 356, 361, 367, 373, 379, 385, 391
+
+# test file for alternative background
+rucl3_az.spc 1179-1258
+
+# other files:
+# only test file with incorrect (?) MCA data from KROMO
+EuPtIn4_remeasured_scans-WITHKROMO.spc  
+
+cro05_2.spc 383-471
+
+# no further info
+maxmags.spc
+
+

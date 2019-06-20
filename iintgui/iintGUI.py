@@ -56,6 +56,8 @@ from . import iintInspectAnalyze
 from . import iintMCADialog
 from . import selectResultOutput
 
+from . import collapsibleBox
+
 
 class iintGUI(QtGui.QMainWindow):
 
@@ -107,6 +109,11 @@ class iintGUI(QtGui.QMainWindow):
         self._sfrGUI = specfilereader.specfilereaderGUI()
         self._ffrGUI = fiofilereader.fiofilereaderGUI()
         self._obsDef = iintObservableDefinition.iintObservableDefinition()
+        templayout = QtGui.QVBoxLayout()
+        templayout.addWidget(self._obsDef)
+        self._obsDefBox = collapsibleBox.CollapsibleBox("Signal definition")
+        self._obsDefBox.setContentLayout(templayout)
+
         self._obsDef.doDespike.connect(self._control.useDespike)
         self._obsDef.showScanProfile.clicked.connect(self._runScanProfiles)
         self._obsDef.motorName.connect(self.setMotorName)
@@ -122,7 +129,6 @@ class iintGUI(QtGui.QMainWindow):
 
         self._bkgHandling = iintBackgroundHandling.iintBackgroundHandling(self._control.getBKGDicts())
         self._bkgHandling.bkgmodel.connect(self._control.setBkgModel)
-        self._bkgHandling.useBkg.stateChanged.connect(self._checkBkgState)
 
         self._signalHandling = iintSignalHandling.iintSignalHandling(self._control.getSIGDict())
         self._signalHandling.passModels(self._control.getFitModels())
@@ -151,7 +157,7 @@ class iintGUI(QtGui.QMainWindow):
 
         self.verticalLayout.addWidget(self._fileInfo)
         self.verticalLayout.addWidget(self._outDir)
-        self.verticalLayout.addWidget(self._obsDef)
+        self.verticalLayout.addWidget(self._obsDefBox)
         self.verticalLayout.addWidget(self._bkgHandling)
         self.verticalLayout.addWidget(self._signalHandling)
         self.verticalLayout.addWidget(self._inspectAnalyze)
@@ -164,11 +170,13 @@ class iintGUI(QtGui.QMainWindow):
         self._obsDef.observableDicts.connect(self.runObservable)
         self._bkgHandling.bkgDicts.connect(self.runBkgProcessing)
         self._bkgHandling.noBKG.connect(self._noBackgroundToggle)
+        #~ self._bkgHandling.noBKG.connect(self._control.useBKG)
         self._simpleImageView.printButton.clicked.connect(self._printDisplayedData)
 
         self._initialGeometry = self.geometry()
         self._widgetList = []
         self._trackedDataDict = {}
+        self._resultTabIndices = []
         self._resultFileName = None
         self._outDir.newdirectory.connect(self._control.setOutputDirectory)
 
@@ -254,6 +262,19 @@ class iintGUI(QtGui.QMainWindow):
                 for tab in range(self.imageTabs.count()):
                     self.imageTabs.removeTab(tab)
             self.imageTabs.hide()
+
+    def resetResultTabs(self, keepSpectra=False):
+        self._resultTabIndices = list(set(self._resultTabIndices))
+        self._resultTabIndices.sort(reverse=True)
+        if keepSpectra:
+            for index in self._resultTabIndices:
+                self.imageTabs.removeTab(index)
+        else:
+            while self.imageTabs.count() >= 1:
+                for tab in range(self.imageTabs.count()):
+                    self.imageTabs.removeTab(tab)
+            self.imageTabs.hide()
+        self._resultTabIndices.clear()
 
     def closeEvent(self, event):
         event.ignore()
@@ -375,7 +396,7 @@ class iintGUI(QtGui.QMainWindow):
         else:
             return
         if "bkgsubtract" in runlist:
-            self._bkgHandling.setParameterDicts(self._control.getBKGDicts())
+            self._bkgHandling.setParameterDicts(self._control.getBKGDicts(), active=True)
             self.runBkgProcessing(self._control.getBKGDicts()[0], self._control.getBKGDicts()[1], self._control.getBKGDicts()[2], self._control.getBKGDicts()[3], reset=False)
         else:
             return
@@ -406,11 +427,11 @@ class iintGUI(QtGui.QMainWindow):
             filereaderdict = self._ffrGUI.getParameterDict()
             #~ self._fileInfo.setNames(filereaderdict["filename"], filereaderdict["scanlist"])
             self._control.setFioFile(filereaderdict["filenames"])
-            self._fileInfo.setNames(filereaderdict["filenames"][0], "...")
             self.message("Reading fio file(s): " + str(filereaderdict["filenames"]))
             ffr = self._control.createAndBulkExecute(filereaderdict)
             self._control.createDataList(ffr.getData(), self._control.getRawDataName())
             self._control.setDefaultOutputDirectory(filereaderdict["filenames"][0])
+            self._fileInfo.setNames(filereaderdict["filenames"][0] + ", ...", str(self._control.getScanlist()))
         self._outDir.setOutputDirectory(self._control.getOutputDirectory())
         # check for MCA! 
         #~ mcaDict = self._control.getMCA()
@@ -457,7 +478,7 @@ class iintGUI(QtGui.QMainWindow):
             if(self._simpleImageView is not None):
                 self._simpleImageView.update("des")
         self._bkgHandling.activate()
-        self._signalHandling.deactivateFitting()
+        self._signalHandling.activateConfiguration()
         self.message(" done.\n")
 
     def doOverlay(self):
@@ -508,6 +529,7 @@ class iintGUI(QtGui.QMainWindow):
 
     def runBkgProcessing(self, selDict, fitDict, calcDict, subtractDict, reset=True):
         if reset:
+            self.resetResultTabs(keepSpectra=True)
             self._inspectAnalyze.reset()
             self._control.resetSIGdata()
             self._signalHandling.setParameterDict(self._control.getSIGDict())
@@ -516,6 +538,7 @@ class iintGUI(QtGui.QMainWindow):
             self._bkgHandling.setParameterDicts(self._control.getBKGDicts())
             self._signalHandling.deactivateFitting()
         self.message("Fitting background ...")
+
         if selDict == {}:
             self._control.useBKG(False)
             self.message("... nothing to be done.\n")
@@ -541,10 +564,15 @@ class iintGUI(QtGui.QMainWindow):
 
     def _noBackgroundToggle(self, nobkg):
         self._control.resetBKGdata()
+        self.resetResultTabs(keepSpectra=True)
+        if nobkg is 1:
+            self._control.useBKG(False)
+        elif nobkg is 0:
+            self._control.useBKG(True)
         if nobkg is 1:
             if(self._simpleImageView is not None):
                 self._simpleImageView.update("nobkg")
-            self._signalHandling.deactivateFitting()
+            self._signalHandling.activateFitting()
             self._inspectAnalyze.deactivate()
             self._control.removeBKGparts()
         else:
@@ -554,13 +582,6 @@ class iintGUI(QtGui.QMainWindow):
                 self._simpleImageView.update("unplotfit")
             except:
                 self.warning("Please inform the developer; this is a new issue.")
-
-    def _checkBkgState(self, i):
-        self._control.useBKG(i)
-        if i is 2:
-            self._signalHandling.deactivateConfiguration()
-        elif i is 0:
-            self._signalHandling.activateConfiguration()
 
     def plotit(self):
         # pyqt helper stuff
@@ -604,6 +625,7 @@ class iintGUI(QtGui.QMainWindow):
             self._inspectAnalyze.reset()
         rundict = self._control.getSIGDict()
         self.message("Fitting the signal, this can take a while ...")
+        # this is a bad idea; this is specific code and needs to be put into the control part!!
         if self._control.guessSignalFit():
             rundict['model'] = { "m0_": { 'modeltype': "gaussianModel",
                   'm0_center' : {'value':1.},
@@ -621,7 +643,7 @@ class iintGUI(QtGui.QMainWindow):
         trackinfo = self._control.getDefaultTrackInformation()
         tdv = iintMultiTrackedDataView.iintMultiTrackedDataView(trackinfo)
         self._trackedDataDict[trackinfo.getName()] = trackinfo
-        self.imageTabs.addTab(tdv, ("Fit vs." + trackinfo.getName()))
+        self._resultTabIndices.append(self.imageTabs.addTab(tdv, ("Fit vs." + trackinfo.getName())))
 
         tdv.pickedTrackedDataPoint.connect(self._setFocusToSpectrum)
         self.message(" ... done.\n")
@@ -782,7 +804,7 @@ class iintGUI(QtGui.QMainWindow):
             trackinfo = self._control.getTrackInformation(name)
             tdv = iintMultiTrackedDataView.iintMultiTrackedDataView(trackinfo, self._blacklist)
             self._trackedDataDict[trackinfo.getName()] = trackinfo
-            self.imageTabs.addTab(tdv, trackinfo.getName())
+            self._resultTabIndices.append(self.imageTabs.addTab(tdv, trackinfo.getName()))
             tdv.pickedTrackedDataPoint.connect(self._setFocusToSpectrum)
 
     def _addMappedData(self, one, two):
@@ -832,7 +854,7 @@ class iintGUI(QtGui.QMainWindow):
         for k, v in self._trackedDataDict.items():
             tdv = iintMultiTrackedDataView.iintMultiTrackedDataView(v, blacklist)
             tdv.pickedTrackedDataPoint.connect(self._setFocusToSpectrum)
-            self.imageTabs.addTab(tdv, k)
+            self._resultTabIndices.append(self.imageTabs.addTab(tdv, k))
 
     def _showInspectionPlots(self):
         tempDict = self._control.getInspectionDict()

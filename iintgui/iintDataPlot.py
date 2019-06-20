@@ -109,6 +109,8 @@ class iintDataPlot(QtGui.QDialog):
             self.showBKG.setDisabled(True)
             self.showFIT.setChecked(False)
             self.showFIT.setDisabled(True)
+            self.showSIG.setChecked(False)
+            self.showSIG.setDisabled(True)
         if(action == "plotfit"):
             self.showFIT.setChecked(True)
         if(action == "unplotfit"):

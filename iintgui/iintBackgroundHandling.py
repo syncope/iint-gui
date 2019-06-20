@@ -39,19 +39,22 @@ class iintBackgroundHandling(QtGui.QWidget):
         self._calcParDict = {}
         self._subtractParDict = {}
         # if there are just two options, only one toggle needs to be connected
-        self.constBkg.toggled.connect(self._setModel)
-        self.fitBkg.clicked.connect(self.emittem)
+        self.constBkg.clicked.connect(self._setModel)
+        self.linearBkg.clicked.connect(self._setModel)
+        self.hyperbolicBkg.clicked.connect(self._setModel)
+        # there used to be a button to fit the background
+        #~ self.fitBkg.clicked.connect(self.emittem)
         self._noBKG = True
-        self.useBkg.stateChanged.connect(self._toggle)
+        self.groupBox.clicked.connect(self._clicktoggle)
+        #~ self.useBkg.stateChanged.connect(self._toggle)
         self.setParameterDicts(pDicts)
-        self.fitBkg.setDisabled(True)
-        self._noBKG = False
-        self.useBkg.setToolTip("If data is available, check this box to enable the\nsetting and execution of background calculation.")
+        #~ self.fitBkg.setDisabled(True)
+        self.groupBox.setToolTip("If data is available, check this box to enable the\nsetting and execution of background calculation.")
         self.linearBkg.setToolTip("Active to chose a linear background model.")
         self.constBkg.setToolTip("Activate to select a constant background model.")
         self.bkgStartPointsSB.setToolTip("Select the number of points at the low end\nof the motor positions to be included in the background estimation.")
         self.bkgEndPointsSB.setToolTip("Select the number of points at the upper end\nof the motor positions to be included in the background estimation.")
-        self.fitBkg.setToolTip("Perform the background fitting procedure.")
+        #~ self.fitBkg.setToolTip("Perform the background fitting procedure.")
 
     def reset(self):
         self._selectParDict = {}
@@ -60,37 +63,47 @@ class iintBackgroundHandling(QtGui.QWidget):
         self._subtractParDict = {}
         self.bkgStartPointsSB.setValue(3)
         self.bkgEndPointsSB.setValue(3)
-        self.fitBkg.setDisabled(True)
+        #~ self.fitBkg.setDisabled(True)
         self.bkgEndPointsSB.setDisabled(True)
         self.bkgStartPointsSB.setDisabled(True)
         self.linearBkg.setDisabled(True)
         self.constBkg.setDisabled(True)
-        self.useBkg.setDisabled(True)
+        self.hyperbolicBkg.setDisabled(True)
+        self.groupBox.setDisabled(True)
+        #~ self.groupBox.setChecked(False)
 
     def activate(self):
         self.bkgEndPointsSB.setDisabled(False)
         self.bkgStartPointsSB.setDisabled(False)
         self.linearBkg.setDisabled(False)
         self.constBkg.setDisabled(False)
-        self.useBkg.setDisabled(False)
-        self.fitBkg.setDisabled(False)
+        self.hyperbolicBkg.setDisabled(False)
+        self.groupBox.setDisabled(False)
+        #~ self.fitBkg.setDisabled(False)
+        # if it is already active, then do the magic
+        self._clicktoggle(self.groupBox.isChecked())
 
-    def _toggle(self):
-        self._noBKG = not self._noBKG
-        self.fitBkg.setDisabled(self._noBKG)
-        if self._noBKG:
-            self.noBKG.emit(1)
-        else:
+    def _clicktoggle(self, checked):
+        if checked:
+            self._noBKG = False
             self.noBKG.emit(0)
+            self.emittem()
+        elif not checked:
+            self._noBKG = True
+            self.noBKG.emit(1)
 
     def _setModel(self):
         if self.linearBkg.isChecked():
             self._model = "linearModel"
         elif self.constBkg.isChecked():
             self._model = "constantModel"
+        elif self.hyperbolicBkg.isChecked():
+            self._model = "shiftedhyperbolaModel"
         self.bkgmodel.emit(self._model)
+        if self._noBKG is False:
+            self.emittem()
 
-    def setParameterDicts(self, dicts):
+    def setParameterDicts(self, dicts, active=False):
         self._selectParDict = dicts[0]
         self.bkgStartPointsSB.setValue(self._selectParDict["startpointnumber"])
         self.bkgEndPointsSB.setValue(self._selectParDict["endpointnumber"])
@@ -106,11 +119,16 @@ class iintBackgroundHandling(QtGui.QWidget):
             self.linearBkg.setChecked(True)
         elif modeltype == 'constantModel':
             self.constBkg.setChecked(True)
+        elif modeltype == 'shiftedhyperbolaModel':
+            self.hyperbolicBkg.setChecked(True)
 
         self._calcParDict = dicts[2]
         self._subtractParDict = dicts[3]
-        if dicts[0] != {} and dicts[1] != {} and dicts[2] != {} and dicts[3] != {}:
-            self.useBkg.setChecked(True)
+        # previous check if bkg is enabled
+        #~ if dicts[0] != {} and dicts[1] != {} and dicts[2] != {} and dicts[3] != {}:
+        # now only activate when done from config!
+        if active:
+            self.groupBox.setChecked(True)
 
     def emittem(self):
         self._selectParDict["startpointnumber"] = self.bkgStartPointsSB.value()

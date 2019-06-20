@@ -1,8 +1,8 @@
 bkgfit:
   error: None
   model:
-    lin_:
-      modeltype: linearModel
+    hyperbolicbkg_:
+      modeltype: shiftedhyperbolaModel
   result: bkgfitresult
   type: curvefitting
   useguessing: 0
@@ -10,7 +10,7 @@ bkgfit:
   xdata: bkgX
   ydata: bkgY
 bkgselect:
-  endpointnumber: 3
+  endpointnumber: 6
   input:
   - observable
   - del
@@ -23,7 +23,7 @@ bkgselect:
   sliceend: null
   slicestart: null
   slicestride: null
-  startpointnumber: 3
+  startpointnumber: 6
   type: subsequenceselection
 bkgsubtract:
   background: bkgPoints
@@ -42,6 +42,8 @@ execlist:
 - bkgfit
 - calcbkgpoints
 - bkgsubtract
+- trapint
+- signalcurvefit
 fioread:
   filenames: null
   output: rawdata
@@ -51,12 +53,35 @@ observabledef:
   exposureTime_column: dt
   id: scannumber
   input: rawdata
-  monitor_column: exp_vfc01
+  monitor_column: exp_vfc02
   motor_column: del
   output: observable
   type: iintdefinition
+signalcurvefit:
+  error: None
+  model:
+    m0_:
+      amplitude:
+        min: 0.0
+        value: 1.6273030758904454
+      center:
+        value: 71.64
+      modeltype: gaussianModel
+      sigma:
+        value: 0.3
+  result: signalcurvefitresult
+  type: curvefitting
+  useguessing: 0
+  usepreviousresult: 1
+  xdata: del
+  ydata: signalObservable
 specread:
   filename: /home/rosem/iintgui/test/test_data/rucl3_az.spc
-  output: rawdata
+  output: default
   scanlist: 1179-1258
   type: specfilereader
+trapint:
+  motor: del
+  observable: signalObservable
+  output: trapezoidIntegral
+  type: trapezoidintegration

@@ -30,7 +30,8 @@ class iintObservableDefinition(QtGui.QWidget):
     def __init__(self, parent=None):
         super(iintObservableDefinition, self).__init__(parent)
         self.setWindowTitle("Observable definition")
-        uic.loadUi(getUIFile.getUIFile("iintobservable.ui"), self)
+        #~ uic.loadUi(getUIFile.getUIFile("iintobservable.ui"), self)
+        uic.loadUi(getUIFile.getUIFile("iintSignalDefinition.ui"), self)
         self._obsDict = {}
         self._despikeDict = {}
         self._trapintDict = {}
@@ -45,9 +46,6 @@ class iintObservableDefinition(QtGui.QWidget):
         self.despikeCheckBox.stateChanged.connect(self.toggleDespiking)
         self._despike = False
         self._notEnabled(True)
-        self.obsDisplayBtn.clicked.connect(self.emittit)
-        self.obsDisplayBtn.clicked.connect(self.activateShowScanProfile)
-        #~ self.obsDisplayBtn.clicked.connect(self.activateMCA)
         self._observableName = 'observable'
         self.motorCB.setToolTip("Choose the independent axis of the scan display (the 'motor'), e.g. from the scan command.")
         self.label.setToolTip("The shorthand notation for the used formula to calculate\nthe number of counts at the given motor position.")
@@ -58,7 +56,6 @@ class iintObservableDefinition(QtGui.QWidget):
         self.observableAttFacCB.setToolTip("Check the box to enable the choice of an attenuation factor entry.")
         self.despikeCheckBox.setToolTip("Check the box to run a despiking/filtering algorithm\non the scan data to dampen spikes/noise fluctuation.")
         self.overlayBtn.setToolTip("Open an overlay plot window to select scans to view at the same time.")
-        self.obsDisplayBtn.setToolTip("Once everything is set, click this button to perform\nthe calculation of the observable data and open a display.")
         self.showScanProfile.setToolTip("Creates a stack of all scans as matrix, creating an image.\nThe result is stored in a file, which is shown in an external viewer.")
         self.trackData.setToolTip("Open a dialog to select column and header\ndata to be included in the output file.")
         self.maptracks.setToolTip("After tracked data has been selected, choose data to map.")
@@ -71,7 +68,6 @@ class iintObservableDefinition(QtGui.QWidget):
         self.observableMonitorCB.currentIndexChanged.connect(self._checkStatus)
         self.observableTimeCB.currentIndexChanged.connect(self._checkStatus)
         self.observableAttFacCB.currentIndexChanged.connect(self._checkStatus)
-        self.obsDisplayBtn.setDisabled(True)
         # introduce a "memory" object for setting initial values for the combo boxes
         self._previousObsDict = {}
         self._previousDespDict = {}
@@ -89,27 +85,25 @@ class iintObservableDefinition(QtGui.QWidget):
         self.deactivateShowScanProfile()
         #~ self.showMCA.setDisabled(False)
         self.trackData.setDisabled(True)
-        self.obsDisplayBtn.setDisabled(True)
 
     def _checkStatus(self):
         # automatic check for the values in the combo boxes, run at every change
         # will fail if *any* relevant combo box value is invalid
         # at fail: no display/overlay/despike button is available
-        # at success: enables all three actions
+        # at success: enables all actions and draw the current selection!
         comboboxes = [self.motorCB, self.observableDetectorCB, self.observableMonitorCB, \
                       self.observableTimeCB]
         if self._useAttenuationFactor:
             comboboxes.append(self.observableAttFacCB)
-        truth = True
+        check = True
         for box in comboboxes:
             if box.currentText() == self._default:
-                truth = False
-        if truth:
-            self.obsDisplayBtn.setDisabled(False)
+                check = False
+        if check:
             self.despikeCheckBox.setDisabled(False)
             self.overlayBtn.setDisabled(False)
+            self.emittit()
         else:
-            self.obsDisplayBtn.setDisabled(True)
             self.despikeCheckBox.setDisabled(True)
             self.overlayBtn.setDisabled(True)
 
@@ -144,6 +138,7 @@ class iintObservableDefinition(QtGui.QWidget):
         self._scanmotorname = dataobject.getMotorName()
 
         # now set the texts and labels
+        self._blockSignals()
         self.motorCB.clear()
         self.observableDetectorCB.clear()
         self.observableMonitorCB.clear()
@@ -161,6 +156,7 @@ class iintObservableDefinition(QtGui.QWidget):
         self.observableMonitorCB.addItems(self._currentdataLabels)
         self.observableTimeCB.addItems(self._currentdataLabels)
         self.observableAttFacCB.addItems(self._currentdataLabels)
+        self._unblockSignals()
         if not self._useAttenuationFactor:
             self.observableAttFacCB.setDisabled(True)
             self._useAttenuationFactor = False
@@ -168,7 +164,9 @@ class iintObservableDefinition(QtGui.QWidget):
         if defaultmotor is not None:
             index = self.motorCB.findText(defaultmotor, QtCore.Qt.MatchExactly)
             if index >= 0:
+                #~ print(" trigger??")
                 self.motorCB.setCurrentIndex(index)
+                #~ print(" triggered??")
 
         if self._previousObsDict != {}:
             self.setParameterDicts(self._previousObsDict, self._previousDespDict)
@@ -182,7 +180,6 @@ class iintObservableDefinition(QtGui.QWidget):
         self.observableAttFacCB.setDisabled(state)
         self.despikeCheckBox.setDisabled(state)
         self.overlayBtn.setDisabled(state)
-        self.obsDisplayBtn.setDisabled(state)
         self.trackData.setDisabled(state)
 
     def activateShowScanProfile(self):
@@ -227,6 +224,7 @@ class iintObservableDefinition(QtGui.QWidget):
             self.emittit()
 
     def emittit(self):
+        self.activateShowScanProfile()
         self._obsDict["type"] = "iintdefinition"
         self._obsDict["input"] = "rawdata"
         self._obsDict["motor_column"] = self._motorname
@@ -258,6 +256,7 @@ class iintObservableDefinition(QtGui.QWidget):
 
         self._previousObsDict = self._obsDict.copy()
         self._previousDespDict = self._despikeDict.copy()
+        #~ print("emitting, the obsdict is: " + str(self._previousObsDict))
 
         self.observableDicts.emit(self._obsDict, self._despikeDict)
 
@@ -293,3 +292,21 @@ class iintObservableDefinition(QtGui.QWidget):
 
         if (despDict != {}):
             self.despikeCheckBox.setChecked(True)
+
+    def _blockSignals(self):
+        self.motorCB.blockSignals(True)
+        self.observableDetectorCB.blockSignals(True)
+        self.observableMonitorCB.blockSignals(True)
+        self.observableTimeCB.blockSignals(True)
+        self.observableAttFacCB.blockSignals(True)
+        self.observableAttFaccheck.blockSignals(True)
+        self.despikeCheckBox.blockSignals(True)
+
+    def _unblockSignals(self):
+        self.motorCB.blockSignals(False)
+        self.observableDetectorCB.blockSignals(False)
+        self.observableMonitorCB.blockSignals(False)
+        self.observableTimeCB.blockSignals(False)
+        self.observableAttFacCB.blockSignals(False)
+        self.observableAttFaccheck.blockSignals(False)
+        self.despikeCheckBox.blockSignals(False)
