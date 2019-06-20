@@ -27,7 +27,7 @@ class iintSignalFitting(QtGui.QWidget):
     #~ removeIndex = QtCore.pyqtSignal(int)
     #~ guesspeak = QtCore.pyqtSignal(int)
 
-    def __init__(self, pDict, modellist parent=None):
+    def __init__(self, pDict, modellist=None, parent=None):
         super(iintSignalFitting, self).__init__(parent)
         uic.loadUi(getUIFile.getUIFile("fitpanel2.ui"), self)
         #~ self._hiddencblist = [self.firstModelCB, self.secondModelCB, self.thirdModelCB, self.fourthModelCB]
