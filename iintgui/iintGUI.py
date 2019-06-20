@@ -376,6 +376,8 @@ class iintGUI(QtGui.QMainWindow):
             self._initializeFromConfig()
 
     def _initializeFromConfig(self):
+        # clear the memory!
+        self._resetAll()
         # reset logic is screwed up
         # first load the config into the actual description
         runlist = self._control.loadConfig(self._procconf)
@@ -391,7 +393,7 @@ class iintGUI(QtGui.QMainWindow):
             return
         if "observabledef" in runlist:
             self._obsDef.setParameterDicts(self._control.getOBSDict(), self._control.getDESDict())
-            self.runObservable(self._control.getOBSDict(), self._control.getDESDict())
+            #~ self.runObservable(self._control.getOBSDict(), self._control.getDESDict())
             self._obsDef.activateShowScanProfile()
         else:
             return
@@ -468,6 +470,8 @@ class iintGUI(QtGui.QMainWindow):
         self._control.createAndBulkExecute(obsDict)
         self.message(" and plotting ...")
         self.plotit()
+        # just check if this works, still unclear of the trigger...
+        self._control.settingChoiceDesBkg()
 
         # check whether despiking is activated, otherwise unset names
         if despDict != {}:

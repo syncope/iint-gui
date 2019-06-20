@@ -127,6 +127,7 @@ class IintGUIProcessingControl():
         self._setupDefaultNames()
         self.resetTrackedData()
         self._readerType = ""
+        self._nodespike = True
 
     def resetRAWdata(self):
         for elem in self._dataList:

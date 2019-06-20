@@ -76,6 +76,8 @@ class iintObservableDefinition(QtGui.QWidget):
         self._obsDict = {}
         self._despikeDict = {}
         self._trapintDict = {}
+        self._previousObsDict = {}
+        self._previousDespDict = {}
         self._useAttenuationFactor = False
         self.observableAttFacCB.setDisabled(True)
         self.despikeCheckBox.setChecked(False)
@@ -85,6 +87,7 @@ class iintObservableDefinition(QtGui.QWidget):
         self.deactivateShowScanProfile()
         #~ self.showMCA.setDisabled(False)
         self.trackData.setDisabled(True)
+        self.doDespike.emit(False)
 
     def _checkStatus(self):
         # automatic check for the values in the combo boxes, run at every change
@@ -108,7 +111,9 @@ class iintObservableDefinition(QtGui.QWidget):
             self.overlayBtn.setDisabled(True)
 
     def reset(self):
+        self._blockSignals()
         self._defaultSettings()
+        self._unblockSignals()
 
     def activate(self):
         self._notEnabled(False)
