@@ -259,7 +259,11 @@ class iintDataPlot(QtGui.QDialog):
         self._tmpFit = self.viewPart.plot(xdata, ydata, pen='r')
 
     def removeGuess(self):
-        self._tmpFit.clear()
+        try:
+            self._tmpFit.clear()
+        except AttributeError:
+            # it may happen that the fit object is a NoneType
+            pass
         self.viewPart.enableAutoRange()
 
     def _toggleRAW(self):

@@ -764,7 +764,11 @@ class iintGUI(QtGui.QMainWindow):
 
     def _updateCurrentImage(self):
         ydata = self._fitWidget.getCurrentFitData()
-        self._simpleImageView.plotFit(ydata)
+        try:
+            # can fail if the model is constant; then the stupid signature is different. ignore!
+            self._simpleImageView.plotFit(ydata)
+        except:
+            pass
 
     def _keepFitList(self, fitwidget):
         # remove if index is already there
