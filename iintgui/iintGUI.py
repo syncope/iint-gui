@@ -91,11 +91,12 @@ class iintGUI(QtGui.QMainWindow):
         self._motorname = ""
         self._rawdataobject = None
         self.imageTabs = QtGui.QTabWidget()
-
+        self.imageTabs.setTabsClosable(True)
         self.imageTabs.removeTab(1)
         self.imageTabs.removeTab(0)
         self.imageTabs.hide()
-        self.imageTabs.tabCloseRequested.connect(self.imageTabs.removeTab)
+        self.imageTabs.tabCloseRequested.connect(self._checkTabClosing)
+        self._dataTabIndex = None
         self._simpleImageView = iintDataPlot.iintDataPlot(parent=self)
         self._simpleImageView.blacklist.connect(self._retrackDataDisplay)
         self._simpleImageView.hidden.connect(self._unresize)
@@ -262,6 +263,7 @@ class iintGUI(QtGui.QMainWindow):
                 for tab in range(self.imageTabs.count()):
                     self.imageTabs.removeTab(tab)
             self.imageTabs.hide()
+        self._dataTabIndex = None
 
     def resetResultTabs(self, keepSpectra=False):
         self._resultTabIndices = list(set(self._resultTabIndices))
@@ -275,6 +277,14 @@ class iintGUI(QtGui.QMainWindow):
                     self.imageTabs.removeTab(tab)
             self.imageTabs.hide()
         self._resultTabIndices.clear()
+
+    def _checkTabClosing(self, index):
+        if self._dataTabIndex is not None:
+            if index is not self._dataTabIndex:
+                self.message("Closing tab " + str(self.imageTabs.tabText(index)))
+                self.imageTabs.removeTab(index)
+            else:
+                self.message("Can't close the data display tab.")
 
     def closeEvent(self, event):
         event.ignore()
@@ -598,7 +608,7 @@ class iintGUI(QtGui.QMainWindow):
                                        self._control.getFittedSignalName(),
                                        )
         self._simpleImageView.plot()
-        self.imageTabs.addTab(self._simpleImageView, "Scan display")
+        self._dataTabIndex = self.imageTabs.addTab(self._simpleImageView, "Scan display")
         self.imageTabs.show()
         self._simpleImageView.show()
         self._simpleImageView.plot()
