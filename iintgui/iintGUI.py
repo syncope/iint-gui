@@ -843,8 +843,11 @@ class iintGUI(QtGui.QMainWindow):
         self._control.processAll(finalDict)
         self._resultFileName = finalDict["outfilename"]
         filename = self._control.getResultBaseFilename()
+        self.message("... processing the scan profile plots ...")
         self._control.processScanProfiles(filename + "_scanProfiles.pdf")
+        self.message("... processing the plots of the tracked data ...")
         self._control.processTrackedColumnsControlPlots(filename  + "_trackedColumnsPlots.pdf")
+        self.message("...and finally the control plots of the scans ...")
         self._control.processScanControlPlots(filename + "_scanControlPlots.pdf")
         self.message(" ... done.\n")
 
