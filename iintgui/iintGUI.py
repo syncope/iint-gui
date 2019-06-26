@@ -46,6 +46,7 @@ from . import iintSignalHandling
 from . import iintTrackedDataChoice
 from . import trackedDataMap
 from . import iintTrackedDataMapDisplay
+from . import iintZValueSelection
 from . import quitDialog
 from . import loggerBox
 from . import resetDialog
@@ -116,7 +117,7 @@ class iintGUI(QtGui.QMainWindow):
         self._obsDefBox.setContentLayout(templayout)
 
         self._obsDef.doDespike.connect(self._control.useDespike)
-        self._obsDef.showScanProfile.clicked.connect(self._runScanProfiles)
+        self._obsDef.showScanProfile.clicked.connect(self._openzvalchoice)
         self._obsDef.motorName.connect(self.setMotorName)
         self._mcaplot = iintMCADialog.iintMCADialog(parent=self)
         self._mcaplot.hide()
@@ -523,7 +524,13 @@ class iintGUI(QtGui.QMainWindow):
             self.warning("Nothing to plot yet, first define the signal.")
             pass
 
-    def _runScanProfiles(self):
+    def _openzvalchoice(self):
+        rawScanData = self._control.getDataList()[0].getData(self._control.getRawDataName())
+        self._tmpdialog = iintZValueSelection.iintZValueSelection(rawScanData.getLabels(), self._control.getObservableName())
+        self._tmpdialog.zvalue.connect(self._runScanProfiles)
+
+    def _runScanProfiles(self, zval):
+        self._control.setZValueInProfilePlot(zval)
         name, timesuffix = self._control.proposeSaveFileName()
         filename = name + "_scanProfiles.pdf"
         self.message("Creating the scan profile plot ...")
@@ -531,6 +538,7 @@ class iintGUI(QtGui.QMainWindow):
         self.message(" ... done.\n")
         from subprocess import Popen
         Popen(["evince", filename])
+        self._tmpdialog = None
 
     def _runMCA(self):
         name, timesuffix = self._control.proposeSaveFileName()
