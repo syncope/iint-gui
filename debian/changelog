@@ -1,3 +1,18 @@
+iintgui (0.11.2-1+deb9u5~fsec) stretch; urgency=low
+
+  * Some bugfixes:
+       + fix reset of display checkboxes
+       + fixed label names in correlation plot of tracked data
+  * Feature additions:
+       + add legend for scan profile plot
+       + changes to scan profile plot, choice of z-axis
+       + changed names in signal definition 
+         2D map -> 
+       + tabs in display are closable (except the main one)
+       + extended log info for finalizing data
+
+ -- Christoph Rosemann <christoph.rosemann@desy.de>  Thu, 27 Jun 2019 17:26:00 +0100
+
 iintgui (0.11.1-1+deb9u5~fsec) stretch; urgency=low
 
   * Minor bugfix: catch exception of broken interface in lmfit.
