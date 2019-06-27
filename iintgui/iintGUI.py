@@ -46,6 +46,7 @@ from . import iintSignalHandling
 from . import iintTrackedDataChoice
 from . import trackedDataMap
 from . import iintTrackedDataMapDisplay
+from . import iintZValueSelection
 from . import quitDialog
 from . import loggerBox
 from . import resetDialog
@@ -91,11 +92,12 @@ class iintGUI(QtGui.QMainWindow):
         self._motorname = ""
         self._rawdataobject = None
         self.imageTabs = QtGui.QTabWidget()
-
+        self.imageTabs.setTabsClosable(True)
         self.imageTabs.removeTab(1)
         self.imageTabs.removeTab(0)
         self.imageTabs.hide()
-        self.imageTabs.tabCloseRequested.connect(self.imageTabs.removeTab)
+        self.imageTabs.tabCloseRequested.connect(self._checkTabClosing)
+        self._dataTabIndex = None
         self._simpleImageView = iintDataPlot.iintDataPlot(parent=self)
         self._simpleImageView.blacklist.connect(self._retrackDataDisplay)
         self._simpleImageView.hidden.connect(self._unresize)
@@ -115,7 +117,7 @@ class iintGUI(QtGui.QMainWindow):
         self._obsDefBox.setContentLayout(templayout)
 
         self._obsDef.doDespike.connect(self._control.useDespike)
-        self._obsDef.showScanProfile.clicked.connect(self._runScanProfiles)
+        self._obsDef.showScanProfile.clicked.connect(self._openzvalchoice)
         self._obsDef.motorName.connect(self.setMotorName)
         self._mcaplot = iintMCADialog.iintMCADialog(parent=self)
         self._mcaplot.hide()
@@ -213,6 +215,7 @@ class iintGUI(QtGui.QMainWindow):
         try:
             self._trackedDataChoice.reset()
             self._trackedDataChoice.close()
+            self._trackedDataChoice = None
         except AttributeError:
             pass
         try:
@@ -262,6 +265,7 @@ class iintGUI(QtGui.QMainWindow):
                 for tab in range(self.imageTabs.count()):
                     self.imageTabs.removeTab(tab)
             self.imageTabs.hide()
+        self._dataTabIndex = None
 
     def resetResultTabs(self, keepSpectra=False):
         self._resultTabIndices = list(set(self._resultTabIndices))
@@ -275,6 +279,14 @@ class iintGUI(QtGui.QMainWindow):
                     self.imageTabs.removeTab(tab)
             self.imageTabs.hide()
         self._resultTabIndices.clear()
+
+    def _checkTabClosing(self, index):
+        if self._dataTabIndex is not None:
+            if index is not self._dataTabIndex:
+                self.message("Closing tab " + str(self.imageTabs.tabText(index)))
+                self.imageTabs.removeTab(index)
+            else:
+                self.message("Won't close the scan display tab.")
 
     def closeEvent(self, event):
         event.ignore()
@@ -513,7 +525,13 @@ class iintGUI(QtGui.QMainWindow):
             self.warning("Nothing to plot yet, first define the signal.")
             pass
 
-    def _runScanProfiles(self):
+    def _openzvalchoice(self):
+        rawScanData = self._control.getDataList()[0].getData(self._control.getRawDataName())
+        self._tmpdialog = iintZValueSelection.iintZValueSelection(rawScanData.getLabels(), self._control.getObservableName())
+        self._tmpdialog.zvalue.connect(self._runScanProfiles)
+
+    def _runScanProfiles(self, zval):
+        self._control.setZValueInProfilePlot(zval)
         name, timesuffix = self._control.proposeSaveFileName()
         filename = name + "_scanProfiles.pdf"
         self.message("Creating the scan profile plot ...")
@@ -521,6 +539,7 @@ class iintGUI(QtGui.QMainWindow):
         self.message(" ... done.\n")
         from subprocess import Popen
         Popen(["evince", filename])
+        self._tmpdialog = None
 
     def _runMCA(self):
         name, timesuffix = self._control.proposeSaveFileName()
@@ -598,7 +617,7 @@ class iintGUI(QtGui.QMainWindow):
                                        self._control.getFittedSignalName(),
                                        )
         self._simpleImageView.plot()
-        self.imageTabs.addTab(self._simpleImageView, "Scan display")
+        self._dataTabIndex = self.imageTabs.addTab(self._simpleImageView, "Scan display")
         self.imageTabs.show()
         self._simpleImageView.show()
         self._simpleImageView.plot()
@@ -843,8 +862,11 @@ class iintGUI(QtGui.QMainWindow):
         self._control.processAll(finalDict)
         self._resultFileName = finalDict["outfilename"]
         filename = self._control.getResultBaseFilename()
+        self.message("... processing the scan profile plots ...")
         self._control.processScanProfiles(filename + "_scanProfiles.pdf")
+        self.message("... processing the plots of the tracked data ...")
         self._control.processTrackedColumnsControlPlots(filename  + "_trackedColumnsPlots.pdf")
+        self.message("...and finally the control plots of the scans ...")
         self._control.processScanControlPlots(filename + "_scanControlPlots.pdf")
         self.message(" ... done.\n")
 

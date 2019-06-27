@@ -212,9 +212,11 @@ class IintGUIProcessingControl():
         self._processParameters["observabledef"]["id"] = self._id
 
         self._processParameters["scanprofileplot"]["outfilename"] = None
-        self._processParameters["scanprofileplot"]["observable"] = self._observableName
-        self._processParameters["scanprofileplot"]["motor"] = None
-        # from out to in:
+        self._processParameters["scanprofileplot"]["xaxis"] = None
+        self._processParameters["scanprofileplot"]["yaxis"] = self._id
+        self._processParameters["scanprofileplot"]["zaxis"] = self._observableName
+        self._processParameters["scanprofileplot"]["rawdataname"] = self.getRawDataName()
+
         self._processParameters["despike"]["input"] = self._observableName
         self._processParameters["despike"]["method"] = "p09despiking"
         self._processParameters["despike"]["output"] = self._despObservableName
@@ -292,7 +294,7 @@ class IintGUIProcessingControl():
     def setMotorName(self, name=None):
         self._motorName = name
         self._processParameters["observabledef"]["motor_column"] = self._motorName
-        self._processParameters["scanprofileplot"]["motor"] = self._motorName
+        self._processParameters["scanprofileplot"]["xaxis"] = self._motorName
         self._processParameters["bkgselect"]["input"] = [self._despObservableName, self._motorName]
         self._processParameters["bkgintegral"]["xdata"] = self._motorName
         self._processParameters["calcbkgpoints"]["xdata"] = self._motorName
@@ -657,6 +659,9 @@ class IintGUIProcessingControl():
             return self._processParameters["trapint"]
         except KeyError:
             return {}
+
+    def setZValueInProfilePlot(self, zval):
+        self._processParameters["scanprofileplot"]["zaxis"] = zval
 
     def setSpecFile(self, name, scanlist):
         self._processParameters["specread"]["filename"] = name
