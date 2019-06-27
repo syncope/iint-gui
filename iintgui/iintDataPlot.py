@@ -77,10 +77,12 @@ class iintDataPlot(QtGui.QDialog):
         self.showFIT.setToolTip("If fit data is available, checking/unchecking\nthe box will display/hide the fit result as curve.\nThe curve is drawn as solid blue line.")
 
     def reset(self):
+        self.showRAW.setChecked(True)
         self.showDES.setChecked(False)
         self.showBKG.setChecked(False)
         self.showSIG.setChecked(False)
         self.showFIT.setChecked(False)
+        self.showRAW.setDisabled(True)
         self.showDES.setDisabled(True)
         self.showBKG.setDisabled(True)
         self.showSIG.setDisabled(True)
@@ -344,3 +346,17 @@ class iintDataPlot(QtGui.QDialog):
     def _setBLB2Rm(self):
         self.blacklistButton.setStyleSheet("color: yellow;background-color: red;")
         self.blacklistButton.setText("Add to display again")
+
+    def _blockSignals(self):
+        self.showRAW.blockSignals(True)
+        self.showDES.blockSignals(True)
+        self.showBKG.blockSignals(True)
+        self.showSIG.blockSignals(True)
+        self.showFIT.blockSignals(True)
+
+    def _unblockSignals(self):
+        self.showRAW.blockSignals(False)
+        self.showDES.blockSignals(False)
+        self.showBKG.blockSignals(False)
+        self.showSIG.blockSignals(False)
+        self.showFIT.blockSignals(False)
