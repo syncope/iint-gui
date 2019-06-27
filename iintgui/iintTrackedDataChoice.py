@@ -96,6 +96,10 @@ class iintTrackedDataChoice(QtGui.QWidget):
         self.listAllHeaders.clear()
         self._untrackedDataHeaders.clear()
         self._trackedDataHeaders.clear()
+        del self._trackedDataColumns[:]
+        del self._trackedDataHeaders[:]
+        del self._untrackedDataColumns[:]
+        del self._untrackedDataHeaders[:]
         self.close()
 
     def _pickedUnselectedItemColumns(self, item):

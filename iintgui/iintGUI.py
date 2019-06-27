@@ -215,6 +215,7 @@ class iintGUI(QtGui.QMainWindow):
         try:
             self._trackedDataChoice.reset()
             self._trackedDataChoice.close()
+            self._trackedDataChoice = None
         except AttributeError:
             pass
         try:
