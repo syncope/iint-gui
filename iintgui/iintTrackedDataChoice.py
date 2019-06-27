@@ -150,29 +150,33 @@ class iintTrackedDataChoice(QtGui.QWidget):
         index = self._untrackedDataColumns.index(item.text())
         self._trackedDataColumns.append(self._untrackedDataColumns.pop(index))
         self.listSelectedColumns.addItem(self.listAllColumns.takeItem(self.listAllColumns.row(item)))
-        if self.listAllColumns.__len__() == 0:
-            self.addToListColumns.setDisabled(True)
+        self.listAllColumns.clearSelection()
+        #~ if self.listAllColumns.__len__() == 0:
+        self.addToListColumns.setDisabled(True)
 
     def _moveToSelectedHeaders(self, item):
         index = self._untrackedDataHeaders.index(item.text())
         self._trackedDataHeaders.append(self._untrackedDataHeaders.pop(index))
         self.listSelectedHeaders.addItem(self.listAllHeaders.takeItem(self.listAllHeaders.row(item)))
-        if self.listAllHeaders.__len__() == 0:
-            self.addToListHeaders.setDisabled(True)
+        self.listAllHeaders.clearSelection()
+        #~ if self.listAllHeaders.__len__() == 0:
+        self.addToListHeaders.setDisabled(True)
 
     def _moveToUnselectedColumns(self, item):
         index = self._trackedDataColumns.index(item.text())
         self._untrackedDataColumns.append(self._trackedDataColumns.pop(index))
         self.listAllColumns.addItem(self.listSelectedColumns.takeItem(self.listSelectedColumns.row(item)))
-        if self.listSelectedColumns.__len__() == 0:
-            self.removeFromListColumns.setDisabled(True)
+        self.listSelectedColumns.clearSelection()
+        #~ if self.listSelectedColumns.__len__() == 0:
+        self.removeFromListColumns.setDisabled(True)
 
     def _moveToUnselectedHeaders(self, item):
         index = self._trackedDataHeaders.index(item.text())
         self._untrackedDataHeaders.append(self._trackedDataHeaders.pop(index))
         self.listAllHeaders.addItem(self.listSelectedHeaders.takeItem(self.listSelectedHeaders.row(item)))
-        if self.listSelectedHeaders.__len__() == 0:
-            self.removeFromListHeaders.setDisabled(True)
+        self.listSelectedHeaders.clearSelection()
+        #~ if self.listSelectedHeaders.__len__() == 0:
+        self.removeFromListHeaders.setDisabled(True)
 
     def _addToListColumns(self):
         self._moveToSelectedColumns(self.listAllColumns.selectedItems())
