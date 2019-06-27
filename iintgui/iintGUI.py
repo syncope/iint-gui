@@ -285,7 +285,7 @@ class iintGUI(QtGui.QMainWindow):
                 self.message("Closing tab " + str(self.imageTabs.tabText(index)))
                 self.imageTabs.removeTab(index)
             else:
-                self.message("Can't close the data display tab.")
+                self.message("Won't close the scan display tab.")
 
     def closeEvent(self, event):
         event.ignore()
