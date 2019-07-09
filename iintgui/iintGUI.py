@@ -478,7 +478,7 @@ class iintGUI(QtGui.QMainWindow):
             self._signalHandling.setParameterDict(self._control.getSIGDict())
             self._control.resetFITdata()
 
-        self.message("Computing the observable...")
+        self.message("Computing the intensity...")
         self._control.createAndBulkExecute(obsDict)
         self.message(" and plotting ...")
         self.plotit()
