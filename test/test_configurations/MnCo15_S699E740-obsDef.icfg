@@ -8,7 +8,7 @@ observabledef:
   input: rawdata
   monitor_column: sumvfcs_counts
   motor_column: pth
-  output: observable
+  output: intensity
   type: iintdefinition
 specread:
   filename: /home/rosem/iintgui/test/test_data/MnCo15.spc
