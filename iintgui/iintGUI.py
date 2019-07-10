@@ -499,10 +499,10 @@ class iintGUI(QtGui.QMainWindow):
 
     def doOverlay(self):
         try:
-            self._overlaySelection.passData(self._control.getScanlist())
             self._overlaySelection.show()
         except AttributeError:
             self._overlaySelection = iintOverlaySelection.iintOverlaySelection(datalist=self._control.getScanlist())
+            self._overlaySelection.passData(self._control.getScanlist())
             self._overlaySelection.show()
         self._overlaySelection.overlayscanlist.connect(self._showOverlay)        
 
@@ -517,7 +517,7 @@ class iintGUI(QtGui.QMainWindow):
                                            self._control.getSignalName(),
                                            self._control.getFittedSignalName(),
                                            )
-            self.imageTabs.addTab(self._overlayView, "Overlay")
+            self.imageTabs.setCurrentIndex(self.imageTabs.addTab(self._overlayView, "Overlay"))
             self.imageTabs.show()
             self._overlayView.plot()
             self._overlayView.show()
@@ -533,7 +533,7 @@ class iintGUI(QtGui.QMainWindow):
     def _runScanProfiles(self, zval):
         self._control.setZValueInProfilePlot(zval)
         name, timesuffix = self._control.proposeSaveFileName()
-        filename = name + "_scanProfiles.pdf"
+        filename = name + "-" + str(zval) + "_scanProfiles.pdf"
         self.message("Creating the scan profile plot ...")
         self._control.processScanProfiles(filename)
         self.message(" ... done.\n")
@@ -618,6 +618,7 @@ class iintGUI(QtGui.QMainWindow):
                                        )
         self._simpleImageView.plot()
         self._dataTabIndex = self.imageTabs.addTab(self._simpleImageView, "Scan display")
+        self.imageTabs.setCurrentIndex(self._dataTabIndex)
         self.imageTabs.show()
         self._simpleImageView.show()
         self._simpleImageView.plot()
@@ -672,7 +673,9 @@ class iintGUI(QtGui.QMainWindow):
         trackinfo = self._control.getDefaultTrackInformation()
         tdv = iintMultiTrackedDataView.iintMultiTrackedDataView(trackinfo)
         self._trackedDataDict[trackinfo.getName()] = trackinfo
-        self._resultTabIndices.append(self.imageTabs.addTab(tdv, ("Fit vs." + trackinfo.getName())))
+        tmpindex = self.imageTabs.addTab(tdv, ("Fit vs." + trackinfo.getName()))
+        self._resultTabIndices.append(tmpindex)
+        self.imageTabs.setCurrentIndex(tmpindex)
 
         # critical here, something doesn't work any longer; take it out
         #~ tdv.pickedTrackedDataPoint.connect(self._setFocusToSpectrum)
@@ -838,7 +841,9 @@ class iintGUI(QtGui.QMainWindow):
             trackinfo = self._control.getTrackInformation(name)
             tdv = iintMultiTrackedDataView.iintMultiTrackedDataView(trackinfo, self._blacklist)
             self._trackedDataDict[trackinfo.getName()] = trackinfo
-            self._resultTabIndices.append(self.imageTabs.addTab(tdv, trackinfo.getName()))
+            tmpindex = self.imageTabs.addTab(tdv, trackinfo.getName())
+            self._resultTabIndices.append(tmpindex)
+            self.imageTabs.setCurrentIndex(tmpindex)
             tdv.pickedTrackedDataPoint.connect(self._setFocusToSpectrum)
 
     def _addMappedData(self, one, two):
@@ -849,7 +854,7 @@ class iintGUI(QtGui.QMainWindow):
         mtdmd.maperror.connect(self.warning)
         mtdmd.plot()
         self.message("Displaying " + str(one) + " versus " + str(two) + ".")
-        self.imageTabs.addTab(mtdmd, one + " vs. " + two)
+        self.imageTabs.setCurrentIndex(self.imageTabs.addTab(mtdmd, one + " vs. " + two))
         self.imageTabs.show()
 
     def _saveResultsFile(self):
@@ -891,7 +896,9 @@ class iintGUI(QtGui.QMainWindow):
         for k, v in self._trackedDataDict.items():
             tdv = iintMultiTrackedDataView.iintMultiTrackedDataView(v, blacklist)
             tdv.pickedTrackedDataPoint.connect(self._setFocusToSpectrum)
-            self._resultTabIndices.append(self.imageTabs.addTab(tdv, k))
+            tmpindex = self.imageTabs.addTab(tdv, k)
+            self._resultTabIndices.append(tmpindex)
+            self.imageTabs.setCurrentIndex(tmpindex)
 
     def _showInspectionPlots(self):
         tempDict = self._control.getInspectionDict()
