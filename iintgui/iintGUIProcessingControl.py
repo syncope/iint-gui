@@ -26,6 +26,7 @@ try:
     from adapt import processData
     from adapt import processBuilder
     from adapt import processingConfiguration
+    from adapt import adaptException
 
     from adapt.processes import specfilereader
     from adapt.processes import fiofilereader
@@ -414,7 +415,10 @@ class IintGUIProcessingControl():
             return
         proc = self._procBuilder.createProcessFromDictionary(pDict)
         proc.initialize()
-        proc.loopExecuteWithOverwrite(self._dataList, emitProgress=True)
+        try:
+            proc.loopExecuteWithOverwrite(self._dataList, emitProgress=True)
+        except adaptException.AdaptProcessingStoppedException:
+            return "stopped"
         return proc
 
     def processAll(self, pDict):

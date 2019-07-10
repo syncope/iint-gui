@@ -658,8 +658,14 @@ class iintGUI(QtGui.QMainWindow):
                   'm0_sigma': {'value': 3.} }}
         else:
             rundict['model'] = fitDict
-        self._control.createAndBulkExecute(rundict)
-        self._control.createAndBulkExecute(self._control.getSignalFitDict())
+        if self._control.createAndBulkExecute(rundict) == "stopped":
+            self._inspectAnalyze.reset()
+            self._simpleImageView.update("unplotfit")
+            return
+        if self._control.createAndBulkExecute(self._control.getSignalFitDict()) == "stopped":
+            self._inspectAnalyze.reset()
+            self._simpleImageView.update("unplotfit")
+            return
         if(self._simpleImageView is not None):
             self._simpleImageView.update("plotfit")
 
