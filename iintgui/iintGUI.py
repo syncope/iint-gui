@@ -533,7 +533,7 @@ class iintGUI(QtGui.QMainWindow):
     def _runScanProfiles(self, zval):
         self._control.setZValueInProfilePlot(zval)
         name, timesuffix = self._control.proposeSaveFileName()
-        filename = name + "_scanProfiles.pdf"
+        filename = name + "-" + str(zval) + "_scanProfiles.pdf"
         self.message("Creating the scan profile plot ...")
         self._control.processScanProfiles(filename)
         self.message(" ... done.\n")
