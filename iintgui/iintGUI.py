@@ -668,7 +668,8 @@ class iintGUI(QtGui.QMainWindow):
         self._trackedDataDict[trackinfo.getName()] = trackinfo
         self._resultTabIndices.append(self.imageTabs.addTab(tdv, ("Fit vs." + trackinfo.getName())))
 
-        tdv.pickedTrackedDataPoint.connect(self._setFocusToSpectrum)
+        # critical here, something doesn't work any longer; take it out
+        #~ tdv.pickedTrackedDataPoint.connect(self._setFocusToSpectrum)
         self.message(" ... done.\n")
         self._inspectAnalyze.activate()
         self._control.useSignalProcessing(True)
