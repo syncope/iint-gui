@@ -12,7 +12,7 @@ bkgfit:
 bkgselect:
   endpointnumber: 6
   input:
-  - observable
+  - intensity
   - del
   output:
   - bkgY
@@ -27,8 +27,8 @@ bkgselect:
   type: subsequenceselection
 bkgsubtract:
   background: bkgPoints
-  input: observable
-  output: signalObservable
+  input: intensity
+  output: signalIntensity
   type: backgroundsubtraction
 calcbkgpoints:
   fitresult: bkgfitresult
@@ -55,7 +55,7 @@ observabledef:
   input: rawdata
   monitor_column: exp_vfc02
   motor_column: del
-  output: observable
+  output: intensity
   type: iintdefinition
 signalcurvefit:
   error: None
@@ -74,7 +74,7 @@ signalcurvefit:
   useguessing: 0
   usepreviousresult: 1
   xdata: del
-  ydata: signalObservable
+  ydata: signalIntensity
 specread:
   filename: /home/rosem/iintgui/test/test_data/rucl3_az.spc
   output: default
@@ -82,6 +82,6 @@ specread:
   type: specfilereader
 trapint:
   motor: del
-  observable: signalObservable
+  observable: signalIntensity
   output: trapezoidIntegral
   type: trapezoidintegration

@@ -478,7 +478,7 @@ class iintGUI(QtGui.QMainWindow):
             self._signalHandling.setParameterDict(self._control.getSIGDict())
             self._control.resetFITdata()
 
-        self.message("Computing the observable...")
+        self.message("Computing the intensity...")
         self._control.createAndBulkExecute(obsDict)
         self.message(" and plotting ...")
         self.plotit()
@@ -658,8 +658,14 @@ class iintGUI(QtGui.QMainWindow):
                   'm0_sigma': {'value': 3.} }}
         else:
             rundict['model'] = fitDict
-        self._control.createAndBulkExecute(rundict)
-        self._control.createAndBulkExecute(self._control.getSignalFitDict())
+        if self._control.createAndBulkExecute(rundict) == "stopped":
+            self._inspectAnalyze.reset()
+            self._simpleImageView.update("unplotfit")
+            return
+        if self._control.createAndBulkExecute(self._control.getSignalFitDict()) == "stopped":
+            self._inspectAnalyze.reset()
+            self._simpleImageView.update("unplotfit")
+            return
         if(self._simpleImageView is not None):
             self._simpleImageView.update("plotfit")
 
@@ -668,7 +674,8 @@ class iintGUI(QtGui.QMainWindow):
         self._trackedDataDict[trackinfo.getName()] = trackinfo
         self._resultTabIndices.append(self.imageTabs.addTab(tdv, ("Fit vs." + trackinfo.getName())))
 
-        tdv.pickedTrackedDataPoint.connect(self._setFocusToSpectrum)
+        # critical here, something doesn't work any longer; take it out
+        #~ tdv.pickedTrackedDataPoint.connect(self._setFocusToSpectrum)
         self.message(" ... done.\n")
         self._inspectAnalyze.activate()
         self._control.useSignalProcessing(True)
