@@ -1,3 +1,13 @@
+iintgui (0.11.3-1+deb9u5~fsec) stretch; urgency=low
+
+  * Bug workaround:
+       + double-click on result point for focus on spectrum is diabled
+  * Feature additions:
+       + name changes: observable -> intensity
+       + fit processing can be stopped interactively in case it's taking too long
+
+ -- Christoph Rosemann <christoph.rosemann@desy.de>  Wed, 10 Jul 2019 14:30:00 +0100
+
 iintgui (0.11.2-1+deb9u5~fsec) stretch; urgency=low
 
   * Some bugfixes:
