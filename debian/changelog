@@ -1,3 +1,14 @@
+iintgui (0.12.0-1+deb9u5~fsec) stretch; urgency=low
+
+  * Small bug fix: list of scans in overlay selection is now correctly
+    retained and initialized only once.
+  * Feature additions:
+       + filenames are shown in log window when saved/created
+       + newly added tabs to the image display are brought into foreground
+       + profile plot pdf filename contains the name of the chosen z value
+
+ -- Christoph Rosemann <christoph.rosemann@desy.de>  Thu, 11 Jul 2019 15:02:00 +0100
+
 iintgui (0.11.3-1+deb9u5~fsec) stretch; urgency=low
 
   * Bug workaround:
