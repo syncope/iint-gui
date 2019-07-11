@@ -873,12 +873,13 @@ class iintGUI(QtGui.QMainWindow):
         self.message("Saving results files, might take a while ...")
         self._control.processAll(finalDict)
         self._resultFileName = finalDict["outfilename"]
+        self.message("saving file: " + str(self._resultFileName))
         filename = self._control.getResultBaseFilename()
-        self.message("... processing the scan profile plots ...")
+        self.message("... processing the scan profile plots: " + str(filename + "_scanProfiles.pdf"))
         self._control.processScanProfiles(filename + "_scanProfiles.pdf")
-        self.message("... processing the plots of the tracked data ...")
+        self.message("... processing the plots of the tracked data: " + str(filename  + "_trackedColumnsPlots.pdf"))
         self._control.processTrackedColumnsControlPlots(filename  + "_trackedColumnsPlots.pdf")
-        self.message("...and finally the control plots of the scans ...")
+        self.message("...and finally the control plots of the scans: " + str(filename + "_scanControlPlots.pdf"))
         self._control.processScanControlPlots(filename + "_scanControlPlots.pdf")
         self.message(" ... done.\n")
 
