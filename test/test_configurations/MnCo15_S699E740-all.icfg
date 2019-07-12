@@ -12,7 +12,7 @@ bkgfit:
 bkgselect:
   endpointnumber: 3
   input:
-  - despikedObservable
+  - despikedIntensity
   - pth
   output:
   - bkgY
@@ -27,8 +27,8 @@ bkgselect:
   type: subsequenceselection
 bkgsubtract:
   background: bkgPoints
-  input: despikedObservable
-  output: signalObservable
+  input: despikedIntensity
+  output: signalIntensity
   type: backgroundsubtraction
 calcbkgpoints:
   fitresult: bkgfitresult
@@ -36,9 +36,9 @@ calcbkgpoints:
   type: gendatafromfunction
   xdata: pth
 despike:
-  input: observable
+  input: intensity
   method: p09despiking
-  output: despikedObservable
+  output: despikedIntensity
   type: filter1d
 execlist:
 - specread
@@ -54,7 +54,7 @@ execlist:
 finalize:
   fitresult: signalcurvefitresult
   motor: pth
-  observable: signalObservable
+  observable: signalIntensity
   outfilename: /home/rosem/iintgui/test/test_data/MnCo15_S699E740_20190502-16h28.iint
   specdataname: rawdata
   trackedData:
@@ -81,7 +81,7 @@ observabledef:
   input: rawdata
   monitor_column: sumvfcs_counts
   motor_column: pth
-  output: observable
+  output: intensity
   type: iintdefinition
 signalcurvefit:
   error: None
@@ -103,7 +103,7 @@ signalcurvefit:
   useguessing: 1
   usepreviousresult: 0
   xdata: pth
-  ydata: signalObservable
+  ydata: signalIntensity
 specread:
   filename: /home/rosem/iintgui/test/test_data/MnCo15.spc
   output: default
@@ -111,6 +111,6 @@ specread:
   type: specfilereader
 trapint:
   motor: pth
-  observable: signalObservable
+  observable: signalIntensity
   output: trapezoidIntegral
   type: trapezoidintegration

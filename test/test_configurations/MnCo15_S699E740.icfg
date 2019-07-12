@@ -11,7 +11,7 @@ bkgfit:
 bkgselect:
   endpointnumber: 3
   input:
-  - despikedObservable
+  - despikedIntensity
   - pth
   output:
   - bkgY
@@ -23,8 +23,8 @@ bkgselect:
   type: subsequenceselection
 bkgsubtract:
   background: bkgPoints
-  input: despikedObservable
-  output: signalObservable
+  input: despikedIntensity
+  output: signalIntensity
   type: backgroundsubtraction
 calcbkgpoints:
   fitresult: bkgfitresult
@@ -32,9 +32,9 @@ calcbkgpoints:
   type: gendatafromfunction
   xdata: pth
 despike:
-  input: observable
+  input: intensity
   method: p09despiking
-  output: despikedObservable
+  output: despikedIntensity
   type: filter1d
 execlist:
 - specread
@@ -51,7 +51,7 @@ observabledef:
   input: rawdata
   monitor_column: sumvfcs_counts
   motor_column: pth
-  output: observable
+  output: intensity
   type: iintdefinition
 specread:
   filename: /home/rosem/iintgui/test/test_data/MnCo15.spc

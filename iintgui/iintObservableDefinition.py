@@ -29,7 +29,7 @@ class iintObservableDefinition(QtGui.QWidget):
 
     def __init__(self, parent=None):
         super(iintObservableDefinition, self).__init__(parent)
-        self.setWindowTitle("Observable definition")
+        self.setWindowTitle("Intensity definition")
         #~ uic.loadUi(getUIFile.getUIFile("iintobservable.ui"), self)
         uic.loadUi(getUIFile.getUIFile("iintSignalDefinition.ui"), self)
         self._obsDict = {}
@@ -46,7 +46,7 @@ class iintObservableDefinition(QtGui.QWidget):
         self.despikeCheckBox.stateChanged.connect(self.toggleDespiking)
         self._despike = False
         self._notEnabled(True)
-        self._observableName = 'observable'
+        self._observableName = 'intensity'
         self.motorCB.setToolTip("Choose the independent axis of the scan display (the 'motor'), e.g. from the scan command.")
         self.label.setToolTip("The shorthand notation for the used formula to calculate\nthe number of counts at the given motor position.")
         self.observableDetectorCB.setToolTip("Chose the detector entry from the scan file information.")
@@ -76,15 +76,18 @@ class iintObservableDefinition(QtGui.QWidget):
         self._obsDict = {}
         self._despikeDict = {}
         self._trapintDict = {}
+        self._previousObsDict = {}
+        self._previousDespDict = {}
         self._useAttenuationFactor = False
         self.observableAttFacCB.setDisabled(True)
         self.despikeCheckBox.setChecked(False)
         self._despike = False
         self._notEnabled(True)
-        self._observableName = 'observable'
+        self._observableName = 'intensity'
         self.deactivateShowScanProfile()
         #~ self.showMCA.setDisabled(False)
         self.trackData.setDisabled(True)
+        self.doDespike.emit(False)
 
     def _checkStatus(self):
         # automatic check for the values in the combo boxes, run at every change
@@ -108,7 +111,9 @@ class iintObservableDefinition(QtGui.QWidget):
             self.overlayBtn.setDisabled(True)
 
     def reset(self):
+        self._blockSignals()
         self._defaultSettings()
+        self._unblockSignals()
 
     def activate(self):
         self._notEnabled(False)
@@ -245,13 +250,13 @@ class iintObservableDefinition(QtGui.QWidget):
         if(self._despike):
             self._despikeDict["type"] = "filter1d"
             self._despikeDict["method"] = "p09despiking"
-            self._despikeDict["input"] = "observable"
-            self._despikeDict["output"] = "despikedObservable"
+            self._despikeDict["input"] = "intensity"
+            self._despikeDict["output"] = "despikedIntensity"
         else:
             self._despikeDict = {}
         self._trapintDict["type"] = "trapezoidintegration"
         self._trapintDict["motor"] = self._motorname
-        self._trapintDict["observable"] = "signalObservable"
+        self._trapintDict["observable"] = "signalIntensity"
         self._trapintDict["output"] = "trapezoidIntegral"
 
         self._previousObsDict = self._obsDict.copy()

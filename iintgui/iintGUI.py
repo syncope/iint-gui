@@ -47,6 +47,7 @@ from . import iintSignalFitting
 from . import iintTrackedDataChoice
 from . import trackedDataMap
 from . import iintTrackedDataMapDisplay
+from . import iintZValueSelection
 from . import quitDialog
 from . import loggerBox
 from . import resetDialog
@@ -92,11 +93,12 @@ class iintGUI(QtGui.QMainWindow):
         self._motorname = ""
         self._rawdataobject = None
         self.imageTabs = QtGui.QTabWidget()
-
+        self.imageTabs.setTabsClosable(True)
         self.imageTabs.removeTab(1)
         self.imageTabs.removeTab(0)
         self.imageTabs.hide()
-        self.imageTabs.tabCloseRequested.connect(self.imageTabs.removeTab)
+        self.imageTabs.tabCloseRequested.connect(self._checkTabClosing)
+        self._dataTabIndex = None
         self._simpleImageView = iintDataPlot.iintDataPlot(parent=self)
         self._simpleImageView.blacklist.connect(self._retrackDataDisplay)
         self._simpleImageView.hidden.connect(self._unresize)
@@ -116,7 +118,7 @@ class iintGUI(QtGui.QMainWindow):
         self._obsDefBox.setContentLayout(templayout)
 
         self._obsDef.doDespike.connect(self._control.useDespike)
-        self._obsDef.showScanProfile.clicked.connect(self._runScanProfiles)
+        self._obsDef.showScanProfile.clicked.connect(self._openzvalchoice)
         self._obsDef.motorName.connect(self.setMotorName)
         self._mcaplot = iintMCADialog.iintMCADialog(parent=self)
         self._mcaplot.hide()
@@ -218,6 +220,7 @@ class iintGUI(QtGui.QMainWindow):
         try:
             self._trackedDataChoice.reset()
             self._trackedDataChoice.close()
+            self._trackedDataChoice = None
         except AttributeError:
             pass
         try:
@@ -267,6 +270,7 @@ class iintGUI(QtGui.QMainWindow):
                 for tab in range(self.imageTabs.count()):
                     self.imageTabs.removeTab(tab)
             self.imageTabs.hide()
+        self._dataTabIndex = None
 
     def resetResultTabs(self, keepSpectra=False):
         self._resultTabIndices = list(set(self._resultTabIndices))
@@ -280,6 +284,14 @@ class iintGUI(QtGui.QMainWindow):
                     self.imageTabs.removeTab(tab)
             self.imageTabs.hide()
         self._resultTabIndices.clear()
+
+    def _checkTabClosing(self, index):
+        if self._dataTabIndex is not None:
+            if index is not self._dataTabIndex:
+                self.message("Closing tab " + str(self.imageTabs.tabText(index)))
+                self.imageTabs.removeTab(index)
+            else:
+                self.message("Won't close the scan display tab.")
 
     def closeEvent(self, event):
         event.ignore()
@@ -381,6 +393,8 @@ class iintGUI(QtGui.QMainWindow):
             self._initializeFromConfig()
 
     def _initializeFromConfig(self):
+        # clear the memory!
+        self._resetAll()
         # reset logic is screwed up
         # first load the config into the actual description
         runlist = self._control.loadConfig(self._procconf)
@@ -396,7 +410,7 @@ class iintGUI(QtGui.QMainWindow):
             return
         if "observabledef" in runlist:
             self._obsDef.setParameterDicts(self._control.getOBSDict(), self._control.getDESDict())
-            self.runObservable(self._control.getOBSDict(), self._control.getDESDict())
+            #~ self.runObservable(self._control.getOBSDict(), self._control.getDESDict())
             self._obsDef.activateShowScanProfile()
         else:
             return
@@ -469,10 +483,12 @@ class iintGUI(QtGui.QMainWindow):
             self._signalHandling.setParameterDict(self._control.getSIGDict())
             self._control.resetFITdata()
 
-        self.message("Computing the observable...")
+        self.message("Computing the intensity...")
         self._control.createAndBulkExecute(obsDict)
         self.message(" and plotting ...")
         self.plotit()
+        # just check if this works, still unclear of the trigger...
+        self._control.settingChoiceDesBkg()
 
         # check whether despiking is activated, otherwise unset names
         if despDict != {}:
@@ -488,10 +504,10 @@ class iintGUI(QtGui.QMainWindow):
 
     def doOverlay(self):
         try:
-            self._overlaySelection.passData(self._control.getScanlist())
             self._overlaySelection.show()
         except AttributeError:
             self._overlaySelection = iintOverlaySelection.iintOverlaySelection(datalist=self._control.getScanlist())
+            self._overlaySelection.passData(self._control.getScanlist())
             self._overlaySelection.show()
         self._overlaySelection.overlayscanlist.connect(self._showOverlay)        
 
@@ -506,7 +522,7 @@ class iintGUI(QtGui.QMainWindow):
                                            self._control.getSignalName(),
                                            self._control.getFittedSignalName(),
                                            )
-            self.imageTabs.addTab(self._overlayView, "Overlay")
+            self.imageTabs.setCurrentIndex(self.imageTabs.addTab(self._overlayView, "Overlay"))
             self.imageTabs.show()
             self._overlayView.plot()
             self._overlayView.show()
@@ -514,14 +530,21 @@ class iintGUI(QtGui.QMainWindow):
             self.warning("Nothing to plot yet, first define the signal.")
             pass
 
-    def _runScanProfiles(self):
+    def _openzvalchoice(self):
+        rawScanData = self._control.getDataList()[0].getData(self._control.getRawDataName())
+        self._tmpdialog = iintZValueSelection.iintZValueSelection(rawScanData.getLabels(), self._control.getObservableName())
+        self._tmpdialog.zvalue.connect(self._runScanProfiles)
+
+    def _runScanProfiles(self, zval):
+        self._control.setZValueInProfilePlot(zval)
         name, timesuffix = self._control.proposeSaveFileName()
-        filename = name + "_scanProfiles.pdf"
+        filename = name + "-" + str(zval) + "_scanProfiles.pdf"
         self.message("Creating the scan profile plot ...")
         self._control.processScanProfiles(filename)
         self.message(" ... done.\n")
         from subprocess import Popen
         Popen(["evince", filename])
+        self._tmpdialog = None
 
     def _runMCA(self):
         name, timesuffix = self._control.proposeSaveFileName()
@@ -599,7 +622,8 @@ class iintGUI(QtGui.QMainWindow):
                                        self._control.getFittedSignalName(),
                                        )
         self._simpleImageView.plot()
-        self.imageTabs.addTab(self._simpleImageView, "Scan display")
+        self._dataTabIndex = self.imageTabs.addTab(self._simpleImageView, "Scan display")
+        self.imageTabs.setCurrentIndex(self._dataTabIndex)
         self.imageTabs.show()
         self._simpleImageView.show()
         self._simpleImageView.plot()
@@ -630,6 +654,7 @@ class iintGUI(QtGui.QMainWindow):
             self._inspectAnalyze.reset()
         rundict = self._control.getSIGDict()
         self.message("Fitting the signal, this can take a while ...")
+        # this is a bad idea; this is specific code and needs to be put into the control part!!
         if self._control.guessSignalFit():
             rundict['model'] = { "m0_": { 'modeltype': "gaussianModel",
                   'm0_center' : {'value':1.},
@@ -639,17 +664,26 @@ class iintGUI(QtGui.QMainWindow):
                   'm0_sigma': {'value': 3.} }}
         else:
             rundict['model'] = fitDict
-        self._control.createAndBulkExecute(rundict)
-        self._control.createAndBulkExecute(self._control.getSignalFitDict())
+        if self._control.createAndBulkExecute(rundict) == "stopped":
+            self._inspectAnalyze.reset()
+            self._simpleImageView.update("unplotfit")
+            return
+        if self._control.createAndBulkExecute(self._control.getSignalFitDict()) == "stopped":
+            self._inspectAnalyze.reset()
+            self._simpleImageView.update("unplotfit")
+            return
         if(self._simpleImageView is not None):
             self._simpleImageView.update("plotfit")
 
         trackinfo = self._control.getDefaultTrackInformation()
         tdv = iintMultiTrackedDataView.iintMultiTrackedDataView(trackinfo)
         self._trackedDataDict[trackinfo.getName()] = trackinfo
-        self._resultTabIndices.append(self.imageTabs.addTab(tdv, ("Fit vs." + trackinfo.getName())))
+        tmpindex = self.imageTabs.addTab(tdv, ("Fit vs." + trackinfo.getName()))
+        self._resultTabIndices.append(tmpindex)
+        self.imageTabs.setCurrentIndex(tmpindex)
 
-        tdv.pickedTrackedDataPoint.connect(self._setFocusToSpectrum)
+        # critical here, something doesn't work any longer; take it out
+        #~ tdv.pickedTrackedDataPoint.connect(self._setFocusToSpectrum)
         self.message(" ... done.\n")
         self._inspectAnalyze.activate()
         self._control.useSignalProcessing(True)
@@ -764,7 +798,11 @@ class iintGUI(QtGui.QMainWindow):
 
     def _updateCurrentImage(self):
         ydata = self._fitWidget.getCurrentFitData()
-        self._simpleImageView.plotFit(ydata)
+        try:
+            # can fail if the model is constant; then the stupid signature is different. ignore!
+            self._simpleImageView.plotFit(ydata)
+        except:
+            pass
 
     def _keepFitList(self, fitwidget):
         # remove if index is already there
@@ -808,7 +846,9 @@ class iintGUI(QtGui.QMainWindow):
             trackinfo = self._control.getTrackInformation(name)
             tdv = iintMultiTrackedDataView.iintMultiTrackedDataView(trackinfo, self._blacklist)
             self._trackedDataDict[trackinfo.getName()] = trackinfo
-            self._resultTabIndices.append(self.imageTabs.addTab(tdv, trackinfo.getName()))
+            tmpindex = self.imageTabs.addTab(tdv, trackinfo.getName())
+            self._resultTabIndices.append(tmpindex)
+            self.imageTabs.setCurrentIndex(tmpindex)
             tdv.pickedTrackedDataPoint.connect(self._setFocusToSpectrum)
 
     def _addMappedData(self, one, two):
@@ -819,7 +859,7 @@ class iintGUI(QtGui.QMainWindow):
         mtdmd.maperror.connect(self.warning)
         mtdmd.plot()
         self.message("Displaying " + str(one) + " versus " + str(two) + ".")
-        self.imageTabs.addTab(mtdmd, one + " vs. " + two)
+        self.imageTabs.setCurrentIndex(self.imageTabs.addTab(mtdmd, one + " vs. " + two))
         self.imageTabs.show()
 
     def _saveResultsFile(self):
@@ -838,9 +878,13 @@ class iintGUI(QtGui.QMainWindow):
         self.message("Saving results files, might take a while ...")
         self._control.processAll(finalDict)
         self._resultFileName = finalDict["outfilename"]
+        self.message("saving file: " + str(self._resultFileName))
         filename = self._control.getResultBaseFilename()
+        self.message("... processing the scan profile plots: " + str(filename + "_scanProfiles.pdf"))
         self._control.processScanProfiles(filename + "_scanProfiles.pdf")
+        self.message("... processing the plots of the tracked data: " + str(filename  + "_trackedColumnsPlots.pdf"))
         self._control.processTrackedColumnsControlPlots(filename  + "_trackedColumnsPlots.pdf")
+        self.message("...and finally the control plots of the scans: " + str(filename + "_scanControlPlots.pdf"))
         self._control.processScanControlPlots(filename + "_scanControlPlots.pdf")
         self.message(" ... done.\n")
 
@@ -858,7 +902,9 @@ class iintGUI(QtGui.QMainWindow):
         for k, v in self._trackedDataDict.items():
             tdv = iintMultiTrackedDataView.iintMultiTrackedDataView(v, blacklist)
             tdv.pickedTrackedDataPoint.connect(self._setFocusToSpectrum)
-            self._resultTabIndices.append(self.imageTabs.addTab(tdv, k))
+            tmpindex = self.imageTabs.addTab(tdv, k)
+            self._resultTabIndices.append(tmpindex)
+            self.imageTabs.setCurrentIndex(tmpindex)
 
     def _showInspectionPlots(self):
         tempDict = self._control.getInspectionDict()

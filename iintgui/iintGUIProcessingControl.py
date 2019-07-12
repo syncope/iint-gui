@@ -26,6 +26,7 @@ try:
     from adapt import processData
     from adapt import processBuilder
     from adapt import processingConfiguration
+    from adapt import adaptException
 
     from adapt.processes import specfilereader
     from adapt.processes import fiofilereader
@@ -70,11 +71,11 @@ class IintGUIProcessingControl():
         self._motorName = ""
         self._rawName = "rawdata"
         self._id = "scannumber"
-        self._observableName = "observable"
-        self._despObservableName = "despikedObservable"
+        self._observableName = "intensity"
+        self._despObservableName = "despikedIntensity"
         self._backgroundPointsName = "bkgPoints"
         self._backgroundIntegralName = "bkgIntegral"
-        self._signalName = "signalObservable"
+        self._signalName = "signalIntensity"
         self._fittedSignalName = "signalcurvefitresult"
         self._fitSignalPointsName = "signalFitPoints"
         self._trapintName = "trapezoidIntegral"
@@ -115,11 +116,11 @@ class IintGUIProcessingControl():
         self._processList.clear()
         self._motorName = ""
         self._rawName = "rawdata"
-        self._observableName = "observable"
-        self._despObservableName = "despikedObservable"
+        self._observableName = "intensity"
+        self._despObservableName = "despikedIntensity"
         self._backgroundPointsName = "bkgPoints"
         self._backgroundIntegralName = "bkgIntegral"
-        self._signalName = "signalObservable"
+        self._signalName = "signalIntensity"
         self._fittedSignalName = "signalcurvefitresult"
         self._fitSignalPointsName = "signalFitPoints"
         self._trapintName = "trapezoidIntegral"
@@ -127,6 +128,7 @@ class IintGUIProcessingControl():
         self._setupDefaultNames()
         self.resetTrackedData()
         self._readerType = ""
+        self._nodespike = True
 
     def resetRAWdata(self):
         for elem in self._dataList:
@@ -211,9 +213,11 @@ class IintGUIProcessingControl():
         self._processParameters["observabledef"]["id"] = self._id
 
         self._processParameters["scanprofileplot"]["outfilename"] = None
-        self._processParameters["scanprofileplot"]["observable"] = self._observableName
-        self._processParameters["scanprofileplot"]["motor"] = None
-        # from out to in:
+        self._processParameters["scanprofileplot"]["xaxis"] = None
+        self._processParameters["scanprofileplot"]["yaxis"] = self._id
+        self._processParameters["scanprofileplot"]["zaxis"] = self._observableName
+        self._processParameters["scanprofileplot"]["rawdataname"] = self.getRawDataName()
+
         self._processParameters["despike"]["input"] = self._observableName
         self._processParameters["despike"]["method"] = "p09despiking"
         self._processParameters["despike"]["output"] = self._despObservableName
@@ -291,7 +295,7 @@ class IintGUIProcessingControl():
     def setMotorName(self, name=None):
         self._motorName = name
         self._processParameters["observabledef"]["motor_column"] = self._motorName
-        self._processParameters["scanprofileplot"]["motor"] = self._motorName
+        self._processParameters["scanprofileplot"]["xaxis"] = self._motorName
         self._processParameters["bkgselect"]["input"] = [self._despObservableName, self._motorName]
         self._processParameters["bkgintegral"]["xdata"] = self._motorName
         self._processParameters["calcbkgpoints"]["xdata"] = self._motorName
@@ -411,7 +415,10 @@ class IintGUIProcessingControl():
             return
         proc = self._procBuilder.createProcessFromDictionary(pDict)
         proc.initialize()
-        proc.loopExecuteWithOverwrite(self._dataList, emitProgress=True)
+        try:
+            proc.loopExecuteWithOverwrite(self._dataList, emitProgress=True)
+        except adaptException.AdaptProcessingStoppedException:
+            return "stopped"
         return proc
 
     def processAll(self, pDict):
@@ -656,6 +663,9 @@ class IintGUIProcessingControl():
             return self._processParameters["trapint"]
         except KeyError:
             return {}
+
+    def setZValueInProfilePlot(self, zval):
+        self._processParameters["scanprofileplot"]["zaxis"] = zval
 
     def setSpecFile(self, name, scanlist):
         self._processParameters["specread"]["filename"] = name

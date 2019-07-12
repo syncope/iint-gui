@@ -52,7 +52,7 @@ class iintTrackedDataMapDisplay(QtGui.QDialog):
             self.maperror.emit("Could not map the current selection, plotting failed.")
             self.close()
         self.viewPart.setLabel('left', self._yaxisname)
-        self.viewPart.setLabel('bottom', self._yaxisname)
+        self.viewPart.setLabel('bottom', self._xaxisname)
 
     def mouse_click(self, event):
         try:

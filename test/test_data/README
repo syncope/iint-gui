@@ -2,18 +2,44 @@ Info for file reading into iint-gui
 ___________________________________
 
 FIO files -> just load
+
+
 # standard test file, a polarization analysis
 MnCo15.spc 699-740 
+  motor_column: pth
+  detector_column: exp_c01
+  monitor_column: sumvfcs_counts
+  exposureTime_column: exp_t01
 
-# test file for different scan positions
-EuPtIn4_remeasured_clean.spc 349, 356, 361, 367, 373, 379, 385, 391
+
 
 # test file for alternative background
 rucl3_az.spc 1179-1258
+  motor_column: del
+  detector_column: exp_c01
+  monitor_column: exp_vfc02
+  exposureTime_column: dt
+
+
+
+# test file for different scan positions
+EuPtIn4_remeasured_clean.spc 349, 356, 361, 367, 373, 379, 385, 391
+  motor_column: del
+  detector_column: exp_c03
+  monitor_column: sumvfcs_counts
+  exposureTime_column: exp_t01
+
+
 
 # other files:
 # only test file with incorrect (?) MCA data from KROMO
 EuPtIn4_remeasured_scans-WITHKROMO.spc  
+  motor_column: del
+  detector_column: exp_c03
+  monitor_column: sumvfcs_counts
+  exposureTime_column: exp_t01
+
+
 
 cro05_2.spc 383-471
 
