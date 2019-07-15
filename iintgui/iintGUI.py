@@ -629,12 +629,12 @@ class iintGUI(QtGui.QMainWindow):
         self._simpleImageView.plot()
 
     def openFitDialog(self, modelname, index):
-        self._fitWidget = self._control.getFitModel(modelname, self._simpleImageView.getCurrentSignal(), index=index)
-        self._fitWidget.updateFit.connect(self._updateCurrentImage)
-        self._fitWidget.guessingDone.connect(self._simpleImageView.removeGuess)
-        self._fitWidget.show()
-        self._fitWidget.update()
-        self._keepFitList(self._fitWidget)
+        self._fitModel = self._control.getFitModel(modelname, self._simpleImageView.getCurrentSignal(), index=index)
+        self._fitModel.updateFit.connect(self._updateCurrentImage)
+        self._fitModel.guessingDone.connect(self._simpleImageView.removeGuess)
+        self._fitModel.show()
+        self._fitModel.update()
+        self._keepFitList(self._fitModel)
 
     def _prepareSignalFitting(self):
         fitDict = {}
@@ -797,7 +797,7 @@ class iintGUI(QtGui.QMainWindow):
                 self.imageTabs.setCurrentIndex(self.imageTabs.indexOf(self._simpleImageView))
 
     def _updateCurrentImage(self):
-        ydata = self._fitWidget.getCurrentFitData()
+        ydata = self._fitModel.getCurrentFitData()
         try:
             # can fail if the model is constant; then the stupid signature is different. ignore!
             self._simpleImageView.plotFit(ydata)
