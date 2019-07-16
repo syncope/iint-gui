@@ -42,7 +42,6 @@ from . import fileInfo
 from . import outputDir
 from . import iintObservableDefinition
 from . import iintBackgroundHandling
-from . import iintSignalHandling
 from . import iintSignalFitting
 from . import iintTrackedDataChoice
 from . import trackedDataMap
@@ -133,16 +132,18 @@ class iintGUI(QtGui.QMainWindow):
         self._bkgHandling = iintBackgroundHandling.iintBackgroundHandling(self._control.getBKGDicts())
         self._bkgHandling.bkgmodel.connect(self._control.setBkgModel)
 
-        self._signalHandling = iintSignalHandling.iintSignalHandling(self._control.getSIGDict())
-        self._signalHandling.passModels(self._control.getFitModels())
-        self._signalHandling.modelcfg.connect(self.openFitDialog)
-        self._signalHandling.guesspeak.connect(self._control.useGuessSignalFit)
-        self._signalHandling.removeIndex.connect(self._removeFitFromListByIndex)
-        self._signalHandling.performFitPushBtn.clicked.connect(self._prepareSignalFitting)
+        #~ self._signalHandling = iintSignalHandling.iintSignalHandling(self._control.getSIGDict())
+        #~ self._signalHandling.passModels(self._control.getFitModels())
+
+        #~ self._signalHandling.modelcfg.connect(self.openFitDialog)
+        #~ self._signalHandling.guesspeak.connect(self._control.useGuessSignalFit)
+        #~ self._signalHandling.removeIndex.connect(self._removeFitFromListByIndex)
+        #~ self._signalHandling.performFitPushBtn.clicked.connect(self._prepareSignalFitting)
         self._fitList = []
 
         self._signalFitting = iintSignalFitting.iintSignalFitting(self._control.getSIGDict(), self._control.getFitModels())
-
+        self._signalFitting.configButton.clicked.connect(print)
+        self._signalFitting.fitButton.clicked.connect(print)
 
         self._inspectAnalyze = iintInspectAnalyze.iintInspectAnalyze()
         self._inspectAnalyze.trackedColumnsPlot.clicked.connect(self._runTrackedControlPlots)
@@ -210,9 +211,9 @@ class iintGUI(QtGui.QMainWindow):
         self._obsDef.reset()
         self._bkgHandling.reset()
         self._bkgHandling.setParameterDicts(self._control.getBKGDicts())
-        self._signalHandling.reset()
-        self._signalHandling.setParameterDict(self._control.getSIGDict())
-        self._signalHandling.deactivateFitting()
+        self._signalFitting.reset()
+        self._signalFitting.setParameterDict(self._control.getSIGDict())
+        self._signalFitting.deactivateFitting()
         self._control.resetAll()
         self._sfrGUI.reset()
         self._ffrGUI.reset()
@@ -238,9 +239,9 @@ class iintGUI(QtGui.QMainWindow):
         self._obsDef.reset()
         self._bkgHandling.reset()
         self._bkgHandling.setParameterDicts(self._control.getBKGDicts())
-        self._signalHandling.reset()
-        self._signalHandling.setParameterDict(self._control.getSIGDict())
-        self._signalHandling.deactivateFitting()
+        self._signalFitting.reset()
+        self._signalFitting.setParameterDict(self._control.getSIGDict())
+        self._signalFitting.deactivateFitting()
         self._control.resetAll()
         self.resetTabs()
         self._inspectAnalyze.reset()
@@ -420,7 +421,7 @@ class iintGUI(QtGui.QMainWindow):
         else:
             return
         if "signalcurvefit" in runlist:
-            self._signalHandling.setParameterDict(self._control.getSIGDict())
+            self._signalFitting.setParameterDict(self._control.getSIGDict())
             self.runSignalProcessing(self._control.getSIGDict()['model'], reset=False)
         else:
             return
@@ -428,7 +429,7 @@ class iintGUI(QtGui.QMainWindow):
     def _updateDisplay(self):
         self.plotit()
         self._bkgHandling.activate()
-        self._signalHandling.activateConfiguration()
+        self._signalFitting.activateConfiguration()
         self._inspectAnalyze.activate()
 
     def runFileReader(self, reader=None):
@@ -480,7 +481,7 @@ class iintGUI(QtGui.QMainWindow):
             self._control.resetBKGdata()
             self._bkgHandling.setParameterDicts(self._control.getBKGDicts())
             self._control.resetSIGdata()
-            self._signalHandling.setParameterDict(self._control.getSIGDict())
+            self._signalFitting.setParameterDict(self._control.getSIGDict())
             self._control.resetFITdata()
 
         self.message("Computing the intensity...")
@@ -499,7 +500,7 @@ class iintGUI(QtGui.QMainWindow):
             if(self._simpleImageView is not None):
                 self._simpleImageView.update("des")
         self._bkgHandling.activate()
-        self._signalHandling.activateConfiguration()
+        self._signalFitting.activateConfiguration()
         self.message(" done.\n")
 
     def doOverlay(self):
@@ -560,11 +561,11 @@ class iintGUI(QtGui.QMainWindow):
             self.resetResultTabs(keepSpectra=True)
             self._inspectAnalyze.reset()
             self._control.resetSIGdata()
-            self._signalHandling.setParameterDict(self._control.getSIGDict())
+            self._signalFitting.setParameterDict(self._control.getSIGDict())
             self._control.resetFITdata()
             self._control.resetBKGdata()
             self._bkgHandling.setParameterDicts(self._control.getBKGDicts())
-            self._signalHandling.deactivateFitting()
+            self._signalFitting.deactivateFitting()
         self.message("Fitting background ...")
 
         if selDict == {}:
@@ -588,7 +589,7 @@ class iintGUI(QtGui.QMainWindow):
         if(self._simpleImageView is not None):
             self._simpleImageView.update("bkg")
         self.message(" ... done.\n")
-        self._signalHandling.activateConfiguration()
+        self._signalFitting.activateConfiguration()
 
     def _noBackgroundToggle(self, nobkg):
         self._control.resetBKGdata()
@@ -600,11 +601,11 @@ class iintGUI(QtGui.QMainWindow):
         if nobkg is 1:
             if(self._simpleImageView is not None):
                 self._simpleImageView.update("nobkg")
-            self._signalHandling.activateFitting()
+            self._signalFitting.activateFitting()
             self._inspectAnalyze.deactivate()
             self._control.removeBKGparts()
         else:
-            self._signalHandling.deactivateFitting()
+            self._signalFitting.deactivateFitting()
             self._inspectAnalyze.deactivate()
             try:
                 self._simpleImageView.update("unplotfit")

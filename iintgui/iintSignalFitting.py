@@ -37,6 +37,7 @@ class iintSignalFitting(QtGui.QWidget):
         self.modelList.addItems(sorted(modellist))
         self.currentModelList.itemClicked.connect(self._currentFunctionClicked)
         self.removeButton.clicked.connect(self._removeCurrentFunction)
+        self.addButton.clicked.connect(self._addFunction)
         #~ self.performFitPushBtn.setDisabled(True)
         #~ self.guessMode.setDisabled(True)
         #~ self.guessMode.stateChanged.connect(self.doGuessing)
@@ -79,8 +80,23 @@ class iintSignalFitting(QtGui.QWidget):
 
     def _removeCurrentFunction(self):
         self.removeButton.setDisabled(True)
-        pass
-        #self._currentModel.
+        # figure out how to remove the stupid item
+        self.currentModelList.takeItem(self.currentModelList.row(self._currentSelected))
+        self.currentModelList.clearSelection()
+        self._currentSelected = None
+        self.removeButton.setDisabled(True)
+        if self.currentModelList.count() < 1:
+            self.deactivateConfiguration()
+
+    def activateConfiguration(self):
+        self.configButton.setDisabled(False)
+
+    def deactivateConfiguration(self):
+        self.configButton.setDisabled(True)
+
+    def _addFunction(self):
+        self.currentModelList.addItem(self.modelList.currentText())
+        self.activateConfiguration()
 
     #~ def doGuessing(self, state):
         #~ if state is 2:
