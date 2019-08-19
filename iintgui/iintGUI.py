@@ -142,8 +142,8 @@ class iintGUI(QtGui.QMainWindow):
         self._fitList = []
 
         self._signalFitting = iintSignalFitting.iintSignalFitting(self._control.getSIGDict(), self._control.getFitModels())
-        self._signalFitting.configButton.clicked.connect(print)
-        self._signalFitting.fitButton.clicked.connect(print)
+        self._signalFitting.models.connect(self.openFitConfigurationDialog)
+        self._signalFitting.fitButton.clicked.connect(self._prepareSignalFitting)
 
         self._inspectAnalyze = iintInspectAnalyze.iintInspectAnalyze()
         self._inspectAnalyze.trackedColumnsPlot.clicked.connect(self._runTrackedControlPlots)
@@ -589,7 +589,8 @@ class iintGUI(QtGui.QMainWindow):
         if(self._simpleImageView is not None):
             self._simpleImageView.update("bkg")
         self.message(" ... done.\n")
-        self._signalFitting.activateConfiguration()
+        #~ self._signalFitting.activateConfiguration()
+        self._signalFitting.activateFitting()
 
     def _noBackgroundToggle(self, nobkg):
         self._control.resetBKGdata()
@@ -629,18 +630,30 @@ class iintGUI(QtGui.QMainWindow):
         self._simpleImageView.show()
         self._simpleImageView.plot()
 
-    def openFitDialog(self, modelname, index):
-        self._fitModel = self._control.getFitModel(modelname, self._simpleImageView.getCurrentSignal(), index=index)
-        self._fitModel.updateFit.connect(self._updateCurrentImage)
-        self._fitModel.guessingDone.connect(self._simpleImageView.removeGuess)
-        self._fitModel.show()
-        self._fitModel.update()
-        self._keepFitList(self._fitModel)
+    def openFitConfigurationDialog(self, names):
+        print("opening fit config dialog with " + str(names))
+        del self._fitList[:]
+        # first build the fit list !
+        for index in range(len(names)):
+            modelname = names[index]
+            self._fitModel = self._control.getFitModel(modelname, self._simpleImageView.getCurrentSignal(), index=index)
+            #~ self._fitModel.updateFit.connect(self._updateCurrentImage)
+            #~ self._fitModel.guessingDone.connect(self._simpleImageView.removeGuess)
+            #~ self._fitModel.show()
+            #~ self._fitModel.update()
+            self._fitList.append(self._fitModel)
+            #~ self._keepFitList(self._fitModel)
+        print("the list of fits is: " + str(self._fitList))
 
     def _prepareSignalFitting(self):
+        print("preparing and performing the signal fit. ")
+        print("current fit list is: " + str(self._fitList))
+        #~ pass
         fitDict = {}
+        # occurrence of self._fitList
         for fit in self._fitList:
             fitDict.update(fit.getCurrentParameterDict())
+        print("the running dict is: " + str(fitDict))
         self.runSignalProcessing(fitDict, reset=True)
 
     def runSignalProcessing(self, fitDict, reset=True):
@@ -657,6 +670,7 @@ class iintGUI(QtGui.QMainWindow):
         self.message("Fitting the signal, this can take a while ...")
         # this is a bad idea; this is specific code and needs to be put into the control part!!
         if self._control.guessSignalFit():
+            print("AUTOAUTOAUTO")
             rundict['model'] = { "m0_": { 'modeltype': "gaussianModel",
                   'm0_center' : {'value':1.},
                   'm0_amplitude': {'value': 2.},
@@ -804,19 +818,6 @@ class iintGUI(QtGui.QMainWindow):
             self._simpleImageView.plotFit(ydata)
         except:
             pass
-
-    def _keepFitList(self, fitwidget):
-        # remove if index is already there
-        for fit in self._fitList:
-            if fitwidget.getIndex() == fit.getIndex():
-                self._fitList.remove(fit)
-        self._fitList.append(fitwidget)
-
-    def _removeFitFromListByIndex(self, index):
-        # update the list of fits by removing the entry
-        for fit in self._fitList:
-            if fit.getIndex() == index:
-                self._fitList.remove(fit)
 
     def _dataToTrack(self):
         rawScanData = self._control.getDataList()[0].getData(self._control.getRawDataName())

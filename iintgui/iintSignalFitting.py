@@ -23,6 +23,7 @@ from . import getUIFile
 
 
 class iintSignalFitting(QtGui.QWidget):
+    models = QtCore.pyqtSignal(list)
     #~ modelcfg = QtCore.pyqtSignal(str, int)
     #~ removeIndex = QtCore.pyqtSignal(int)
     #~ guesspeak = QtCore.pyqtSignal(int)
@@ -38,6 +39,7 @@ class iintSignalFitting(QtGui.QWidget):
         self.currentModelList.itemClicked.connect(self._currentFunctionClicked)
         self.removeButton.clicked.connect(self._removeCurrentFunction)
         self.addButton.clicked.connect(self._addFunction)
+        self.configButton.clicked.connect(self._getModels)
         #~ self.performFitPushBtn.setDisabled(True)
         #~ self.guessMode.setDisabled(True)
         #~ self.guessMode.stateChanged.connect(self.doGuessing)
@@ -47,6 +49,7 @@ class iintSignalFitting(QtGui.QWidget):
         self.addButton.setToolTip("If a function is selected in the drop down list next to this button, clicking it will add this function to the current model.")
         self.removeButton.setToolTip("If a function is selection in the view of the current model, clicking this button will remove it from the current model.")
         self.fitButton.setToolTip("Perform the fit with the current model. Might trigger the display of a configuration dialog if further details need to be provided.")
+        self.deactivateFitting()
 
     def reset(self):
         self.currentModelList.setDisabled(True)
@@ -98,6 +101,13 @@ class iintSignalFitting(QtGui.QWidget):
         self.currentModelList.addItem(self.modelList.currentText())
         self.activateConfiguration()
 
+    def _getModels(self):
+        modellist = []
+        for i in range(self.currentModelList.count()):
+            modellist.append(str(self.currentModelList.item(i).text()))
+        self.models.emit(modellist)
+
+    #~ def _itemIter(self):
     #~ def doGuessing(self, state):
         #~ if state is 2:
             #~ self.configureFirst.setDisabled(True)
