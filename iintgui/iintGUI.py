@@ -631,7 +631,6 @@ class iintGUI(QtGui.QMainWindow):
         self._simpleImageView.plot()
 
     def openFitConfigurationDialog(self, names):
-        print("opening fit config dialog with " + str(names))
         del self._fitList[:]
         # first build the fit list !
         for index in range(len(names)):
@@ -643,7 +642,6 @@ class iintGUI(QtGui.QMainWindow):
             #~ self._fitModel.update()
             self._fitList.append(self._fitModel)
             #~ self._keepFitList(self._fitModel)
-        print("the list of fits is: " + str(self._fitList))
 
     def _prepareSignalFitting(self):
         print("preparing and performing the signal fit. ")

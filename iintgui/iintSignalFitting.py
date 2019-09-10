@@ -40,10 +40,13 @@ class iintSignalFitting(QtGui.QWidget):
         self.removeButton.clicked.connect(self._removeCurrentFunction)
         self.addButton.clicked.connect(self._addFunction)
         self.configButton.clicked.connect(self._getModels)
+        self.resetButton.clicked.connect(self._reset)
+        self.autoGaussButton.clicked.connect(self._autogauss)
         #~ self.performFitPushBtn.setDisabled(True)
         #~ self.guessMode.setDisabled(True)
         #~ self.guessMode.stateChanged.connect(self.doGuessing)
         #~ self._inactive = [False, True, True, True]
+        self.resetButton.setToolTip("Resets the complete fit information to its initial values.")
         self.currentModelList.setToolTip("The current model by its constituents, only the name and type of function are indicated.")
         self.modelList.setToolTip("Select a function for addition to the current fit mdel.")
         self.addButton.setToolTip("If a function is selected in the drop down list next to this button, clicking it will add this function to the current model.")
@@ -51,12 +54,20 @@ class iintSignalFitting(QtGui.QWidget):
         self.fitButton.setToolTip("Perform the fit with the current model. Might trigger the display of a configuration dialog if further details need to be provided.")
         self.deactivateFitting()
 
+    def _reset(self):
+        print("resetting")
+
+    def _autogauss(self):
+        print("set auto gauss")
+
     def reset(self):
         self.currentModelList.setDisabled(True)
         self.modelList.setDisabled(True)
         self.addButton.setDisabled(True)
         self.removeButton.setDisabled(True)
         self.fitButton.setDisabled(True)
+        self.resetButton.setDisabled(True)
+        self.autoGaussButton.setDisabled(True)
 
     def setParameterDict(self, pDict):
         self._parDict = pDict
@@ -66,7 +77,8 @@ class iintSignalFitting(QtGui.QWidget):
         self.modelList.setDisabled(False)
         self.addButton.setDisabled(False)
         self.fitButton.setDisabled(False)
-
+        self.resetButton.setDisabled(False)
+        self.autoGaussButton.setDisabled(False)
         #~ self._checkForGauss()
 
     def deactivateFitting(self):
@@ -76,6 +88,8 @@ class iintSignalFitting(QtGui.QWidget):
         self.addButton.setDisabled(True)
         self.removeButton.setDisabled(True)
         self.fitButton.setDisabled(True)
+        self.resetButton.setDisabled(True)
+        self.autoGaussButton.setDisabled(True)
 
     def _currentFunctionClicked(self, item):
         self._currentSelected = item

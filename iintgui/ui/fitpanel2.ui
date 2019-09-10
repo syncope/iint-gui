@@ -6,7 +6,7 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>350</width>
+    <width>368</width>
     <height>204</height>
    </rect>
   </property>
@@ -132,9 +132,16 @@
              </spacer>
             </item>
             <item>
-             <widget class="QPushButton" name="defaultBtn">
+             <widget class="QPushButton" name="autoGaussButton">
               <property name="text">
-               <string>Default</string>
+               <string>Auto-Gauss</string>
+              </property>
+             </widget>
+            </item>
+            <item>
+             <widget class="QPushButton" name="resetButton">
+              <property name="text">
+               <string>Reset</string>
               </property>
              </widget>
             </item>
