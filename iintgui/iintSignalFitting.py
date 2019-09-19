@@ -24,28 +24,17 @@ from . import getUIFile
 
 class iintSignalFitting(QtGui.QWidget):
     models = QtCore.pyqtSignal(list)
-    #~ modelcfg = QtCore.pyqtSignal(str, int)
-    #~ removeIndex = QtCore.pyqtSignal(int)
-    #~ guesspeak = QtCore.pyqtSignal(int)
+    autogauss = QtCore.pyqtSignal(int)
 
-    def __init__(self, pDict, modellist, parent=None):
+    def __init__(self, modellist, parent=None):
         super(iintSignalFitting, self).__init__(parent)
         uic.loadUi(getUIFile.getUIFile("fitpanel2.ui"), self)
-        #~ self._hiddencblist = [self.firstModelCB, self.secondModelCB, self.thirdModelCB, self.fourthModelCB]
-        #~ self._dummy = True
-        #~ self._hiddenuselist = [self._dummy, self.useSecond, self.useThird, self.useFourth]
-        self.setParameterDict(pDict)
         self.modelList.addItems(sorted(modellist))
         self.currentModelList.itemClicked.connect(self._currentFunctionClicked)
         self.removeButton.clicked.connect(self._removeCurrentFunction)
         self.addButton.clicked.connect(self._addFunction)
         self.configButton.clicked.connect(self._getModels)
         self.resetButton.clicked.connect(self._reset)
-        self.autoGaussButton.clicked.connect(self._autogauss)
-        #~ self.performFitPushBtn.setDisabled(True)
-        #~ self.guessMode.setDisabled(True)
-        #~ self.guessMode.stateChanged.connect(self.doGuessing)
-        #~ self._inactive = [False, True, True, True]
         self.resetButton.setToolTip("Resets the complete fit information to its initial values.")
         self.currentModelList.setToolTip("The current model by its constituents, only the name and type of function are indicated.")
         self.modelList.setToolTip("Select a function for addition to the current fit mdel.")
@@ -53,43 +42,65 @@ class iintSignalFitting(QtGui.QWidget):
         self.removeButton.setToolTip("If a function is selection in the view of the current model, clicking this button will remove it from the current model.")
         self.fitButton.setToolTip("Perform the fit with the current model. Might trigger the display of a configuration dialog if further details need to be provided.")
         self.deactivateFitting()
+        self.autoGaussBox.setToolTip("Enable to choose single gaussian fit with automatic guessing of parameters.\nDisables all other options.")
+        self.autoGaussBox.stateChanged.connect(self._toggleGaussGuess)
+
+    def _toggleGaussGuess(self, state):
+        if state is 2:
+            self.autogauss.emit(1)
+            self._hideMost(True)
+            self.allowFitButton()
+        elif state is 0:
+            self.autogauss.emit(0)
+            self._hideMost(False)
+            self.disallowFitButton()
+
+    def _hideMost(self, hide):
+        if hide:
+            self.currentModelList.hide()
+            self.modelList.hide()
+            self.addButton.hide()
+            self.removeButton.hide()
+            self.configButton.hide()
+        else: 
+            self.currentModelList.show()
+            self.modelList.show()
+            self.addButton.show()
+            self.removeButton.show()
+            self.configButton.show()
 
     def _reset(self):
-        print("resetting")
-
-    def _autogauss(self):
-        print("set auto gauss")
+        self.removeButton.setDisabled(True)
+        self.fitButton.setDisabled(True)
+        self.activateConfiguration()
 
     def reset(self):
         self.currentModelList.setDisabled(True)
         self.modelList.setDisabled(True)
         self.addButton.setDisabled(True)
         self.removeButton.setDisabled(True)
-        self.fitButton.setDisabled(True)
+        self.disallowFitButton()
         self.resetButton.setDisabled(True)
-        self.autoGaussButton.setDisabled(True)
-
-    def setParameterDict(self, pDict):
-        self._parDict = pDict
+        self.autoGaussBox.setDisabled(True)
+        self.deactivateConfiguration()
 
     def activateFitting(self):
         self.currentModelList.setDisabled(False)
         self.modelList.setDisabled(False)
         self.addButton.setDisabled(False)
-        self.fitButton.setDisabled(False)
         self.resetButton.setDisabled(False)
-        self.autoGaussButton.setDisabled(False)
-        #~ self._checkForGauss()
+        self.autoGaussBox.setDisabled(False)
+        self.activateConfiguration()
 
     def deactivateFitting(self):
-        #~ self.guessMode.setDisabled(True)
         self.currentModelList.setDisabled(True)
         self.modelList.setDisabled(True)
         self.addButton.setDisabled(True)
         self.removeButton.setDisabled(True)
+        self.configButton.setDisabled(True)
         self.fitButton.setDisabled(True)
         self.resetButton.setDisabled(True)
-        self.autoGaussButton.setDisabled(True)
+        self.autoGaussBox.setDisabled(True)
 
     def _currentFunctionClicked(self, item):
         self._currentSelected = item
@@ -104,6 +115,12 @@ class iintSignalFitting(QtGui.QWidget):
         self.removeButton.setDisabled(True)
         if self.currentModelList.count() < 1:
             self.deactivateConfiguration()
+
+    def allowFitButton(self, state=True):
+        self.fitButton.setDisabled(False)
+
+    def disallowFitButton(self, state=True):
+        self.fitButton.setDisabled(True)
 
     def activateConfiguration(self):
         self.configButton.setDisabled(False)
@@ -120,43 +137,3 @@ class iintSignalFitting(QtGui.QWidget):
         for i in range(self.currentModelList.count()):
             modellist.append(str(self.currentModelList.item(i).text()))
         self.models.emit(modellist)
-
-    #~ def _itemIter(self):
-    #~ def doGuessing(self, state):
-        #~ if state is 2:
-            #~ self.configureFirst.setDisabled(True)
-            #~ self.activateFitting()
-            #~ self.guesspeak.emit(1)
-            #~ self.useSecond.setDisabled(True)
-            #~ self.useThird.setDisabled(True)
-            #~ self.useFourth.setDisabled(True)
-        #~ elif state is 0:
-            #~ self.configureFirst.setDisabled(False)
-            #~ self.guesspeak.emit(0)
-            #~ self.configureFirst.setDisabled(False)
-            #~ self.useSecond.setDisabled(False)
-            #~ self.useThird.setDisabled(False)
-            #~ self.useFourth.setDisabled(False)
-            #~ self.performFitPushBtn.setDisabled(True)
-
-    #~ def _checkForGauss(self):
-        #~ # get the model name:
-        #~ currentModel = self._modelnames[self.firstModelCB.currentIndex()]
-        #~ if currentModel != "gaussianModel":
-            #~ self.guessMode.setCheckState(0)
-        #~ else:
-            #~ if( self.guessMode.isEnabled()):
-                #~ self.guessMode.setCheckState(2)
-  
-    #~ def _checkGuessEnabled(self):
-        #~ if self._inactive[1] and self._inactive[2] and self._inactive[3]:
-            #~ self.guessMode.setDisabled(False)
-        #~ else:
-            #~ self.guessMode.setDisabled(True)
-
-    #~ def passModels(self, modelDict):
-        #~ self._modelnames = sorted([key for key in modelDict.keys()])
-        #~ self.firstModelCB.addItems(self._modelnames)
-        #~ self.secondModelCB.addItems(self._modelnames)
-        #~ self.thirdModelCB.addItems(self._modelnames)
-        #~ self.fourthModelCB.addItems(self._modelnames)
