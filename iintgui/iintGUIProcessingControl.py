@@ -251,7 +251,7 @@ class IintGUIProcessingControl():
         self._processParameters["signalcurvefit"]["ydata"] = self._signalName
         self._processParameters["signalcurvefit"]["error"] = "None"
         self._processParameters["signalcurvefit"]["usepreviousresult"] = 0
-        self._processParameters["signalcurvefit"]["useguessing"] = 1
+        self._processParameters["signalcurvefit"]["useguessing"] = 0
         self._processParameters["signalcurvefit"]["result"] = self._fittedSignalName
         self._processParameters["signalcurvefit"]["model"] = {"m0_": {"modeltype": "gaussianModel"}}
         # calc fitted signal points
@@ -765,10 +765,8 @@ class IintGUIProcessingControl():
     def getFitModels(self):
         return curvefitting.curvefitting().getFitModels()
 
-    def getFitModel(self, modelname, data, index):
-        # needs different approach // or extension: keep the widgets
-        self._signalfitter = self._fitmodels[modelname]()
-        return self._signalfitter.getWidget(data[0], data[1], index=index)
+    def createFitFunctions(self, names):
+        return [self._fitmodels[name]() for name in names]
 
     def getSignalFitDict(self):
         return self._processParameters["calcfitpoints"]

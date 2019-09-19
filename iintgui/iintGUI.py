@@ -43,6 +43,7 @@ from . import outputDir
 from . import iintObservableDefinition
 from . import iintBackgroundHandling
 from . import iintSignalFitting
+from . import iintFitConfiguration
 from . import iintTrackedDataChoice
 from . import trackedDataMap
 from . import iintTrackedDataMapDisplay
@@ -140,9 +141,11 @@ class iintGUI(QtGui.QMainWindow):
         #~ self._signalHandling.removeIndex.connect(self._removeFitFromListByIndex)
         #~ self._signalHandling.performFitPushBtn.clicked.connect(self._prepareSignalFitting)
         self._fitList = []
+        self._fitWidgets = []
 
-        self._signalFitting = iintSignalFitting.iintSignalFitting(self._control.getSIGDict(), self._control.getFitModels())
+        self._signalFitting = iintSignalFitting.iintSignalFitting(self._control.getFitModels())
         self._signalFitting.models.connect(self.openFitConfigurationDialog)
+        self._signalFitting.autogauss.connect(self._control.useGuessSignalFit)
         self._signalFitting.fitButton.clicked.connect(self._prepareSignalFitting)
 
         self._inspectAnalyze = iintInspectAnalyze.iintInspectAnalyze()
@@ -212,7 +215,6 @@ class iintGUI(QtGui.QMainWindow):
         self._bkgHandling.reset()
         self._bkgHandling.setParameterDicts(self._control.getBKGDicts())
         self._signalFitting.reset()
-        self._signalFitting.setParameterDict(self._control.getSIGDict())
         self._signalFitting.deactivateFitting()
         self._control.resetAll()
         self._sfrGUI.reset()
@@ -240,7 +242,6 @@ class iintGUI(QtGui.QMainWindow):
         self._bkgHandling.reset()
         self._bkgHandling.setParameterDicts(self._control.getBKGDicts())
         self._signalFitting.reset()
-        self._signalFitting.setParameterDict(self._control.getSIGDict())
         self._signalFitting.deactivateFitting()
         self._control.resetAll()
         self.resetTabs()
@@ -421,7 +422,6 @@ class iintGUI(QtGui.QMainWindow):
         else:
             return
         if "signalcurvefit" in runlist:
-            self._signalFitting.setParameterDict(self._control.getSIGDict())
             self.runSignalProcessing(self._control.getSIGDict()['model'], reset=False)
         else:
             return
@@ -481,7 +481,6 @@ class iintGUI(QtGui.QMainWindow):
             self._control.resetBKGdata()
             self._bkgHandling.setParameterDicts(self._control.getBKGDicts())
             self._control.resetSIGdata()
-            self._signalFitting.setParameterDict(self._control.getSIGDict())
             self._control.resetFITdata()
 
         self.message("Computing the intensity...")
@@ -561,7 +560,6 @@ class iintGUI(QtGui.QMainWindow):
             self.resetResultTabs(keepSpectra=True)
             self._inspectAnalyze.reset()
             self._control.resetSIGdata()
-            self._signalFitting.setParameterDict(self._control.getSIGDict())
             self._control.resetFITdata()
             self._control.resetBKGdata()
             self._bkgHandling.setParameterDicts(self._control.getBKGDicts())
@@ -632,43 +630,80 @@ class iintGUI(QtGui.QMainWindow):
 
     def openFitConfigurationDialog(self, names):
         del self._fitList[:]
+        del self._fitWidgets[:]
         # first build the fit list !
-        for index in range(len(names)):
-            modelname = names[index]
-            self._fitModel = self._control.getFitModel(modelname, self._simpleImageView.getCurrentSignal(), index=index)
-            #~ self._fitModel.updateFit.connect(self._updateCurrentImage)
+        self._fitList = self._control.createFitFunctions(names)
+        try:
+            self._configWidget.reset()
+        except AttributeError:
+            self._configWidget = iintFitConfiguration.iintFitConfiguration()
+        data = self._simpleImageView.getCurrentSignal()
+        for i in self._fitList:
+            # from the fits get the widget, keep it for reference and add it
+            tw = i.getWidget(data[0], data[1], name=str(self._fitList.index(i)))
+            self._fitWidgets.append(tw)
+            self._configWidget.addWidget(tw)
+            tw.updateFit.connect(self._updateCurrentImage)
+            tw.update()
+        # MISSING: connect the signals from the config widget
+        self._configWidget.testButton.clicked.connect(print)
+        self._configWidget.doneButton.clicked.connect(self._simpleImageView.removeGuess)
+        self._configWidget.doneButton.clicked.connect(self._signalFitting.allowFitButton)
+        self._configWidget.cancelButton.clicked.connect(self._cleanUpFit)
+        #~ self._configWidget.show()
+        #~ for index in range(len(names)):
+            #~ modelname = names[index]
+            #~ self._fitModel = self._control.getFitModel(modelname, self._simpleImageView.getCurrentSignal(), index=index)
+        #~ self._fitModel.updateFit.connect(self._updateCurrentImage)
             #~ self._fitModel.guessingDone.connect(self._simpleImageView.removeGuess)
             #~ self._fitModel.show()
             #~ self._fitModel.update()
-            self._fitList.append(self._fitModel)
+            #~ self._fitList.append(self._fitModel)
             #~ self._keepFitList(self._fitModel)
 
+    def _cleanUpFit(self):
+        del self._fitList[:]
+        del self._fitWidgets[:]
+        self._simpleImageView.removeGuess()
+
+    def _updateCurrentImage(self):
+        # called by signal from fit config window
+        # do: collect all info and piece it together
+        tmpFits = []
+        for wi in self._fitWidgets:
+            tmpFits.append(wi.getCurrentFitData())
+        try:
+            # can fail if the model is constant; then the stupid signature is different. ignore!
+            self._simpleImageView.plotFit(tmpFits)
+        except:
+            self.warning("Updating the data display for fitting went wrong.")
+            pass
+
     def _prepareSignalFitting(self):
-        print("preparing and performing the signal fit. ")
-        print("current fit list is: " + str(self._fitList))
-        #~ pass
         fitDict = {}
-        # occurrence of self._fitList
-        for fit in self._fitList:
+        # the config parts are inside the widget part, not the actual fit
+        for fit in self._fitWidgets:
             fitDict.update(fit.getCurrentParameterDict())
-        print("the running dict is: " + str(fitDict))
         self.runSignalProcessing(fitDict, reset=True)
 
     def runSignalProcessing(self, fitDict, reset=True):
+        # run two steps here:
+        # first the trapezoid summation
         self.message("Signal processing: first trapezoidal integration ...")
         self._control.resetTRAPINTdata()
         self._control.createAndBulkExecute(self._control.getTrapIntDict())
         self.message(" ... done.")
+        # second run the actual fitting; separate function call
         self.runSignalFitting(fitDict, reset)
 
     def runSignalFitting(self, fitDict, reset):
+        # now run the signal fitting
         if reset:
             self._inspectAnalyze.reset()
         rundict = self._control.getSIGDict()
         self.message("Fitting the signal, this can take a while ...")
         # this is a bad idea; this is specific code and needs to be put into the control part!!
         if self._control.guessSignalFit():
-            print("AUTOAUTOAUTO")
             rundict['model'] = { "m0_": { 'modeltype': "gaussianModel",
                   'm0_center' : {'value':1.},
                   'm0_amplitude': {'value': 2.},
@@ -808,14 +843,6 @@ class iintGUI(QtGui.QMainWindow):
             if xindices[0] == yindices[0]:
                 self._simpleImageView.setCurrentIndex(xindices[0])
                 self.imageTabs.setCurrentIndex(self.imageTabs.indexOf(self._simpleImageView))
-
-    def _updateCurrentImage(self):
-        ydata = self._fitModel.getCurrentFitData()
-        try:
-            # can fail if the model is constant; then the stupid signature is different. ignore!
-            self._simpleImageView.plotFit(ydata)
-        except:
-            pass
 
     def _dataToTrack(self):
         rawScanData = self._control.getDataList()[0].getData(self._control.getRawDataName())
