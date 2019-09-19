@@ -52,12 +52,13 @@ class iintDataPlot(QtGui.QDialog):
         self._setBLB2Add()
         self._blacklist = []
         self._currentIndex = 0
+        self._tmpFit = []
         self.currentIndex.emit(self._currentIndex)
         self._showraw = True
         self._showdespike = False
         self._showbkg = False
         self._showbkgsubtracted = False
-        self._tmpFit = None
+        self._tmpFit = []
         self._logScale = False
         self._showsigfit = False
         self.setGeometry(640, 1, 840, 840)
@@ -89,6 +90,7 @@ class iintDataPlot(QtGui.QDialog):
         self.showFIT.setDisabled(True)
         self.viewPart.autoRange()
         self._currentIndex = 0
+        del self._tmpFit[:]
         self._showraw = True
         self._showdespike = False
         self._showbkg = False
@@ -251,18 +253,27 @@ class iintDataPlot(QtGui.QDialog):
         return self._xaxisname, self._yaxisname
 
     def plotFit(self, ydata):
+        # special function to plot the current fit guess
+        # called with a container of fit data, including a name and a colour
+
+        # get independent data first for the current element
         datum = self._dataList[self._currentIndex]
         xdata = datum.getData(self._motorName)
         if self._tmpFit is not None:
-            self._tmpFit.clear()
+            for tf in self._tmpFit:
+                tf.clear()
         self.viewPart.disableAutoRange()
-        if (self._logScale):
-            ydata = np.log10(np.clip(ydata, 10e-3, np.inf))
-        self._tmpFit = self.viewPart.plot(xdata, ydata, pen='r')
+
+        for singleFit in ydata:
+            if (self._logScale):
+                singleFit.setData(np.log10(np.clip(singleFit.data(), 10e-3, np.inf)))
+            self._tmpFit.append(self.viewPart.plot(xdata, singleFit.data(), pen=singleFit.colour()))
 
     def removeGuess(self):
         try:
-            self._tmpFit.clear()
+            if self._tmpFit is not None:
+                for tf in self._tmpFit:
+                    tf.clear()
         except AttributeError:
             # it may happen that the fit object is a NoneType
             pass
