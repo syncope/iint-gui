@@ -638,6 +638,11 @@ class iintGUI(QtGui.QMainWindow):
         except AttributeError:
             self._configWidget = iintFitConfiguration.iintFitConfiguration()
         data = self._simpleImageView.getCurrentSignal()
+
+        # first check if the sum widget needs to be shown
+        if len(self._fitList) > 1:
+            self._configWidget.showSumPart()
+
         for i in self._fitList:
             # from the fits get the widget, keep it for reference and add it
             tw = i.getWidget(data[0], data[1], name=str(self._fitList.index(i)))
@@ -645,11 +650,16 @@ class iintGUI(QtGui.QMainWindow):
             self._configWidget.addWidget(tw)
             tw.updateFit.connect(self._updateCurrentImage)
             tw.update()
+        # if the model is made up from more than one part
+        # create the sum model
+        
         # MISSING: connect the signals from the config widget
         self._configWidget.testButton.clicked.connect(print)
         self._configWidget.doneButton.clicked.connect(self._simpleImageView.removeGuess)
         self._configWidget.doneButton.clicked.connect(self._signalFitting.allowFitButton)
         self._configWidget.cancelButton.clicked.connect(self._cleanUpFit)
+        self._configWidget.sumColourChanged.connect(self._updateCurrentImage)
+        
         #~ self._configWidget.show()
         #~ for index in range(len(names)):
             #~ modelname = names[index]
@@ -672,6 +682,10 @@ class iintGUI(QtGui.QMainWindow):
         tmpFits = []
         for wi in self._fitWidgets:
             tmpFits.append(wi.getCurrentFitData())
+        # now get the fake exchange object if needed:
+        if len(tmpFits) > 1:
+            tmpObject = self._control.getSumExchangeObject(tmpFits, self._configWidget.getSumColour())
+            tmpFits.append(tmpObject)
         try:
             # can fail if the model is constant; then the stupid signature is different. ignore!
             self._simpleImageView.plotFit(tmpFits)
@@ -736,6 +750,24 @@ class iintGUI(QtGui.QMainWindow):
         self._inspectAnalyze.activate()
         self._control.useSignalProcessing(True)
         self._showTracked()
+
+    def runSingleTestFit(self, fitDict):
+        # single use function -- not the best way, but how to do it differently?
+
+        rundict = self._control.getSIGDict()
+        self.message("Fitting the signal, this can take a while ...")
+        # this is a bad idea; this is specific code and needs to be put into the control part!!
+        if self._control.guessSignalFit():
+            rundict['model'] = { "m0_": { 'modeltype': "gaussianModel",
+                  'm0_center' : {'value':1.},
+                  'm0_amplitude': {'value': 2.},
+                  'm0_height': {'value': 22.},
+                  'm0_fwhm': {'value': 21.},
+                  'm0_sigma': {'value': 3.} }}
+        else:
+            rundict['model'] = fitDict
+        #~ if(self._simpleImageView is not None):
+            #~ self._simpleImageView.update("plotfit")
 
     def _printDisplayedData(self):
         dataDict = self._simpleImageView.getPrintData()
