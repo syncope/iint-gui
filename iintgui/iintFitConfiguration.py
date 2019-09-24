@@ -23,12 +23,17 @@ from . import getUIFile
 
 
 class iintFitConfiguration(QtGui.QDialog):
+    sumColourChanged = QtCore.pyqtSignal()
+
     def __init__(self, parent=None):
         super(iintFitConfiguration, self).__init__(parent)
         uic.loadUi(getUIFile.getUIFile("iintFitConfig.ui"), self)
         self.cancelButton.clicked.connect(self._close)
         self.doneButton.clicked.connect(self.close)
         self.hideSumPart()
+        self._sumColour = QtGui.QColor('black')
+        self._setSumColour(self._sumColour)
+        self.sumColourButton.clicked.connect(self._chooseSumColour)
 
     def _close(self):
         self.reset()
@@ -47,6 +52,22 @@ class iintFitConfiguration(QtGui.QDialog):
         self.sumLabel.show()
         self.sumColourButton.show()
 
+    def getSumColour(self):
+        return self._sumColour
+
     def reset(self):
         for i in reversed(range(self.functionlist.count())): 
-            self.functionlist.itemAt(i).widget().setParent(None)
+            if i is 0:
+                pass
+            else:
+                self.functionlist.itemAt(i).widget().setParent(None)
+
+    def _chooseSumColour(self):
+        self._qcd = QtGui.QColorDialog()
+        self._qcd.show()
+        self._qcd.currentColorChanged.connect(self._setSumColour)
+
+    def _setSumColour(self, colour):
+        self._sumColour = colour
+        self.sumColourButton.setStyleSheet( ("background-color:"+str(colour.name())))
+        self.sumColourChanged.emit()
