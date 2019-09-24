@@ -28,6 +28,7 @@ class iintFitConfiguration(QtGui.QDialog):
         uic.loadUi(getUIFile.getUIFile("iintFitConfig.ui"), self)
         self.cancelButton.clicked.connect(self._close)
         self.doneButton.clicked.connect(self.close)
+        self.hideSumPart()
 
     def _close(self):
         self.reset()
@@ -37,6 +38,14 @@ class iintFitConfiguration(QtGui.QDialog):
         self.functionlist.addWidget(widget)
         self.update()
         self.show()
+
+    def hideSumPart(self):
+        self.sumLabel.hide()
+        self.sumColourButton.hide()
+
+    def showSumPart(self):
+        self.sumLabel.show()
+        self.sumColourButton.show()
 
     def reset(self):
         for i in reversed(range(self.functionlist.count())): 
