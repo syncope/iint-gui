@@ -49,6 +49,7 @@ except ImportError:
     pass
 
 
+from PyQt4 import QtGui
 import numpy as np
 import datetime
 
@@ -768,6 +769,16 @@ class IintGUIProcessingControl():
     def createFitFunctions(self, names):
         return [self._fitmodels[name]() for name in names]
 
+    # i can't help it, this breaks about every design rule; but i can't think of a better way currently
+    def getSumExchangeObject(self, tmpobjects, colour):
+        self._ffexo = None
+        for tmp in tmpobjects:
+            try:
+                self._ffexo.addData(tmp.data())
+            except:
+                self._ffexo = fakeFitExchangeObject(data=tmp.data(), colour=colour)
+        return self._ffexo
+
     def getSignalFitDict(self):
         return self._processParameters["calcfitpoints"]
 
@@ -951,3 +962,30 @@ class trackedInformation():
 
     def getFitParameterValue(self, name):
         return self.values[name]
+
+
+class fakeFitExchangeObject():
+    # until I come up with a better idea, this is the way to create the 
+    # "sum" display part from an object
+
+    def __init__(self, data=None, colour=QtGui.QColor('black')):
+        self._data = np.copy(data)
+        self._colour = colour
+
+    def data(self):
+        return self._data
+
+    def colour(self):
+        return self._colour
+
+    def addData(self, data):
+        self._data += data
+
+    def setData(self, data):
+        self._data = data
+
+    def setColour(self, colour):
+        self._colour = colour
+
+    def dump(self):
+        print("[FakeFitExchangeObject] colour " + str(self._colour)+ "\ndata:  " + str(self._data))
