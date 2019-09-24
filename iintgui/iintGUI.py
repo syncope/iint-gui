@@ -652,24 +652,12 @@ class iintGUI(QtGui.QMainWindow):
             tw.update()
         # if the model is made up from more than one part
         # create the sum model
-        
         # MISSING: connect the signals from the config widget
-        self._configWidget.testButton.clicked.connect(print)
+        self._configWidget.testButton.clicked.connect(self.runSingleTestFit)
         self._configWidget.doneButton.clicked.connect(self._simpleImageView.removeGuess)
         self._configWidget.doneButton.clicked.connect(self._signalFitting.allowFitButton)
         self._configWidget.cancelButton.clicked.connect(self._cleanUpFit)
         self._configWidget.sumColourChanged.connect(self._updateCurrentImage)
-        
-        #~ self._configWidget.show()
-        #~ for index in range(len(names)):
-            #~ modelname = names[index]
-            #~ self._fitModel = self._control.getFitModel(modelname, self._simpleImageView.getCurrentSignal(), index=index)
-        #~ self._fitModel.updateFit.connect(self._updateCurrentImage)
-            #~ self._fitModel.guessingDone.connect(self._simpleImageView.removeGuess)
-            #~ self._fitModel.show()
-            #~ self._fitModel.update()
-            #~ self._fitList.append(self._fitModel)
-            #~ self._keepFitList(self._fitModel)
 
     def _cleanUpFit(self):
         del self._fitList[:]
@@ -751,24 +739,19 @@ class iintGUI(QtGui.QMainWindow):
         self._control.useSignalProcessing(True)
         self._showTracked()
 
-    def runSingleTestFit(self, fitDict):
+    def runSingleTestFit(self):
         # single use function -- not the best way, but how to do it differently?
+        fitDict = {}
+        # the config parts are inside the widget part, not the actual fit
+        for fit in self._fitWidgets:
+            fitDict.update(fit.getCurrentParameterDict())
 
         rundict = self._control.getSIGDict()
-        self.message("Fitting the signal, this can take a while ...")
-        # this is a bad idea; this is specific code and needs to be put into the control part!!
-        if self._control.guessSignalFit():
-            rundict['model'] = { "m0_": { 'modeltype': "gaussianModel",
-                  'm0_center' : {'value':1.},
-                  'm0_amplitude': {'value': 2.},
-                  'm0_height': {'value': 22.},
-                  'm0_fwhm': {'value': 21.},
-                  'm0_sigma': {'value': 3.} }}
-        else:
-            rundict['model'] = fitDict
-        #~ if(self._simpleImageView is not None):
-            #~ self._simpleImageView.update("plotfit")
-
+        self.message("Test fit for item.")
+        # this is a bad idea; this is s
+        rundict['model'] = fitDict
+        self._control.createAndSingleExecute(rundict, self._simpleImageView.getCurrentIndex())
+        
     def _printDisplayedData(self):
         dataDict = self._simpleImageView.getPrintData()
         import matplotlib.pyplot as plt

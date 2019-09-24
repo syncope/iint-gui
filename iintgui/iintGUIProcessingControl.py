@@ -422,6 +422,18 @@ class IintGUIProcessingControl():
             return "stopped"
         return proc
 
+    def createAndSingleExecute(self, pDict, index):
+        print("creating.. with index : " + str(index))
+        if pDict is None:
+            return
+        proc = self._procBuilder.createProcessFromDictionary(pDict)
+        proc.initialize()
+        try:
+            proc.singleExecute(self._dataList[index])
+        except adaptException.AdaptProcessingStoppedException:
+            return "stopped"
+        return proc
+
     def processAll(self, pDict):
         if pDict is None:
             return

@@ -123,6 +123,17 @@ class iintDataPlot(QtGui.QDialog):
         self.plot()
         self.viewPart.autoRange()
 
+    def plotSingleFit(self):
+        pass
+        xdata = datum.getData(self._motorName)
+        ydata = datum.getData(self._observableName)
+        self.viewPart.autoRange()
+        if (self._logScale):
+            ydata = np.log10(np.clip(ydata, 10e-3, np.inf))
+        self.viewPart.clear()
+        if(self._showraw): # raw data has black "plus signs"
+            self._theDrawItem = self.viewPart.plot(xdata, ydata, pen=None, symbolPen='k', symbolBrush='k', symbol='+')
+
     def passData(self, datalist, motorname, obsname, despobsname, bkgname, signalname, fittedsignalname):
         self._dataList = datalist
         self._motorName = motorname
