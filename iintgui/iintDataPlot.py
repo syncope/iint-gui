@@ -21,6 +21,7 @@
 from PyQt4 import QtCore, QtGui, uic
 import numpy as np
 from . import getUIFile
+import pyqtgraph as pg
 
 
 class iintDataPlot(QtGui.QDialog):
@@ -122,17 +123,6 @@ class iintDataPlot(QtGui.QDialog):
             self.showFIT.setDisabled(True)
         self.plot()
         self.viewPart.autoRange()
-
-    def plotSingleFit(self):
-        pass
-        xdata = datum.getData(self._motorName)
-        ydata = datum.getData(self._observableName)
-        self.viewPart.autoRange()
-        if (self._logScale):
-            ydata = np.log10(np.clip(ydata, 10e-3, np.inf))
-        self.viewPart.clear()
-        if(self._showraw): # raw data has black "plus signs"
-            self._theDrawItem = self.viewPart.plot(xdata, ydata, pen=None, symbolPen='k', symbolBrush='k', symbol='+')
 
     def passData(self, datalist, motorname, obsname, despobsname, bkgname, signalname, fittedsignalname):
         self._dataList = datalist
@@ -279,6 +269,17 @@ class iintDataPlot(QtGui.QDialog):
             if (self._logScale):
                 singleFit.setData(np.log10(np.clip(singleFit.data(), 10e-3, np.inf)))
             self._tmpFit.append(self.viewPart.plot(xdata, singleFit.data(), pen=singleFit.colour()))
+
+    def plotSingleFit(self, index, name):
+        datum = self._dataList[index]
+        xdata = datum.getData(self._motorName)
+        ydata = datum.getData(name)
+        self.viewPart.autoRange()
+        if (self._logScale):
+            ydata = np.log10(np.clip(ydata, 10e-3, np.inf))
+        #~ self.viewPart.clear()
+        if(self._showraw): # raw data has black "plus signs"
+            self._theDrawItem = self.viewPart.plot(xdata, ydata, pen=pg.mkPen('b', width=4, style=QtCore.Qt.DashLine))
 
     def removeGuess(self):
         try:
