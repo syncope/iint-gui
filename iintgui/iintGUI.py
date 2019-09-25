@@ -746,11 +746,16 @@ class iintGUI(QtGui.QMainWindow):
         for fit in self._fitWidgets:
             fitDict.update(fit.getCurrentParameterDict())
 
-        rundict = self._control.getSIGDict()
-        self.message("Test fit for item.")
-        # this is a bad idea; this is s
+        rundict = self._control.getTestFitDict()
+        self.message("Single test fit executing ....")
+        # get the fit parameters for running
         rundict['model'] = fitDict
-        self._control.createAndSingleExecute(rundict, self._simpleImageView.getCurrentIndex())
+        index = self._simpleImageView.getCurrentIndex()
+        self._control.createAndSingleExecute(rundict, index)
+        # now fit is done, create points for drawing
+        self._control.createAndSingleExecute(self._control.getSingleFitDict(), index)
+        self.message("... test fit finished, now displaying.")
+        self._simpleImageView.plotSingleFit(index, name=self._control.getSingleFitPointsName())
         
     def _printDisplayedData(self):
         dataDict = self._simpleImageView.getPrintData()
