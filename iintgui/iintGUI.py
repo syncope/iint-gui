@@ -678,7 +678,7 @@ class iintGUI(QtGui.QMainWindow):
             # can fail if the model is constant; then the stupid signature is different. ignore!
             self._simpleImageView.plotFit(tmpFits)
         except:
-            self.warning("Updating the data display for fitting went wrong.")
+            self.message("Updating the data display for constants does not work.")
             pass
 
     def _prepareSignalFitting(self):
