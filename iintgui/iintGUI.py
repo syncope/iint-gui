@@ -745,7 +745,6 @@ class iintGUI(QtGui.QMainWindow):
         # the config parts are inside the widget part, not the actual fit
         for fit in self._fitWidgets:
             fitDict.update(fit.getCurrentParameterDict())
-
         rundict = self._control.getTestFitDict()
         self.message("Single test fit executing ....")
         # get the fit parameters for running

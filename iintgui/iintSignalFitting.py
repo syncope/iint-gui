@@ -115,6 +115,7 @@ class iintSignalFitting(QtGui.QWidget):
         self.removeButton.setDisabled(True)
         if self.currentModelList.count() < 1:
             self.deactivateConfiguration()
+            self.disallowFitButton()
 
     def allowFitButton(self, state=True):
         self.fitButton.setDisabled(False)
