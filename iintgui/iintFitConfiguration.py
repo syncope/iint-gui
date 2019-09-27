@@ -47,10 +47,12 @@ class iintFitConfiguration(QtGui.QDialog):
     def hideSumPart(self):
         self.sumLabel.hide()
         self.sumColourButton.hide()
+        self.colourDisplay.hide()
 
     def showSumPart(self):
         self.sumLabel.show()
         self.sumColourButton.show()
+        self.colourDisplay.show()
 
     def getSumColour(self):
         return self._sumColour
@@ -69,5 +71,5 @@ class iintFitConfiguration(QtGui.QDialog):
 
     def _setSumColour(self, colour):
         self._sumColour = colour
-        self.sumColourButton.setStyleSheet( ("background-color:"+str(colour.name())))
+        self.colourDisplay.setStyleSheet( ("background-color:"+str(colour.name())))
         self.sumColourChanged.emit()
