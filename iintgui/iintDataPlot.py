@@ -277,6 +277,10 @@ class iintDataPlot(QtGui.QDialog):
         self.viewPart.autoRange()
         if (self._logScale):
             ydata = np.log10(np.clip(ydata, 10e-3, np.inf))
+        try:
+            self._testFit.clear()
+        except:
+            pass
         self._testFit = self.viewPart.plot(xdata, ydata, pen=pg.mkPen('b', width=4, style=QtCore.Qt.DashLine))
 
     def removeGuess(self):
