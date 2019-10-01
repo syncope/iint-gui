@@ -19,3 +19,5 @@
 # Boston, MA  02110-1301, USA.
 
 __version__ = "0.12.0"
+
+from . import iintGUI

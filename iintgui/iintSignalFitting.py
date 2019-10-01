@@ -62,7 +62,7 @@ class iintSignalFitting(QtGui.QWidget):
             self.addButton.hide()
             self.removeButton.hide()
             self.configButton.hide()
-        else: 
+        else:
             self.currentModelList.show()
             self.modelList.show()
             self.addButton.show()

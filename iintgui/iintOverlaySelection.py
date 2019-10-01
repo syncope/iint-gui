@@ -73,13 +73,13 @@ class iintOverlaySelection(QtGui.QWidget):
     def _moveToOverlay(self):
         for index in self.listScans.selectedIndexes():
             self._currentItemOverlays.append(index.data())
-            self._currentItemScans = [i for i in self._currentItemScans if i != index.data() ] 
+            self._currentItemScans = [i for i in self._currentItemScans if i != index.data()]
         self._updateDisplay()
 
     def _removeFromOverlay(self):
         for index in self.listOverlayScans.selectedIndexes():
             self._currentItemScans.append(index.data())
-            self._currentItemOverlays = [i for i in self._currentItemOverlays if i != index.data() ] 
+            self._currentItemOverlays = [i for i in self._currentItemOverlays if i != index.data()]
         self._updateDisplay()
 
     def _emitOverlayScans(self):

@@ -20,10 +20,9 @@
 
 from PyQt4 import QtCore, QtGui
 
-# taken from 
+# taken from
 # expandable/collapsible widget/group box:
 # https://stackoverflow.com/questions/52615115/how-to-create-collapsible-box-in-pyqt
-
 
 
 class CollapsibleBox(QtGui.QWidget):
@@ -55,7 +54,6 @@ class CollapsibleBox(QtGui.QWidget):
     @QtCore.pyqtSlot()
     def on_pressed(self):
         checked = self.toggle_button.isChecked()
-        #~ self.toggle_button.setArrowType(QtCore.Qt.ArrowType.DownArrow if not checked else QtCore.Qt.ArrowType.RightArrow)
         self.toggle_button.setArrowType(QtCore.Qt.DownArrow if not checked else QtCore.Qt.RightArrow)
         self.toggle_animation.setDirection(QtCore.QAbstractAnimation.Forward if not checked else QtCore.QAbstractAnimation.Backward)
         self.toggle_animation.start()

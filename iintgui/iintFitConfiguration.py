@@ -58,7 +58,7 @@ class iintFitConfiguration(QtGui.QDialog):
         return self._sumColour
 
     def reset(self):
-        for i in reversed(range(self.functionlist.count())): 
+        for i in reversed(range(self.functionlist.count())):
             if i is 0:
                 pass
             else:
@@ -71,5 +71,5 @@ class iintFitConfiguration(QtGui.QDialog):
 
     def _setSumColour(self, colour):
         self._sumColour = colour
-        self.colourDisplay.setStyleSheet( ("background-color:"+str(colour.name())))
+        self.colourDisplay.setStyleSheet(("background-color:"+str(colour.name())))
         self.sumColourChanged.emit()

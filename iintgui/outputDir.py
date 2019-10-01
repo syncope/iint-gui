@@ -21,6 +21,7 @@
 from PyQt4 import QtCore, QtGui, uic
 from . import getUIFile
 
+
 class OutputDir(QtGui.QWidget):
     newdirectory = QtCore.pyqtSignal(str)
 

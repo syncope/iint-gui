@@ -296,7 +296,7 @@ class IintGUIProcessingControl():
         self._processParameters["inspection"]["fitresult"] = self._fittedSignalName
         self._processParameters["inspection"]["trapintname"] = self._trapintName
         self._processParameters["inspection"]["trackedData"] = []
-        # mca plots 
+        # mca plots
         self._processParameters["mcaplot"]["input"] = self._rawName
         self._processParameters["mcaplot"]["outfilename"] = ""
         # finalization: saving files
@@ -408,17 +408,6 @@ class IintGUIProcessingControl():
             pass
         # and now create the scan list!
         self._createScanList()
-
-    #~ def checkForMCA(self):
-        #~ # search through the list of data and retrieve the indices 
-        #~ mca = {}
-        #~ for datum in self._dataList:
-            #~ try:
-                #~ datum.getData("MCA")
-                #~ mca[datum.getData(self.getRawDataName()).getScanNumber()] = self._dataList.index(datum)
-            #~ except:
-                #~ pass
-        #~ return mca
 
     def getMCA(self):
         return self._mcaDict
@@ -552,15 +541,12 @@ class IintGUIProcessingControl():
         # cleaning up, improper handling of save value -- how to really fix?
         if self._processParameters["observabledef"]["attenuationFactor_column"] is None:
             del self._processParameters["observabledef"]["attenuationFactor_column"]
-        # why is this?? -- comment it out and see what happens (may 02, 2019)
-        #~ if "finalize" in execOrder:
-            #~ self._cleanUpTrackedData()
         return execOrder
 
     def saveConfig(self, filename):
         if self._readerType == "spec":
             execlist = ["specread", "observabledef"]
-        elif  self._readerType == "fio":
+        elif self._readerType == "fio":
             execlist = ["fioread", "observabledef"]
         else:
             return
@@ -715,13 +701,11 @@ class IintGUIProcessingControl():
     def setSpecFile(self, name, scanlist):
         self._processParameters["specread"]["filename"] = name
         self._processParameters["specread"]["scanlist"] = scanlist
-        #~ self._scanlist = self._expandList(scanlist)
         self._setOutfileName("spec")
 
     def setFioFile(self, names):
         self._processParameters["fioread"]["filenames"] = names
         self._setOutfileName("fio")
-        #~ self._createScanList()
 
     def getScanlist(self):
         return self._scanlist
@@ -753,10 +737,10 @@ class IintGUIProcessingControl():
                 try:
                     tmp = elem.split('-')
                     if stride:
-                        for n in range(tmp[0],(tmp[1]+1), stride):
+                        for n in range(tmp[0], (tmp[1]+1), stride):
                             retlist.append(n)
                     else:
-                        for n in range(int(tmp[0]),int(tmp[1])+1):
+                        for n in range(int(tmp[0]), int(tmp[1])+1):
                             retlist.append(n)
                 except:
                     pass
@@ -840,7 +824,7 @@ class IintGUIProcessingControl():
             if 'scannumber' not in self._processParameters["finalize"]["trackedData"]:
                 self._processParameters["finalize"]["trackedData"] = \
                     ['scannumber', self._fittedSignalName, self._trapintName, self._trapintName+"_stderr"] + \
-                     self._processParameters["finalize"]["trackedData"]
+                    self._processParameters["finalize"]["trackedData"]
         except TypeError:
             self._processParameters["finalize"]["trackedData"] = \
                 ['scannumber', self._fittedSignalName, self._trapintName, self._trapintName+"_stderr"]
@@ -1015,7 +999,7 @@ class trackedInformation():
 
 
 class fakeFitExchangeObject():
-    # until I come up with a better idea, this is the way to create the 
+    # until I come up with a better idea, this is the way to create the
     # "sum" display part from an object
 
     def __init__(self, data=None, colour=QtGui.QColor('black')):
@@ -1038,4 +1022,4 @@ class fakeFitExchangeObject():
         self._colour = colour
 
     def dump(self):
-        print("[FakeFitExchangeObject] colour " + str(self._colour)+ "\ndata:  " + str(self._data))
+        print("[FakeFitExchangeObject] colour " + str(self._colour) + "\ndata:  " + str(self._data))

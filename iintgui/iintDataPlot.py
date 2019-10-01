@@ -182,13 +182,13 @@ class iintDataPlot(QtGui.QDialog):
         if (self._logScale):
             ydata = np.log10(np.clip(ydata, 10e-3, np.inf))
         self.viewPart.clear()
-        if(self._showraw): # raw data has black "plus signs"
+        if(self._showraw):  # raw data has black "plus signs"
             self._theDrawItem = self.viewPart.plot(xdata, ydata, pen=None, symbolPen='k', symbolBrush='k', symbol='+')
-        if(self._showdespike): # despiked data: green "x"
+        if(self._showdespike):  # despiked data: green "x"
             despikeData = datum.getData(self._despObservableName)
             if (self._logScale):
                 despikeData = np.log10(np.clip(despikeData, 10e-3, np.inf))
-            self.viewPart.plot(xdata, despikeData, pen=None, symbolPen=(0,0,80), symbolBrush='g', symbol='x')
+            self.viewPart.plot(xdata, despikeData, pen=None, symbolPen=(0, 0, 80), symbolBrush='g', symbol='x')
         if(self._showbkg):
             bkg = datum.getData(self._backgroundPointsName)
             if (self._logScale):
@@ -223,26 +223,23 @@ class iintDataPlot(QtGui.QDialog):
         rawdata = datum.getData(self._observableName)
         if (self._logScale):
             rawdata = np.log10(np.clip(rawdata, 10e-3, np.inf))
-        if(self._showraw): # raw data has black "plus signs"
+        if(self._showraw):  # raw data has black "plus signs"
             printDict['raw'] = rawdata
-        if(self._showdespike): # despiked data: green "x"
+        if(self._showdespike):  # despiked data: green "x"
             despikeData = datum.getData(self._despObservableName)
             if (self._logScale):
                 despikeData = np.log10(np.clip(despikeData, 10e-3, np.inf))
             printDict['despike'] = despikeData
-            #~ self.viewPart.plot(xdata, despikeData, pen=None, symbolPen=(0,0,80), symbolBrush='g', symbol='x')
         if(self._showbkg):
             bkg = datum.getData(self._backgroundPointsName)
             if (self._logScale):
                 bkg = np.log10(np.clip(bkg, 10e-3, np.inf))
             printDict['bkg'] = bkg
-            #~ self.viewPart.plot(xdata, bkg, pen=None, symbolPen='r', symbolBrush='r', symbol='d')
         if(self._showbkgsubtracted):
             signal = datum.getData(self._signalName)
             if (self._logScale):
                 signal = np.log10(np.clip(signal, 10e-3, np.inf))
             printDict['signal'] = signal
-            #~ self.viewPart.plot(xdata, signal, pen=None, symbolPen='b', symbolBrush='b', symbol='o')
         if(self._showsigfit):
             fitdata = datum.getData(self._fittedSignalName)
             if (self._logScale):

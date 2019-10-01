@@ -49,5 +49,5 @@ class TrackedDataMap(QtGui.QDialog):
     def emitNames(self):
         first = self.firstSelection.currentIndex()
         second = self.secondSelection.currentIndex()
-        self.trackeddatatomap.emit(self.firstSelection.itemText(first), 
+        self.trackeddatatomap.emit(self.firstSelection.itemText(first),
                                    self.secondSelection.itemText(second))
