@@ -835,9 +835,6 @@ class IintGUIProcessingControl():
     def getSingleFitDict(self):
         return self._processParameters["calcsinglefitpoints"]
 
-    def getTrapIntDict(self):
-        return self._processParameters["trapint"]
-
     def getFinalizingDict(self):
         try:
             if 'scannumber' not in self._processParameters["finalize"]["trackedData"]:
@@ -916,7 +913,7 @@ class IintGUIProcessingControl():
         '''Collect the tracked data given by name.
            Returns the name, value and error of the tracked parameter,
            plus a dictionary of the fitted parameters including their error.'''
-        value, error = [], []
+        value = []
         for datum in self._dataList:
             try:
                 array = datum.getData(self._rawName).getArray(name)

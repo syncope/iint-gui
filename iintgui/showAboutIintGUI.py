@@ -18,7 +18,7 @@
 # Foundation, Inc., 51 Franklin Street, Fifth Floor,
 # Boston, MA  02110-1301, USA.
 
-from PyQt4 import QtCore, QtGui, uic
+from PyQt4 import QtGui, uic
 from . import getUIFile
 try:
     from adapt import __version__ as adaptversion

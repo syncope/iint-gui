@@ -20,9 +20,7 @@
 
 from PyQt4 import QtCore, QtGui, uic
 import numpy as np
-import pyqtgraph as pg
 from . import getUIFile
-#~ from adapt.processes import curvefitting
 
 
 class iintMCADialog(QtGui.QDialog):
