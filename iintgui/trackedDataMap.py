@@ -37,6 +37,7 @@ class TrackedDataMap(QtGui.QDialog):
 
     def passNames(self, someDict):
         self.reset()
+        # works only in v>=3.5  "unpacking generalization"
         self._names = [*someDict]
         self.firstSelection.clear()
         self.secondSelection.clear()
