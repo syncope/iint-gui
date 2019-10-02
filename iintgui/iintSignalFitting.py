@@ -81,6 +81,7 @@ class iintSignalFitting(QtGui.QWidget):
         self.removeButton.setDisabled(True)
         self.disallowFitButton()
         self.resetButton.setDisabled(True)
+        self.autoGaussBox.setCheckState(0)
         self.autoGaussBox.setDisabled(True)
         self.deactivateConfiguration()
 
