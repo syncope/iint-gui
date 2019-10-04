@@ -29,15 +29,17 @@ from PyQt4.QtCore import Qt
 
 # still to write: include all test cases into a test suite
 from . import test_loggerBox
+from . import test_selectResultOutput
 
 # initialize the test suite
 loader = unittest.TestLoader()
 suite  = unittest.TestSuite()
 
+app = QApplication(sys.argv)
+
 # add tests to the test suite
 suite.addTests(loader.loadTestsFromModule(test_loggerBox))
-
-app = QApplication(sys.argv)
+suite.addTests(loader.loadTestsFromModule(test_selectResultOutput))
 
 
 def run(verbosity=3):

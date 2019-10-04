@@ -19,20 +19,29 @@
 # Boston, MA  02110-1301, USA.
 
 
-'''This is the test for the  module.'''
+'''This is the test for the SelectResultOutput module.'''
 
 import unittest
-from iintgui import 
+from iintgui import selectResultOutput
+from PyQt4.QtTest import QTest
+from PyQt4.QtCore import Qt
 
 
-class Test(unittest.TestCase):
+class SelectResultOutputTest(unittest.TestCase):
 
     def setUp(self):
-        '''Create LoggerBox'''
-        self. = .()
+        '''Create SelectResultOutput'''
+        self.dialog = selectResultOutput.SelectResultOutput()
 
-    def test_bla(self):
-        pass
+    def test_name(self):
+        test_name = "asdfasdfasfd"
+        self.dialog.setName(test_name)
+        self.dialog.accept.connect(self._assign)
+        QTest.mouseClick(self.dialog.ok, Qt.LeftButton)
+        self.assertEqual(self._n, test_name)
+
+    def _assign(self, n):
+        self._n = n
 
     def tearDown(self):
         pass
@@ -40,28 +49,3 @@ class Test(unittest.TestCase):
 
 if __name__ == '__main__':
     unittest.main()
-
-
-
-#~ from PyQt4 import QtCore, QtGui, uic
-#~ from . import getUIFile
-
-
-#~ class SelectResultOutput(QtGui.QDialog):
-    #~ accept = QtCore.pyqtSignal(str)
-
-    #~ def __init__(self, parent=None):
-        #~ super(SelectResultOutput, self).__init__(parent)
-        #~ uic.loadUi(getUIFile.getUIFile("selectResultOutput.ui"), self)
-        #~ self.cancel.clicked.connect(self.close)
-        #~ self.ok.clicked.connect(self._returnOK)
-        #~ self.filename.setToolTip("The proposed file name; type here to change it.")
-        #~ self.ok.setToolTip("Click here to accept the file name.")
-        #~ self.cancel.setToolTip("Click here to cancel the save procedure.")
-
-    #~ def _returnOK(self):
-        #~ self.accept.emit(self.filename.text())
-        #~ self.close()
-
-    #~ def setName(self, filename):
-        #~ self.filename.setText(filename)
