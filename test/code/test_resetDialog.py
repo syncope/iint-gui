@@ -23,17 +23,23 @@
 '''This is the test for the  module.'''
 
 import unittest
-from iintgui import 
+from iintgui import resetDialog
+from PyQt4.QtTest import QTest
+from PyQt4.QtCore import Qt
 
 
-class Test(unittest.TestCase):
+class TestResetDialog(unittest.TestCase):
 
     def setUp(self):
         '''Create LoggerBox'''
-        self. = .()
+        self.dialog = resetDialog.ResetDialog()
 
-    def test_bla(self):
-        pass
+    def test_accept(self):
+        self.dialog.resetOK.connect(self._ok)
+        QTest.mouseClick(self.dialog.okButton, Qt.LeftButton)
+
+    def _ok(self):
+        self.assertTrue(True)
 
     def tearDown(self):
         pass

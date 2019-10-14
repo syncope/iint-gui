@@ -30,6 +30,7 @@ from PyQt4.QtCore import Qt
 # still to write: include all test cases into a test suite
 from . import test_loggerBox
 from . import test_selectResultOutput
+from . import test_resetDialog
 
 # initialize the test suite
 loader = unittest.TestLoader()
@@ -40,6 +41,7 @@ app = QApplication(sys.argv)
 # add tests to the test suite
 suite.addTests(loader.loadTestsFromModule(test_loggerBox))
 suite.addTests(loader.loadTestsFromModule(test_selectResultOutput))
+suite.addTests(loader.loadTestsFromModule(test_resetDialog))
 
 
 def run(verbosity=3):
