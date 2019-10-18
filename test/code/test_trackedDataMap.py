@@ -19,17 +19,18 @@
 # Boston, MA  02110-1301, USA.
 
 
-'''This is the test for the  module.'''
+'''This is the test for the TrackedDataMap module.'''
 
 import unittest
-from iintgui import 
+from iintgui import trackedDataMap
 
 
-class Test(unittest.TestCase):
+class TrackedDataMapTest(unittest.TestCase):
 
     def setUp(self):
-        '''Create LoggerBox'''
-        self. = .()
+        '''Create TrackedDataMap'''
+        self.tdm = trackedDataMap.TrackedDataMap()
+        self._testdict = {'a': 1, 'b': 2, 'c': 3}
 
     def test_bla(self):
         pass

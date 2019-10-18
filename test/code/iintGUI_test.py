@@ -32,6 +32,14 @@ from . import test_loggerBox
 from . import test_selectResultOutput
 from . import test_resetDialog
 
+# general tests
+from . import test_iintGUI_00_start
+from . import test_iintGUI_01_fileload
+from . import test_iintGUI_02_signaldefinitions
+from . import test_iintGUI_03_backgrounddefinitions
+from . import test_iintGUI_04_fitting
+from . import test_iintGUI_05_configurations
+
 # initialize the test suite
 loader = unittest.TestLoader()
 suite  = unittest.TestSuite()
@@ -42,6 +50,13 @@ app = QApplication(sys.argv)
 suite.addTests(loader.loadTestsFromModule(test_loggerBox))
 suite.addTests(loader.loadTestsFromModule(test_selectResultOutput))
 suite.addTests(loader.loadTestsFromModule(test_resetDialog))
+
+suite.addTests(loader.loadTestsFromModule(test_iintGUI_00_start))
+suite.addTests(loader.loadTestsFromModule(test_iintGUI_01_fileload))
+suite.addTests(loader.loadTestsFromModule(test_iintGUI_02_signaldefinitions))
+suite.addTests(loader.loadTestsFromModule(test_iintGUI_03_backgrounddefinitions))
+suite.addTests(loader.loadTestsFromModule(test_iintGUI_04_fitting))
+suite.addTests(loader.loadTestsFromModule(test_iintGUI_05_configurations))
 
 
 def run(verbosity=3):
