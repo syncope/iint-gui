@@ -33,12 +33,19 @@ class TestResetDialog(unittest.TestCase):
     def setUp(self):
         '''Create LoggerBox'''
         self.dialog = resetDialog.ResetDialog()
-
-    def test_accept(self):
         self.dialog.resetOK.connect(self._ok)
+        self.dialog.cancelButton.clicked.connect(self._cancel)
+
+    def test_acceptReset(self):
         QTest.mouseClick(self.dialog.okButton, Qt.LeftButton)
 
+    def test_cancelReset(self):
+        QTest.mouseClick(self.dialog.cancelButton, Qt.LeftButton)
+
     def _ok(self):
+        self.assertTrue(True)
+
+    def _cancel(self):
         self.assertTrue(True)
 
     def tearDown(self):

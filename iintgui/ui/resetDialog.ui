@@ -6,7 +6,7 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>239</width>
+    <width>250</width>
     <height>103</height>
    </rect>
   </property>
@@ -47,7 +47,7 @@
           <string>OK</string>
          </property>
          <property name="autoDefault">
-          <bool>false</bool>
+          <bool>true</bool>
          </property>
          <property name="default">
           <bool>true</bool>
