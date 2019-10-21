@@ -32,6 +32,7 @@ from . import test_loggerBox
 from . import test_selectResultOutput
 from . import test_resetDialog
 from . import test_trackedDataMap
+from . import test_outputDir
 
 # general tests
 from . import test_iintGUI_00_start
@@ -52,6 +53,7 @@ suite.addTests(loader.loadTestsFromModule(test_loggerBox))
 suite.addTests(loader.loadTestsFromModule(test_selectResultOutput))
 suite.addTests(loader.loadTestsFromModule(test_resetDialog))
 suite.addTests(loader.loadTestsFromModule(test_trackedDataMap))
+suite.addTests(loader.loadTestsFromModule(test_outputDir))
 
 suite.addTests(loader.loadTestsFromModule(test_iintGUI_00_start))
 suite.addTests(loader.loadTestsFromModule(test_iintGUI_01_fileload))

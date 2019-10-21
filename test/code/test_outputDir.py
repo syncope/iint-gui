@@ -23,17 +23,22 @@
 '''This is the test for the  module.'''
 
 import unittest
-from iintgui import 
+from iintgui import outputDir
 
 
-class Test(unittest.TestCase):
+class TestOutputDir(unittest.TestCase):
 
     def setUp(self):
-        '''Create LoggerBox'''
-        self. = .()
+        self._name1 = "asdhfkljHJKL"
+        self._name2 = "fsafIPUIPUIAHJKHD"
+        self.mtt = outputDir.OutputDir(self._name1)
 
-    def test_bla(self):
-        pass
+    def test_initial(self):
+        self.assertEqual(self.mtt.getOutputDirectory(), self._name1)
+
+    def test_setting(self):
+        self.mtt.setOutputDirectory(self._name2)
+        self.assertEqual(self.mtt.getOutputDirectory(), self._name2)
 
     def tearDown(self):
         pass
