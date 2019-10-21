@@ -32,8 +32,19 @@ class TrackedDataMapTest(unittest.TestCase):
         self.tdm = trackedDataMap.TrackedDataMap()
         self._testdict = {'a': 1, 'b': 2, 'c': 3}
 
-    def test_bla(self):
-        pass
+    def test_initial(self):
+        for st in self.tdm.getStatus():
+            self.assertFalse(st)
+
+    def test_namesetting(self):
+        self.tdm.passNames(self._testdict)
+        for st in self.tdm.getStatus():
+            self.assertTrue(st)
+
+    def test_resetting(self):
+        self.tdm.reset()
+        for st in self.tdm.getStatus():
+            self.assertFalse(st)
 
     def tearDown(self):
         pass
