@@ -24,11 +24,10 @@
 import sys
 import unittest
 from PyQt4.QtGui import QApplication
-from PyQt4.QtTest import QTest
-from PyQt4.QtCore import Qt
+#~ from PyQt4.QtTest import QTest
+#~ from PyQt4.QtCore import Qt
 
 # still to write: include all test cases into a test suite
-from . import test_loggerBox
 from . import test_selectResultOutput
 from . import test_resetDialog
 from . import test_trackedDataMap
@@ -49,7 +48,6 @@ suite  = unittest.TestSuite()
 app = QApplication(sys.argv)
 
 # add tests to the test suite
-suite.addTests(loader.loadTestsFromModule(test_loggerBox))
 suite.addTests(loader.loadTestsFromModule(test_selectResultOutput))
 suite.addTests(loader.loadTestsFromModule(test_resetDialog))
 suite.addTests(loader.loadTestsFromModule(test_trackedDataMap))
@@ -72,4 +70,5 @@ def run_tests(verbosity=3):
     run(verbosity)
 
 if __name__ == "__main__":
-    unittest.main()
+    #~ unittest.main()
+    run()

@@ -18,4 +18,5 @@
 # Foundation, Inc., 51 Franklin Street, Fifth Floor,
 # Boston, MA  02110-1301, USA.
 
-from .iintGUI_test import run
+#~ from .iintGUI_test import run
+
