@@ -61,9 +61,11 @@ pg.setConfigOption('foreground', 'k')
 
 class iintGUI(QtGui.QMainWindow):
 
-    def __init__(self, parent=None):
+    def __init__(self, parent=None, testMode=False):
         super(iintGUI, self).__init__(parent)
         uic.loadUi(getUIFile.getUIFile("iintMain.ui"), self)
+
+        self._testMode = testMode
 
         self.actionNew.triggered.connect(self._askReset)
         self.action_Open_SPEC_file.triggered.connect(self.showSFRGUI)
@@ -368,7 +370,10 @@ class iintGUI(QtGui.QMainWindow):
             prev = self._file
         except:
             prev = None
-        self._file = QtGui.QFileDialog.getOpenFileName(self, 'Choose iint config file', '.', "iint cfg files (*.icfg)")
+        if self._testMode:
+            pass
+        else:
+            self._file = QtGui.QFileDialog.getOpenFileName(self, 'Choose iint config file', '.', "iint cfg files (*.icfg)")
         if self._file != "":
             if prev is not None:
                 self._resetAll()
