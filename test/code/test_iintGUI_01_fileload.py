@@ -23,17 +23,75 @@
 
 
 import unittest
+import os
 from iintgui import iintGUI
+from PyQt4.QtTest import QTest
+from PyQt4.QtCore import Qt
 
 
 class TestIintGUI01FileLoad(unittest.TestCase):
 
     def setUp(self):
-        '''Create LoggerBox'''
-        self.ui = iintGUI.iintGUI()
+        '''Create GUI first'''
+        self.ui = iintGUI.iintGUI(testMode=True)
+        self.ctrl = self.ui._control
 
-    def test_bla(self):
-        self.assertTrue(True)
+        self.obs = self.ui._obsDef
+        self.bkg = self.ui._bkgHandling
+        self.sigfit = self.ui._signalFitting
+        self.ia = self.ui._inspectAnalyze
+        dir_path = os.path.dirname(os.path.realpath(__file__)) + "/"
+        self.obsfilepath = "../test_configurations/MnCo15_S699E740-obsDef.icfg"
+        self.obsattfilepath = "../test_configurations/MnCo15_S699E740-obsDefAttFac.icfg"
+        self.obsdespfilepath = "../test_configurations/MnCo15_S699E740-obsDefwDes.icfg"
+        self.obscfgfile = os.path.join(dir_path, self.obsfilepath)
+        self.obsattcfgfile = os.path.join(dir_path, self.obsattfilepath)
+        self.obsdespcfgfile = os.path.join(dir_path, self.obsdespfilepath)
+
+    def test_load_obs(self):
+        self.ui._file = self.obscfgfile
+        self.ui.chooseAndLoadConfig()
+        # loading should enable all elements...
+        self.assertTrue(self.obs.motorCB.isEnabled())
+        self.assertTrue(self.obs.observableDetectorCB.isEnabled())
+        self.assertTrue(self.obs.observableMonitorCB.isEnabled())
+        self.assertTrue(self.obs.observableTimeCB.isEnabled())
+        # ... but: the attenuation factor (needs to be checked first!)
+        self.assertFalse(self.obs.observableAttFacCB.isEnabled())
+        self.assertTrue(self.obs.observableAttFaccheck.isEnabled())
+        self.assertTrue(self.obs.despikeCheckBox.isEnabled())
+        self.assertTrue(self.obs.trackData.isEnabled())
+        self.assertTrue(self.obs.showScanProfile.isEnabled())
+        # ... and but: the map tracks, unless something has been chosen for tracking
+        self.assertFalse(self.obs.maptracks.isEnabled())
+        self.assertTrue(self.obs.overlayBtn.isEnabled())
+
+        # after loading the bkg box should be enabled
+        self.assertTrue(self.bkg.isEnabled())
+        self.assertTrue(self.bkg.groupBox.isEnabled())
+        # .. but the rest should be disabled, unless it's checked!
+        self.assertFalse(self.bkg.linearBkg.isEnabled())
+        self.assertFalse(self.bkg.constBkg.isEnabled())
+        self.assertFalse(self.bkg.hyperbolicBkg.isEnabled())
+        self.assertFalse(self.bkg.bkgStartPointsSB.isEnabled())
+        self.assertFalse(self.bkg.bkgEndPointsSB.isEnabled())
+
+        # it's possible to fit something after loading
+        self.assertTrue(self.sigfit.isEnabled())
+        self.assertTrue(self.sigfit.autoGaussBox.isEnabled())
+        self.assertTrue(self.sigfit.resetButton.isEnabled())
+        self.assertTrue(self.sigfit.addButton.isEnabled())
+        self.assertTrue(self.sigfit.modelList.isEnabled())
+        self.assertFalse(self.sigfit.removeButton.isEnabled())
+        self.assertFalse(self.sigfit.configButton.isEnabled())
+        self.assertFalse(self.sigfit.fitButton.isEnabled())
+
+        self.assertFalse(self.ia.trackedColumnsPlot.isEnabled())
+        self.assertFalse(self.ia.showScanFits.isEnabled())
+        self.assertFalse(self.ia.polAnalysis.isEnabled())
+        self.assertFalse(self.ia.saveResults.isEnabled())
+
+
 
     def tearDown(self):
         pass

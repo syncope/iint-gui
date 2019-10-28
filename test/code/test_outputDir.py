@@ -46,31 +46,3 @@ class TestOutputDir(unittest.TestCase):
 
 if __name__ == '__main__':
     unittest.main()
-
-
-
-
-#~ from PyQt4 import QtCore, QtGui, uic
-#~ from . import getUIFile
-
-
-#~ class OutputDir(QtGui.QWidget):
-    #~ newdirectory = QtCore.pyqtSignal(str)
-
-    #~ def __init__(self, initialDir, parent=None):
-        #~ super(OutputDir, self).__init__(parent)
-        #~ self.setWindowTitle("Output Directory")
-        #~ uic.loadUi(getUIFile.getUIFile("outputDirectory.ui"), self)
-        #~ self.outdir.setToolTip("Displays the current directory, in which any output is stored.")
-        #~ self.selectDirBtn.setToolTip("Select the output directory for storing result files.")
-        #~ self.selectDirBtn.clicked.connect(self._dirSelectDialog)
-        #~ self.outdir.setText(initialDir)
-
-    #~ def _dirSelectDialog(self):
-        #~ newname = QtGui.QFileDialog.getExistingDirectory(self, 'Choose output directory', '.')
-        #~ if newname:
-            #~ self.outdir.setText(newname)
-            #~ self.newdirectory.emit(newname)
-
-    #~ def setOutputDirectory(self, name):
-        #~ self.outdir.setText(name)
