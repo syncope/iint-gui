@@ -46,7 +46,6 @@ class TestIintGUI03BackgroundDefinitions(unittest.TestCase):
         rucl = "../test_configurations/rucl3_az_S1179E1258.icfg"
         self.ruclfile = os.path.join(dir_path, rucl)
 
-
     def test_linear_bkg(self):
         self.ui._file = self.mncoallfile
         self.ui.chooseAndLoadConfig()
@@ -61,6 +60,8 @@ class TestIintGUI03BackgroundDefinitions(unittest.TestCase):
         self.assertTrue(self.bkg.linearBkg.isChecked())
         self.assertTrue(self.bkg.bkgStartPointsSB.isEnabled())
         self.assertTrue(self.bkg.bkgEndPointsSB.isEnabled())
+        self.assertEqual(self.bkg.bkgStartPointsSB.value(), 3)
+        self.assertEqual(self.bkg.bkgEndPointsSB.value(), 3)
 
     def test_const_bkg(self):
         # also full monty, different bkg
@@ -76,6 +77,8 @@ class TestIintGUI03BackgroundDefinitions(unittest.TestCase):
         self.assertTrue(self.bkg.constBkg.isChecked())
         self.assertTrue(self.bkg.bkgStartPointsSB.isEnabled())
         self.assertTrue(self.bkg.bkgEndPointsSB.isEnabled())
+        self.assertEqual(self.bkg.bkgStartPointsSB.value(), 3)
+        self.assertEqual(self.bkg.bkgEndPointsSB.value(), 3)
 
     def test_hyperbolic_bkg(self):
         # file contains fitting and usage of 1/x bkg
@@ -92,6 +95,8 @@ class TestIintGUI03BackgroundDefinitions(unittest.TestCase):
         self.assertTrue(self.bkg.hyperbolicBkg.isChecked())
         self.assertTrue(self.bkg.bkgStartPointsSB.isEnabled())
         self.assertTrue(self.bkg.bkgEndPointsSB.isEnabled())
+        self.assertEqual(self.bkg.bkgStartPointsSB.value(), 6)
+        self.assertEqual(self.bkg.bkgEndPointsSB.value(), 6)
 
     def tearDown(self):
         pass
