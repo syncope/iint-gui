@@ -72,6 +72,7 @@ class iintSignalFitting(QtGui.QWidget):
     def _buttonreset(self):
         self.removeButton.setDisabled(True)
         self.fitButton.setDisabled(True)
+        self.currentModelList.clear()
         self.activateConfiguration()
         self.autoGaussBox.setCheckState(False)
 
@@ -143,8 +144,12 @@ class iintSignalFitting(QtGui.QWidget):
 
         # WIP
     def setParameterDict(self, pDict):
-        for elem in pDict:
-            self.currentModelList.addItem(pDict[elem]['modeltype'])
+        mDict = pDict['model']
+        for elem in mDict:
+            if len(mDict) is 1 and mDict[elem]['modeltype'] == 'gaussianModel' and pDict['useguessing'] is 1:
+                self.autoGaussBox.setChecked(True)
+            else:
+                self.currentModelList.addItem(mDict[elem]['modeltype'])
         if self.currentModelList.count() > 0:
             self.activateFitting()
             self.allowFitButton()
