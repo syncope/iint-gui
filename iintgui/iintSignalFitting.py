@@ -34,7 +34,7 @@ class iintSignalFitting(QtGui.QWidget):
         self.removeButton.clicked.connect(self._removeCurrentFunction)
         self.addButton.clicked.connect(self._addFunction)
         self.configButton.clicked.connect(self._getModels)
-        self.resetButton.clicked.connect(self._reset)
+        self.resetButton.clicked.connect(self._buttonreset)
         self.resetButton.setToolTip("Resets the complete fit information to its initial values.")
         self.currentModelList.setToolTip("The current model by its constituents, only the name and type of function are indicated.")
         self.modelList.setToolTip("Select a function for addition to the current fit mdel.")
@@ -69,10 +69,11 @@ class iintSignalFitting(QtGui.QWidget):
             self.removeButton.show()
             self.configButton.show()
 
-    def _reset(self):
+    def _buttonreset(self):
         self.removeButton.setDisabled(True)
         self.fitButton.setDisabled(True)
         self.activateConfiguration()
+        self.autoGaussBox.setCheckState(False)
 
     def reset(self):
         self.currentModelList.setDisabled(True)
@@ -81,6 +82,7 @@ class iintSignalFitting(QtGui.QWidget):
         self.removeButton.setDisabled(True)
         self.disallowFitButton()
         self.resetButton.setDisabled(True)
+        self.autoGaussBox.setCheckState(False)
         self.autoGaussBox.setDisabled(True)
         self.deactivateConfiguration()
 
