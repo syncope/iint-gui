@@ -140,3 +140,11 @@ class iintSignalFitting(QtGui.QWidget):
         for i in range(self.currentModelList.count()):
             modellist.append(str(self.currentModelList.item(i).text()))
         self.models.emit(modellist)
+
+        # WIP
+    def setParameterDict(self, pDict):
+        for elem in pDict:
+            self.currentModelList.addItem(pDict[elem]['modeltype'])
+        if self.currentModelList.count() > 0:
+            self.activateFitting()
+            self.allowFitButton()

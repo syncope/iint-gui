@@ -409,6 +409,7 @@ class iintGUI(QtGui.QMainWindow):
         else:
             return
         if "signalcurvefit" in runlist:
+            self._signalFitting.setParameterDict(self._control.getSIGDict()['model'])
             self.runSignalProcessing(self._control.getSIGDict()['model'], reset=False)
         else:
             return
