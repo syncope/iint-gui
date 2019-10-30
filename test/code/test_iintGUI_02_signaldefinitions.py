@@ -41,13 +41,143 @@ class TestIintGUI02SignalDefinitions(unittest.TestCase):
         dir_path = os.path.dirname(os.path.realpath(__file__)) + "/"
         mnco = "../test_configurations/MnCo15_S699E740-obsDef.icfg"
         self.obscfgfile = os.path.join(dir_path, mnco)
+        mncodes = "../test_configurations/MnCo15_S699E740-obsDefwDes.icfg"
+        self.mncodesfile = os.path.join(dir_path, mncodes)
+        mncoatt = "../test_configurations/MnCo15_S699E740-obsDefAttFac.icfg"
+        self.mncoattfile = os.path.join(dir_path, mncoatt)
         eupt = "../test_configurations/EuPtIn4_remeasured_clean_S349E391.icfg"
         self.euptfile = os.path.join(dir_path, eupt)
         rucl = "../test_configurations/rucl3_az_S1179E1258.icfg"
         self.ruclfile = os.path.join(dir_path, rucl)
 
-    def test_bla(self):
-        self.assertTrue(True)
+    def test_obsdef_mnco4(self):
+        self.ui._file = self.obscfgfile
+        self.ui.chooseAndLoadConfig()
+        # loading should enable all elements...
+        self.assertTrue(self.obs.motorCB.isEnabled())
+        self.assertTrue(self.obs.observableDetectorCB.isEnabled())
+        self.assertTrue(self.obs.observableMonitorCB.isEnabled())
+        self.assertTrue(self.obs.observableTimeCB.isEnabled())
+        # ... but: the attenuation factor (needs to be checked first!)
+        self.assertFalse(self.obs.observableAttFacCB.isEnabled())
+        self.assertTrue(self.obs.observableAttFaccheck.isEnabled())
+        self.assertFalse(self.obs.observableAttFaccheck.isChecked())
+        self.assertTrue(self.obs.despikeCheckBox.isEnabled())
+        self.assertFalse(self.obs.despikeCheckBox.isChecked())
+        self.assertTrue(self.obs.trackData.isEnabled())
+        self.assertTrue(self.obs.showScanProfile.isEnabled())
+        # ... and but: the map tracks, unless something has been chosen for tracking
+        self.assertFalse(self.obs.maptracks.isEnabled())
+        self.assertTrue(self.obs.overlayBtn.isEnabled())
+
+        self.assertEqual(self.obs.motorCB.currentText(), 'pth')
+        self.assertEqual(self.obs.observableDetectorCB.currentText(), 'exp_c01')
+        self.assertEqual(self.obs.observableMonitorCB.currentText(), 'sumvfcs_counts')
+        self.assertEqual(self.obs.observableTimeCB.currentText(), 'exp_t01')
+
+    def test_obsdef_mnco4att(self):
+        self.ui._file = self.mncoattfile
+        self.ui.chooseAndLoadConfig()
+        # loading should enable all elements...
+        self.assertTrue(self.obs.motorCB.isEnabled())
+        self.assertTrue(self.obs.observableDetectorCB.isEnabled())
+        self.assertTrue(self.obs.observableMonitorCB.isEnabled())
+        self.assertTrue(self.obs.observableTimeCB.isEnabled())
+        # ... but: the attenuation factor (needs to be checked first!)
+        self.assertTrue(self.obs.observableAttFacCB.isEnabled())
+        self.assertTrue(self.obs.observableAttFaccheck.isEnabled())
+        self.assertTrue(self.obs.observableAttFaccheck.isChecked())
+        self.assertTrue(self.obs.despikeCheckBox.isEnabled())
+        self.assertFalse(self.obs.despikeCheckBox.isChecked())
+        self.assertTrue(self.obs.trackData.isEnabled())
+        self.assertTrue(self.obs.showScanProfile.isEnabled())
+        # ... and but: the map tracks, unless something has been chosen for tracking
+        self.assertFalse(self.obs.maptracks.isEnabled())
+        self.assertTrue(self.obs.overlayBtn.isEnabled())
+
+        self.assertEqual(self.obs.motorCB.currentText(), 'pth')
+        self.assertEqual(self.obs.observableDetectorCB.currentText(), 'exp_c01')
+        self.assertEqual(self.obs.observableMonitorCB.currentText(), 'sumvfcs_counts')
+        self.assertEqual(self.obs.observableTimeCB.currentText(), 'exp_t01')
+        self.assertEqual(self.obs.observableAttFacCB.currentText(), 'abs_attenfactor')
+
+    def test_obsdef_mnco4des(self):
+        self.ui._file = self.mncodesfile
+        self.ui.chooseAndLoadConfig()
+        # loading should enable all elements...
+        self.assertTrue(self.obs.motorCB.isEnabled())
+        self.assertTrue(self.obs.observableDetectorCB.isEnabled())
+        self.assertTrue(self.obs.observableMonitorCB.isEnabled())
+        self.assertTrue(self.obs.observableTimeCB.isEnabled())
+        # ... but: the attenuation factor (needs to be checked first!)
+        self.assertFalse(self.obs.observableAttFacCB.isEnabled())
+        self.assertTrue(self.obs.observableAttFaccheck.isEnabled())
+        self.assertFalse(self.obs.observableAttFaccheck.isChecked())
+        self.assertTrue(self.obs.despikeCheckBox.isEnabled())
+        self.assertTrue(self.obs.despikeCheckBox.isChecked())
+        self.assertTrue(self.obs.trackData.isEnabled())
+        self.assertTrue(self.obs.showScanProfile.isEnabled())
+        # ... and but: the map tracks, unless something has been chosen for tracking
+        self.assertFalse(self.obs.maptracks.isEnabled())
+        self.assertTrue(self.obs.overlayBtn.isEnabled())
+
+        self.assertEqual(self.obs.motorCB.currentText(), 'pth')
+        self.assertEqual(self.obs.observableDetectorCB.currentText(), 'exp_c01')
+        self.assertEqual(self.obs.observableMonitorCB.currentText(), 'sumvfcs_counts')
+        self.assertEqual(self.obs.observableTimeCB.currentText(), 'exp_t01')
+
+    def test_obsdef_eupt(self):
+
+        self.ui._file = self.euptfile
+        self.ui.chooseAndLoadConfig()
+        # loading should enable all elements...
+        self.assertTrue(self.obs.motorCB.isEnabled())
+        self.assertTrue(self.obs.observableDetectorCB.isEnabled())
+        self.assertTrue(self.obs.observableMonitorCB.isEnabled())
+        self.assertTrue(self.obs.observableTimeCB.isEnabled())
+        # ... but: the attenuation factor (needs to be checked first!)
+        self.assertFalse(self.obs.observableAttFacCB.isEnabled())
+        self.assertTrue(self.obs.observableAttFaccheck.isEnabled())
+        self.assertFalse(self.obs.observableAttFaccheck.isChecked())
+        self.assertTrue(self.obs.despikeCheckBox.isEnabled())
+        self.assertFalse(self.obs.despikeCheckBox.isChecked())
+        self.assertTrue(self.obs.trackData.isEnabled())
+        self.assertTrue(self.obs.showScanProfile.isEnabled())
+        # ... and but: the map tracks, unless something has been chosen for tracking
+        self.assertFalse(self.obs.maptracks.isEnabled())
+        self.assertTrue(self.obs.overlayBtn.isEnabled())
+
+        self.assertEqual(self.obs.motorCB.currentText(), 'del')
+        self.assertEqual(self.obs.observableDetectorCB.currentText(), 'exp_c03')
+        self.assertEqual(self.obs.observableMonitorCB.currentText(), 'sumvfcs_counts')
+        self.assertEqual(self.obs.observableTimeCB.currentText(), 'exp_t01')
+
+    def test_obsdef_rucl(self):
+        # file contains fitting and usage of 1/x bkg
+
+        self.ui._file = self.ruclfile
+        self.ui.chooseAndLoadConfig()
+        # loading should enable all elements...
+        self.assertTrue(self.obs.motorCB.isEnabled())
+        self.assertTrue(self.obs.observableDetectorCB.isEnabled())
+        self.assertTrue(self.obs.observableMonitorCB.isEnabled())
+        self.assertTrue(self.obs.observableTimeCB.isEnabled())
+        # ... but: the attenuation factor (needs to be checked first!)
+        self.assertFalse(self.obs.observableAttFacCB.isEnabled())
+        self.assertTrue(self.obs.observableAttFaccheck.isEnabled())
+        self.assertFalse(self.obs.observableAttFaccheck.isChecked())
+        self.assertTrue(self.obs.despikeCheckBox.isEnabled())
+        self.assertFalse(self.obs.despikeCheckBox.isChecked())
+        self.assertTrue(self.obs.trackData.isEnabled())
+        self.assertTrue(self.obs.showScanProfile.isEnabled())
+        # ... and but: the map tracks, unless something has been chosen for tracking
+        self.assertFalse(self.obs.maptracks.isEnabled())
+        self.assertTrue(self.obs.overlayBtn.isEnabled())
+
+        self.assertEqual(self.obs.motorCB.currentText(), 'del')
+        self.assertEqual(self.obs.observableDetectorCB.currentText(), 'exp_c01')
+        self.assertEqual(self.obs.observableMonitorCB.currentText(), 'exp_vfc02')
+        self.assertEqual(self.obs.observableTimeCB.currentText(), 'dt')
 
     def tearDown(self):
         pass
