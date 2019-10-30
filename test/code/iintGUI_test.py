@@ -53,12 +53,12 @@ suite.addTests(loader.loadTestsFromModule(test_resetDialog))
 suite.addTests(loader.loadTestsFromModule(test_trackedDataMap))
 suite.addTests(loader.loadTestsFromModule(test_outputDir))
 
-#~ suite.addTests(loader.loadTestsFromModule(test_iintGUI_00_start))
-#~ suite.addTests(loader.loadTestsFromModule(test_iintGUI_01_fileload))
-#~ suite.addTests(loader.loadTestsFromModule(test_iintGUI_02_signaldefinitions))
+suite.addTests(loader.loadTestsFromModule(test_iintGUI_00_start))
+suite.addTests(loader.loadTestsFromModule(test_iintGUI_01_fileload))
+suite.addTests(loader.loadTestsFromModule(test_iintGUI_02_signaldefinitions))
 suite.addTests(loader.loadTestsFromModule(test_iintGUI_03_backgrounddefinitions))
-#~ suite.addTests(loader.loadTestsFromModule(test_iintGUI_04_fitting))
-#~ suite.addTests(loader.loadTestsFromModule(test_iintGUI_05_configurations))
+suite.addTests(loader.loadTestsFromModule(test_iintGUI_04_fitting))
+suite.addTests(loader.loadTestsFromModule(test_iintGUI_05_configurations))
 
 
 def run(verbosity=3):
