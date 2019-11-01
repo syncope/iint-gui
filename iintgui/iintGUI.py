@@ -427,7 +427,11 @@ class iintGUI(QtGui.QMainWindow):
             self._fileInfo.setNames(filereaderdict["filename"], filereaderdict["scanlist"])
             self._control.setSpecFile(filereaderdict["filename"], filereaderdict["scanlist"])
             self.message("Reading spec file: " + str(filereaderdict["filename"]))
-            sfr = self._control.createAndInitialize(filereaderdict)
+            try:
+                sfr = self._control.createAndInitialize(filereaderdict)
+            except(adaptException.AdaptFileReadException):
+                self.warning("Failed to read the file, maybe a spelling error or it doesn't exist.")
+                return
             self._control.createDataList(sfr.getData(), self._control.getRawDataName())
             self._control.setDefaultOutputDirectory(filereaderdict["filename"])
         elif reader == "fio":
