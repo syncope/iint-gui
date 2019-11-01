@@ -1,22 +1,23 @@
+despike:
+  input: intensity
+  method: p09despiking
+  output: despikedIntensity
+  type: filter1d
 execlist:
 - specread
 - observabledef
+- despike
 - trapint
 - signalcurvefit
 observabledef:
-  detector_column: exp_c03
+  detector_column: exp_c01
   exposureTime_column: exp_t01
   id: scannumber
   input: rawdata
   monitor_column: sumvfcs_counts
-  motor_column: del
+  motor_column: pth
   output: intensity
   type: iintdefinition
-specread:
-  filename: /home/rosem/iintgui/test/test_data/EuPtIn4_remeasured_clean.spc
-  output: rawdata
-  scanlist: 349, 356, 361, 367, 373, 379, 385, 391
-  type: specfilereader
 signalcurvefit:
   error: None
   model:
@@ -36,10 +37,15 @@ signalcurvefit:
   type: curvefitting
   useguessing: 1
   usepreviousresult: 0
-  xdata: del
+  xdata: pth
   ydata: intensity
+specread:
+  filename: /home/rosem/iintgui/tests/test_data/MnCo15.spc
+  output: default
+  scanlist: 699-740
+  type: specfilereader
 trapint:
-  motor: del
-  observable: intensity
+  motor: pth
+  observable: signalIntensity
   output: trapezoidIntegral
   type: trapezoidintegration

@@ -1,11 +1,10 @@
 bkgfit:
   error: None
   model:
-    linbkg_:
-      modeltype: linearModel
+    constbkg_:
+      modeltype: constantModel
   result: bkgfitresult
   type: curvefitting
-  useguessing: 0
   usepreviousresult: 0
   xdata: bkgX
   ydata: bkgY
@@ -20,9 +19,6 @@ bkgselect:
   selectors:
   - selectfromstart
   - selectfromend
-  sliceend: null
-  slicestart: null
-  slicestride: null
   startpointnumber: 3
   type: subsequenceselection
 bkgsubtract:
@@ -48,6 +44,8 @@ execlist:
 - bkgfit
 - calcbkgpoints
 - bkgsubtract
+- trapint
+- signalcurvefit
 observabledef:
   detector_column: exp_c01
   exposureTime_column: exp_t01
@@ -58,7 +56,29 @@ observabledef:
   output: intensity
   type: iintdefinition
 specread:
-  filename: /home/rosem/iintgui/test/test_data/MnCo15.spc
-  output: default
+  filename: /home/rosem/iintgui/tests/test_data/MnCo15.spc
+  output: rawdata
+  outputdata: default
   scanlist: 699-740
   type: specfilereader
+signalcurvefit:
+  error: None
+  model:
+    m0_:
+      amplitude:
+        value: 3779.6196444326156
+      center:
+        value: 45.3956
+      modeltype: gaussianModel
+      sigma:
+        value: 0.08
+  result: signalcurvefitresult
+  type: curvefitting
+  usepreviousresult: 1
+  xdata: pth
+  ydata: signalIntensity
+trapint:
+  motor: pth
+  observable: signalIntensity
+  output: trapezoidIntegral
+  type: trapezoidintegration

@@ -55,7 +55,7 @@ finalize:
   fitresult: signalcurvefitresult
   motor: pth
   observable: signalIntensity
-  outfilename: /home/rosem/iintgui/test/test_data/MnCo15_S699E740_20190502-16h28.iint
+  outfilename: /home/rosem/iintgui/tests/test_data/MnCo15_S699E740_20190502-16h28.iint
   specdataname: rawdata
   trackedData:
   - scannumber
@@ -105,7 +105,7 @@ signalcurvefit:
   xdata: pth
   ydata: signalIntensity
 specread:
-  filename: /home/rosem/iintgui/test/test_data/MnCo15.spc
+  filename: /home/rosem/iintgui/tests/test_data/MnCo15.spc
   output: default
   scanlist: 699-740
   type: specfilereader
