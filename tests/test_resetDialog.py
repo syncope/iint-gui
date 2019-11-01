@@ -19,7 +19,6 @@
 # Boston, MA  02110-1301, USA.
 
 
-
 '''This is the test for the  module.'''
 
 import unittest
@@ -54,24 +53,3 @@ class TestResetDialog(unittest.TestCase):
 
 if __name__ == '__main__':
     unittest.main()
-
-
-
-#~ from PyQt4 import QtCore, QtGui, uic
-#~ from . import getUIFile
-
-
-#~ class ResetDialog(QtGui.QDialog):
-    #~ resetOK = QtCore.pyqtSignal(int)
-
-    #~ def __init__(self, parent=None):
-        #~ super(ResetDialog, self).__init__(parent)
-        #~ uic.loadUi(getUIFile.getUIFile("resetDialog.ui"), self)
-        #~ self.cancelButton.clicked.connect(self.close)
-        #~ self.okButton.clicked.connect(self._returnOK)
-        #~ self.okButton.setToolTip("Click here to reset all processing and stored data.")
-        #~ self.cancelButton.setToolTip("Click here to keep all processed data and settings.")
-
-    #~ def _returnOK(self):
-        #~ self.resetOK.emit(0)
-        #~ self.close()

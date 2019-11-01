@@ -38,20 +38,7 @@ class TestIintGUI00Start(unittest.TestCase):
         self.sigfit = self.ui._signalFitting
         self.ia = self.ui._inspectAnalyze
 
-        #~ self. = self.ui._quit
-        #~ self. = self.ui._simpleImageView
-        #~ self. = self.ui._overlayView
-        #~ self. = self.ui._resetQuestion
-        #~ self. = self.ui._fileInfo
-        #~ self. = self.ui._outDir
-        #~ self. = self.ui._sfrGUI
-        #~ self. = self.ui._ffrGUI
-        #~ self. = self.ui._obsDef
-        #~ self. = self.ui._inspectAnalyze
-        #~ self. = self.ui._saveResultsDialog
-
     def test_start(self):
-        #~ self.assertFalse(self.obs.scantype.isEnabled())
         self.assertFalse(self.obs.motorCB.isEnabled())
         self.assertFalse(self.obs.observableDetectorCB.isEnabled())
         self.assertFalse(self.obs.observableMonitorCB.isEnabled())
@@ -86,7 +73,6 @@ class TestIintGUI00Start(unittest.TestCase):
 
     def test_reset(self):
         self.ui._resetAll()
-        #~ self.assertFalse(self.obs.scantype.isEnabled())
         self.assertFalse(self.obs.motorCB.isEnabled())
         self.assertFalse(self.obs.observableDetectorCB.isEnabled())
         self.assertFalse(self.obs.observableMonitorCB.isEnabled())
@@ -119,9 +105,9 @@ class TestIintGUI00Start(unittest.TestCase):
         self.assertFalse(self.ia.polAnalysis.isEnabled())
         self.assertFalse(self.ia.saveResults.isEnabled())
 
-
     def tearDown(self):
         pass
+
 
 if __name__ == '__main__':
     unittest.main()

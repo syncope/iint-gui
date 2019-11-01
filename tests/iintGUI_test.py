@@ -24,8 +24,6 @@
 import sys
 import unittest
 from PyQt4.QtGui import QApplication
-#~ from PyQt4.QtTest import QTest
-#~ from PyQt4.QtCore import Qt
 
 # still to write: include all test cases into a test suite
 from . import test_selectResultOutput
@@ -43,7 +41,7 @@ from . import test_iintGUI_05_configurations
 
 # initialize the test suite
 loader = unittest.TestLoader()
-suite  = unittest.TestSuite()
+suite = unittest.TestSuite()
 
 app = QApplication(sys.argv)
 
@@ -64,11 +62,12 @@ suite.addTests(loader.loadTestsFromModule(test_iintGUI_05_configurations))
 def run(verbosity=3):
     # initialize a runner, pass it your suite and run it
     runner = unittest.TextTestRunner(verbosity=verbosity)
-    result = runner.run(suite)
+    runner.run(suite)
+
 
 def run_tests(verbosity=3):
     run(verbosity)
 
+
 if __name__ == "__main__":
-    #~ unittest.main()
     run()
