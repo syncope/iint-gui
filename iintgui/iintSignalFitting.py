@@ -34,7 +34,7 @@ class iintSignalFitting(QtGui.QWidget):
         self.removeButton.clicked.connect(self._removeCurrentFunction)
         self.addButton.clicked.connect(self._addFunction)
         self.configButton.clicked.connect(self._getModels)
-        self.resetButton.clicked.connect(self._reset)
+        self.resetButton.clicked.connect(self._buttonreset)
         self.resetButton.setToolTip("Resets the complete fit information to its initial values.")
         self.currentModelList.setToolTip("The current model by its constituents, only the name and type of function are indicated.")
         self.modelList.setToolTip("Select a function for addition to the current fit mdel.")
@@ -69,10 +69,12 @@ class iintSignalFitting(QtGui.QWidget):
             self.removeButton.show()
             self.configButton.show()
 
-    def _reset(self):
+    def _buttonreset(self):
         self.removeButton.setDisabled(True)
         self.fitButton.setDisabled(True)
+        self.currentModelList.clear()
         self.activateConfiguration()
+        self.autoGaussBox.setCheckState(False)
 
     def reset(self):
         self.currentModelList.setDisabled(True)
@@ -81,7 +83,7 @@ class iintSignalFitting(QtGui.QWidget):
         self.removeButton.setDisabled(True)
         self.disallowFitButton()
         self.resetButton.setDisabled(True)
-        self.autoGaussBox.setCheckState(0)
+        self.autoGaussBox.setChecked(False)
         self.autoGaussBox.setDisabled(True)
         self.deactivateConfiguration()
 
@@ -139,3 +141,15 @@ class iintSignalFitting(QtGui.QWidget):
         for i in range(self.currentModelList.count()):
             modellist.append(str(self.currentModelList.item(i).text()))
         self.models.emit(modellist)
+
+        # WIP
+    def setParameterDict(self, pDict):
+        mDict = pDict['model']
+        for elem in mDict:
+            if len(mDict) is 1 and mDict[elem]['modeltype'] == 'gaussianModel' and pDict['useguessing'] is 1:
+                self.autoGaussBox.setChecked(True)
+            else:
+                self.currentModelList.addItem(mDict[elem]['modeltype'])
+        if self.currentModelList.count() > 0:
+            self.activateFitting()
+            self.allowFitButton()

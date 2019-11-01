@@ -1,12 +1,6 @@
-despike:
-  input: intensity
-  method: p09despiking
-  output: despikedIntensity
-  type: filter1d
 execlist:
 - specread
 - observabledef
-- despike
 observabledef:
   detector_column: exp_c01
   exposureTime_column: exp_t01
@@ -17,7 +11,7 @@ observabledef:
   output: intensity
   type: iintdefinition
 specread:
-  filename: /home/rosem/iintgui/test/test_data/MnCo15.spc
+  filename: /home/rosem/iintgui/tests/test_data/MnCo15.spc
   output: default
   scanlist: 699-740
   type: specfilereader

@@ -42,3 +42,6 @@ class OutputDir(QtGui.QWidget):
 
     def setOutputDirectory(self, name):
         self.outdir.setText(name)
+
+    def getOutputDirectory(self):
+        return self.outdir.text()

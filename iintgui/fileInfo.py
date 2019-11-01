@@ -31,11 +31,13 @@ class FileInfo(QtGui.QWidget):
         uic.loadUi(getUIFile.getUIFile("fileInfo.ui"), self)
         self.fileLabel.setToolTip("If a SPEC file has been selected, the name is shown here.")
         self.scanSelectionDisplay.setToolTip("The actual selection of scans in the given SPEC file.")
+        self._defaulttext = "No File"
+        self._defaultselection = "No Selection"
 
     def reset(self):
-        self.fileLabel.setText("No File")
-        self.fileLabel.setToolTip("No File")
-        self.scanSelectionDisplay.setText("No selection")
+        self.fileLabel.setText(self._defaulttext)
+        self.fileLabel.setToolTip(self._defaulttext)
+        self.scanSelectionDisplay.setText(self._defaultselection)
 
     def setNames(self, f, s):
         import os.path
