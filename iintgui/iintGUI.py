@@ -486,11 +486,18 @@ class iintGUI(QtGui.QMainWindow):
 
     def doOverlay(self):
         try:
-            self._overlaySelection.show()
+            self._overlaySelection.passData(self._control.getScanlist())
+            if self._testMode:
+                pass
+            else:
+                self._overlaySelection.show()
         except AttributeError:
             self._overlaySelection = iintOverlaySelection.iintOverlaySelection(datalist=self._control.getScanlist())
             self._overlaySelection.passData(self._control.getScanlist())
-            self._overlaySelection.show()
+            if self._testMode:
+                pass
+            else:
+                self._overlaySelection.show()
         self._overlaySelection.overlayscanlist.connect(self._showOverlay)
 
     def _showOverlay(self, selection):

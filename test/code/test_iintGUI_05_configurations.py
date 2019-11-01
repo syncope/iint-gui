@@ -46,8 +46,21 @@ class TestIintGUI05Configurations(unittest.TestCase):
         rucl = "../test_configurations/rucl3_az_S1179E1258.icfg"
         self.ruclfile = os.path.join(dir_path, rucl)
 
-    def test_bla(self):
-        self.assertTrue(True)
+    def test_overlays(self):
+        # test case if overlay items are properly inserted
+        self.ui._file = self.obscfgfile
+        self.ui.chooseAndLoadConfig()
+        self.ui.doOverlay()
+        li = self.ui._overlaySelection.getAllItemsByName()
+        self.assertEqual(len(li), 42)
+
+    def test_overlays2(self):
+        # test case if overlay items are properly inserted
+        self.ui._file = self.ruclfile
+        self.ui.chooseAndLoadConfig()
+        self.ui.doOverlay()
+        li = self.ui._overlaySelection.getAllItemsByName()
+        self.assertEqual(len(li), 80)
 
     def tearDown(self):
         pass

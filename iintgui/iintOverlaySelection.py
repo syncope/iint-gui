@@ -60,6 +60,7 @@ class iintOverlaySelection(QtGui.QWidget):
 
     def _fillLists(self):
         # two lists: scans and overlays
+        self.listScans.clear()
         self._currentItemScans = sorted(self._datalist)
         self._currentItemOverlays = []
         self.listScans.addItems(self._currentItemScans)
@@ -85,3 +86,11 @@ class iintOverlaySelection(QtGui.QWidget):
     def _emitOverlayScans(self):
         self.overlayscanlist.emit(self._currentItemOverlays)
         self.hide()
+
+    def getAllItemsByName(self):
+        lazynamelist = []
+        for i in range(self.listScans.count()):
+            lazynamelist.append(self.listScans.item(i).text())
+        for j in range(self.listOverlayScans.count()):
+            lazynamelist.append(self.listOverlayScans.item(j).text())
+        return lazynamelist
