@@ -62,4 +62,4 @@ class TrackedDataMap(QtGui.QDialog):
                                    self.secondSelection.itemText(second))
 
     def getStatus(self):
-        return [ i.isEnabled() for i in self._buttonlist]
+        return [i.isEnabled() for i in self._buttonlist]
