@@ -17,6 +17,8 @@ setup(
     description='iintgui: ', 
     long_description=long_description,
 
+    test_suite="tests",
+
     url='https://github.com/syncope/iintgui',
 
     author='Ch.Rosemann',

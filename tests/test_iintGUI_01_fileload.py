@@ -39,23 +39,23 @@ class TestIintGUI01FileLoad(unittest.TestCase):
         self.sigfit = self.ui._signalFitting
         self.ia = self.ui._inspectAnalyze
         dir_path = os.path.dirname(os.path.realpath(__file__)) + "/"
-        self.obsfilepath = "../test_configurations/MnCo15_S699E740-obsDef.icfg"
+        self.obsfilepath = "test_configurations/MnCo15_S699E740-obsDef.icfg"
         self.obscfgfile = os.path.join(dir_path, self.obsfilepath)
-        self.obsattfilepath = "../test_configurations/MnCo15_S699E740-obsDefAttFac.icfg"
+        self.obsattfilepath = "test_configurations/MnCo15_S699E740-obsDefAttFac.icfg"
         self.obsattcfgfile = os.path.join(dir_path, self.obsattfilepath)
-        self.obsdespfilepath = "../test_configurations/MnCo15_S699E740-obsDefwDes.icfg"
+        self.obsdespfilepath = "test_configurations/MnCo15_S699E740-obsDefwDes.icfg"
         self.obsdespcfgfile = os.path.join(dir_path, self.obsdespfilepath)
-        eupt = "../test_configurations/EuPtIn4_remeasured_clean_S349E391.icfg"
+        eupt = "test_configurations/EuPtIn4_remeasured_clean_S349E391.icfg"
         self.euptfile = os.path.join(dir_path, eupt)
-        euptfio = "../test_configurations/EuPtIn4_remeasured_S349E391-FIO.icfg"
+        euptfio = "test_configurations/EuPtIn4_remeasured_S349E391-FIO.icfg"
         self.euptfiofile = os.path.join(dir_path, euptfio)
-        mncoall = "../test_configurations/MnCo15_S699E740-all.icfg"
+        mncoall = "test_configurations/MnCo15_S699E740-all.icfg"
         self.mncoallfile = os.path.join(dir_path, mncoall)
-        mncobkg = "../test_configurations/MnCo15_S699E740-bkg.icfg"
+        mncobkg = "test_configurations/MnCo15_S699E740-bkg.icfg"
         self.mncobkgfile = os.path.join(dir_path, mncobkg)
-        mncoconstbkg = "../test_configurations/MnCo15_S699E740-constBKG.icfg"
+        mncoconstbkg = "test_configurations/MnCo15_S699E740-constBKG.icfg"
         self.mncoconstbkgfile = os.path.join(dir_path, mncoconstbkg)
-        rucl = "../test_configurations/rucl3_az_S1179E1258.icfg"
+        rucl = "test_configurations/rucl3_az_S1179E1258.icfg"
         self.ruclfile = os.path.join(dir_path, rucl)
 
     def test_load_obs(self):

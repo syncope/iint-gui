@@ -39,11 +39,11 @@ class TestIintGUI05Configurations(unittest.TestCase):
         self.sigfit = self.ui._signalFitting
         self.ia = self.ui._inspectAnalyze
         dir_path = os.path.dirname(os.path.realpath(__file__)) + "/"
-        mnco = "../test_configurations/MnCo15_S699E740-obsDef.icfg"
+        mnco = "test_configurations/MnCo15_S699E740-obsDef.icfg"
         self.obscfgfile = os.path.join(dir_path, mnco)
-        eupt = "../test_configurations/EuPtIn4_remeasured_clean_S349E391.icfg"
+        eupt = "test_configurations/EuPtIn4_remeasured_clean_S349E391.icfg"
         self.euptfile = os.path.join(dir_path, eupt)
-        rucl = "../test_configurations/rucl3_az_S1179E1258.icfg"
+        rucl = "test_configurations/rucl3_az_S1179E1258.icfg"
         self.ruclfile = os.path.join(dir_path, rucl)
 
     def test_overlays(self):

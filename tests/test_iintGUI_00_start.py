@@ -123,45 +123,5 @@ class TestIintGUI00Start(unittest.TestCase):
     def tearDown(self):
         pass
 
-
 if __name__ == '__main__':
     unittest.main()
-
-        #~ self.obs = self.ui._obsDefBox
-        #~ self.obs.
-        #~ self.obs.scantype
-        #~ self.obs.motorCB
-        #~ self.obs.observableDetectorCB
-        #~ self.obs.observableMonitorCB
-        #~ self.obs.observableTimeCB
-        #~ self.obs.observableAttFacCB
-        #~ self.obs.observableAttFaccheck
-        #~ self.obs.despikeCheckBox
-        #~ self.obs.trackData
-        #~ self.obs.showScanProfile
-        #~ self.obs.maptracks
-        #~ self.obs.overlayBtn
-
-        #~ self.bkg = self.ui._bkgHandling
-        #~ self.bkg.groupBox
-        #~ self.bkg.linearBkg
-        #~ self.bkg.constBkg
-        #~ self.bkg.hyperbolicBkg
-        #~ self.bkg.bkgStartPointsSB
-        #~ self.bkg.bkgEndPointsSB
-
-        #~ self.sigfit = self.ui._signalFitting
-        #~ self.sigfit.autoGaussBox
-        #~ self.sigfit.resetButton
-        #~ self.sigfit.addButton
-        #~ self.sigfit.modelList
-        #~ self.sigfit.removeButton
-        #~ self.sigfit.configButton
-        #~ self.sigfit.fitButton
-
-        #~ self.ia = self.ui._inspectAnalyze
-        #~ self.ia.trackedColumnsPlot
-        #~ self.ia.showScanFits
-        #~ self.ia.polAnalysis
-        #~ self.ia.saveResults
-

@@ -39,11 +39,11 @@ class TestIintGUI03BackgroundDefinitions(unittest.TestCase):
         self.sigfit = self.ui._signalFitting
         self.ia = self.ui._inspectAnalyze
         dir_path = os.path.dirname(os.path.realpath(__file__)) + "/"
-        mncoall = "../test_configurations/MnCo15_S699E740-all.icfg"
+        mncoall = "test_configurations/MnCo15_S699E740-all.icfg"
         self.mncoallfile = os.path.join(dir_path, mncoall)
-        mncoconstbkg = "../test_configurations/MnCo15_S699E740-constBKG.icfg"
+        mncoconstbkg = "test_configurations/MnCo15_S699E740-constBKG.icfg"
         self.mncoconstbkgfile = os.path.join(dir_path, mncoconstbkg)
-        rucl = "../test_configurations/rucl3_az_S1179E1258.icfg"
+        rucl = "test_configurations/rucl3_az_S1179E1258.icfg"
         self.ruclfile = os.path.join(dir_path, rucl)
 
     def test_linear_bkg(self):
