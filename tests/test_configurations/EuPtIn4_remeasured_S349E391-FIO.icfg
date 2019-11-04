@@ -3,14 +3,14 @@ execlist:
 - observabledef
 fioread:
   filenames:
-  - /home/rosem/iintgui/tests/test_data/EuPtIn4_remeasured_00349.fio
-  - /home/rosem/iintgui/tests/test_data/EuPtIn4_remeasured_00356.fio
-  - /home/rosem/iintgui/tests/test_data/EuPtIn4_remeasured_00361.fio
-  - /home/rosem/iintgui/tests/test_data/EuPtIn4_remeasured_00367.fio
-  - /home/rosem/iintgui/tests/test_data/EuPtIn4_remeasured_00373.fio
-  - /home/rosem/iintgui/tests/test_data/EuPtIn4_remeasured_00379.fio
-  - /home/rosem/iintgui/tests/test_data/EuPtIn4_remeasured_00385.fio
-  - /home/rosem/iintgui/tests/test_data/EuPtIn4_remeasured_00391.fio
+  - tests/test_data/EuPtIn4_remeasured_00349.fio
+  - tests/test_data/EuPtIn4_remeasured_00356.fio
+  - tests/test_data/EuPtIn4_remeasured_00361.fio
+  - tests/test_data/EuPtIn4_remeasured_00367.fio
+  - tests/test_data/EuPtIn4_remeasured_00373.fio
+  - tests/test_data/EuPtIn4_remeasured_00379.fio
+  - tests/test_data/EuPtIn4_remeasured_00385.fio
+  - tests/test_data/EuPtIn4_remeasured_00391.fio
   output: rawdata
   type: fiofilereader
 observabledef:

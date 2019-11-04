@@ -13,7 +13,7 @@ observabledef:
   output: intensity
   type: iintdefinition
 specread:
-  filename: /home/rosem/iintgui/tests/test_data/EuPtIn4_remeasured_clean.spc
+  filename: tests/test_data/EuPtIn4_remeasured_clean.spc
   output: rawdata
   scanlist: 349, 356, 361, 367, 373, 379, 385, 391
   type: specfilereader

@@ -76,7 +76,7 @@ signalcurvefit:
   xdata: del
   ydata: signalIntensity
 specread:
-  filename: /home/rosem/iintgui/tests/test_data/rucl3_az.spc
+  filename: tests/test_data/rucl3_az.spc
   output: default
   scanlist: 1179-1258
   type: specfilereader
