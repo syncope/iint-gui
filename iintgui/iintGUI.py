@@ -61,7 +61,7 @@ pg.setConfigOption('foreground', 'k')
 
 class iintGUI(QtGui.QMainWindow):
 
-    def __init__(self, parent=None, testMode=False):
+    def __init__(self, parent=None, configFile=None, testMode=False):
         super(iintGUI, self).__init__(parent)
         uic.loadUi(getUIFile.getUIFile("iintMain.ui"), self)
 
@@ -176,6 +176,15 @@ class iintGUI(QtGui.QMainWindow):
         self._resultTabIndices = []
         self._resultFileName = None
         self._outDir.newdirectory.connect(self._control.setOutputDirectory)
+
+        if configFile != None:
+            try:
+                self.loadConfig(configFile)
+            except(FileNotFoundError):
+                self.warning("Failed to read the initial config file, file could not be found.")
+            except(adaptException.AdaptFileReadException):
+                self.warning("Failed to read the initial config file.\n" +
+                             "Check for a spelling error, an inconstency within or it doesn't exist.")
 
     def _unresize(self):
         # this is the place any resizing code could/should go
@@ -381,6 +390,21 @@ class iintGUI(QtGui.QMainWindow):
             handler = configurationHandler.ConfigurationHandler()
             self._procconf = handler.loadConfig(self._file)
             self._initializeFromConfig()
+
+    def loadConfig(self, cfgfile):
+        if cfgfile is not None:
+            try:
+                prev = self._file
+            except:
+                self._file = cfgfile
+                prev = None
+            if self._file != "":
+                if prev is not None:
+                    self._resetAll()
+                from adapt import configurationHandler
+                handler = configurationHandler.ConfigurationHandler()
+                self._procconf = handler.loadConfig(self._file)
+                self._initializeFromConfig()
 
     def _initializeFromConfig(self):
         # clear the memory!

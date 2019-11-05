@@ -41,26 +41,11 @@ class TestIintGUI05Configurations(unittest.TestCase):
         dir_path = os.path.dirname(os.path.realpath(__file__)) + "/"
         mnco = "test_configurations/MnCo15_S699E740-obsDef.icfg"
         self.obscfgfile = os.path.join(dir_path, mnco)
-        eupt = "test_configurations/EuPtIn4_remeasured_clean_S349E391.icfg"
-        self.euptfile = os.path.join(dir_path, eupt)
-        rucl = "test_configurations/rucl3_az_S1179E1258.icfg"
-        self.ruclfile = os.path.join(dir_path, rucl)
 
-    def test_overlays(self):
-        # test case if overlay items are properly inserted
-        self.ui._file = self.obscfgfile
-        self.ui.chooseAndLoadConfig()
-        self.ui.doOverlay()
-        li = self.ui._overlaySelection.getAllItemsByName()
-        self.assertEqual(len(li), 42)
-
-    def test_overlays2(self):
-        # test case if overlay items are properly inserted
-        self.ui._file = self.ruclfile
-        self.ui.chooseAndLoadConfig()
-        self.ui.doOverlay()
-        li = self.ui._overlaySelection.getAllItemsByName()
-        self.assertEqual(len(li), 80)
+    def test_cla(self):
+        # test case for command line argument
+        ui2 = iintGUI.iintGUI(configFile=self.obscfgfile, testMode=True)
+        self.assertTrue(True)
 
     def tearDown(self):
         pass

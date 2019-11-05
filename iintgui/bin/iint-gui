@@ -26,6 +26,9 @@ except ImportError:
     print("[iint-gui] Library not found. Exiting!")
     exit()
 
+import argparse
+
+
 if __name__ == "__main__":
     import sys, os
     from PyQt4 import QtGui
@@ -34,6 +37,11 @@ if __name__ == "__main__":
         QtGui.QApplication.setStyle( 'Cleanlooks')
 
     app = QtGui.QApplication(sys.argv)
-    ui = iintGUI.iintGUI()
+
+    parser = argparse.ArgumentParser(description='A graphical interface to iint processing of P09 data')
+    parser.add_argument('-c','--config', help='config file name', required=False)
+    args = parser.parse_args()
+    
+    ui = iintGUI.iintGUI(configFile=args.config)
     ui.show()
     sys.exit(app.exec_())
