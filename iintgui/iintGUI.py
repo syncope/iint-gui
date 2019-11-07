@@ -177,7 +177,7 @@ class iintGUI(QtGui.QMainWindow):
         self._resultFileName = None
         self._outDir.newdirectory.connect(self._control.setOutputDirectory)
 
-        if configFile != None:
+        if configFile is not None:
             try:
                 self.loadConfig(configFile)
             except(FileNotFoundError):

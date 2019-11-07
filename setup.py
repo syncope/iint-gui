@@ -1,4 +1,4 @@
-from setuptools import setup, find_packages
+from setuptools import setup
 
 from codecs import open
 from os import path
@@ -6,15 +6,15 @@ from os import path
 with open(path.join('.', 'README.rst'), encoding='utf-8') as f:
     long_description = f.read()
 
-name='iint-gui'
-version='0'
-release='0.15.0'
+name = 'iint-gui'
+version = '0'
+release = '0.15.0'
 
 setup(
     name='iintgui',
     version=release,
 
-    description='iintgui: ', 
+    description='iintgui: a gui to use with iint',
     long_description=long_description,
 
     test_suite="tests",
@@ -23,10 +23,10 @@ setup(
 
     author='Ch.Rosemann',
     author_email='christoph.rosemann@desy.de',
-    
+
     license='GPLv2',
-    
-    classifiers = [
+
+    classifiers=[
         'Development Status :: 3 - Alpha',
         'Intended Audience :: Science/Research',
         'Topic :: Scientific/Engineering :: Physics',
@@ -38,12 +38,10 @@ setup(
     ],
 
     keywords='photon science data processing analysis gui interactive',
-    
-    packages=['iintgui',],
-    
-    package_dir = { 'iintgui':'iintgui',},
+
+    packages=['iintgui', ],
+    package_dir={'iintgui': 'iintgui', },
     include_package_data=True,
 
-    scripts = ['iintgui/bin/iint-gui'],
+    scripts=['iintgui/bin/iint-gui'],
 )
-
