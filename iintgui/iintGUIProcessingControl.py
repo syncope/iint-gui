@@ -798,14 +798,7 @@ class IintGUIProcessingControl():
         return self._processParameters["signalcurvefit"]["model"]["m0_"]["modeltype"]
 
     def getFitModels(self):
-        models = curvefitting.curvefitting().getFitModels()
-        # modify the model list to exclude the constantModel
-        # its unfit to be in a combination (...)
-        try:
-            del models['constantModel']
-        except ValueError:
-            pass
-        return models
+        return curvefitting.curvefitting().getFitModels()
 
     def createFitFunctions(self, names):
         return [self._fitmodels[name]() for name in names]

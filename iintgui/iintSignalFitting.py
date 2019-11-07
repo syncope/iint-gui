@@ -30,6 +30,8 @@ class iintSignalFitting(QtGui.QWidget):
         super(iintSignalFitting, self).__init__(parent)
         uic.loadUi(getUIFile.getUIFile("fitpanel2.ui"), self)
         self.modelList.addItems(sorted(modellist))
+        # due to incompatability remove the 'constantModel' from the listwidget
+        self.modelList.removeItem(self.modelList.findText('constantModel', QtCore.Qt.MatchExactly))
         self.currentModelList.itemClicked.connect(self._currentFunctionClicked)
         self.removeButton.clicked.connect(self._removeCurrentFunction)
         self.addButton.clicked.connect(self._addFunction)
