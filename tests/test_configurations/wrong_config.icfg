@@ -1,0 +1,17 @@
+execlist:
+- specread
+- observabledef
+observabledef:
+  detector_column: exp_c01
+  exposureTime_column: exp_t01
+  id: scannumber
+  input: rawdata
+  monitor_column: sumvfcs_counts
+  motor_column: pth
+  output: intensity
+  type: iintdefinition
+specread:
+  filename: completely/wrong/path/MnCo15.spc
+  output: default
+  scanlist: 699-740
+  type: specfilereader
