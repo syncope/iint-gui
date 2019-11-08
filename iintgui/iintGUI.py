@@ -109,6 +109,8 @@ class iintGUI(QtGui.QMainWindow):
         self._resetQuestion.resetOK.connect(self._resetAll)
         self._fileInfo = fileInfo.FileInfo()
         self._outDir = outputDir.OutputDir("Unset")
+        self._outDir.warning.connect(self.warning)
+        self._outDir.warning.connect(print)
         self._sfrGUI = specfilereader.specfilereaderGUI()
         self._ffrGUI = fiofilereader.fiofilereaderGUI()
         self._obsDef = iintObservableDefinition.iintObservableDefinition()
@@ -454,16 +456,24 @@ class iintGUI(QtGui.QMainWindow):
             try:
                 sfr = self._control.createAndInitialize(filereaderdict)
             except(adaptException.AdaptFileReadException):
-                self.warning("Failed to read the file, maybe a spelling error or it doesn't exist.")
+                self.warning("Failed to read the spec file.  Please check the file in question.")
                 return
             self._control.createDataList(sfr.getData(), self._control.getRawDataName())
             self._control.setDefaultOutputDirectory(filereaderdict["filename"])
         elif reader == "fio":
             self._control.setReaderType("fio")
             filereaderdict = self._ffrGUI.getParameterDict()
-            self._control.setFioFile(filereaderdict["filenames"])
+            try:
+                self._control.setFioFile(filereaderdict["filenames"])
+            except:
+                self.warning("FIO file(s) cannot be read in, there is something malformed.")
+                return
             self.message("Reading fio file(s): " + str(filereaderdict["filenames"]))
-            ffr = self._control.createAndBulkExecute(filereaderdict)
+            try:
+                ffr = self._control.createAndBulkExecute(filereaderdict)
+            except(adaptException.AdaptFileReadException):
+                self.warning("Failed to read the FIO file(s). Please check the file in question.")
+                return
             self._control.createDataList(ffr.getData(), self._control.getRawDataName())
             self._control.setDefaultOutputDirectory(filereaderdict["filenames"][0])
             self._fileInfo.setNames(filereaderdict["filenames"][0] + ", ...", str(self._control.getScanlist()))

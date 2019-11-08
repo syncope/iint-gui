@@ -24,6 +24,7 @@ from . import getUIFile
 
 class OutputDir(QtGui.QWidget):
     newdirectory = QtCore.pyqtSignal(str)
+    warning = QtCore.pyqtSignal(str)
 
     def __init__(self, initialDir, parent=None):
         super(OutputDir, self).__init__(parent)
@@ -35,7 +36,11 @@ class OutputDir(QtGui.QWidget):
         self.outdir.setText(initialDir)
 
     def _dirSelectDialog(self):
-        newname = QtGui.QFileDialog.getExistingDirectory(self, 'Choose output directory', '.')
+        try:
+            newname = QtGui.QFileDialog.getExistingDirectory(self, 'Choose output directory', '.')
+        except:
+            self.warning.emit("Directory cannot be selected.")
+            return
         if newname:
             self.outdir.setText(newname)
             self.newdirectory.emit(newname)
