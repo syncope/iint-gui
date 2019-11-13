@@ -56,8 +56,11 @@ class iintObservableDefinition(QtGui.QWidget):
         self.despikeCheckBox.setToolTip("Check the box to run a despiking/filtering algorithm\non the scan data to dampen spikes/noise fluctuation.")
         self.overlayBtn.setToolTip("Open an overlay plot window to select scans to view at the same time.")
         self.showScanProfile.setToolTip("Creates a stack of all scans as matrix, creating an image.\nThe result is stored in a file, which is shown in an external viewer.")
-        self.trackData.setToolTip("Open a dialog to select column and header\ndata to be included in the output file.")
-        self.maptracks.setToolTip("After tracked data has been selected, choose data to map.")
+        self.trackData.setToolTip("Open a dialog to select column and header data to be included in the output file.\n"
+                                  "The selected elements are also displayed as dependent component in the results of the fitted parameters (after fitting).\n"
+                                  "Lastly, also doing a scatter plot of the tracked data against each other becomes available (button '2D Plot of tracked data'")
+        self.maptracks.setToolTip("After tracked data has been selected,  this allows to scatter plot the tracked data against each other.\n"
+                                  "For each scan a single point will be displayed, either by averaging column data or taking the header data value itself.")
         # infrastructure for testing whether a value has already been set
         self._default = "Not set"
         self.motorCB.currentIndexChanged.connect(self._checkStatus)
