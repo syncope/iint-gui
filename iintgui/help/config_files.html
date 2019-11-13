@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html>
+<h1 id="iint-gui-Configurationfiles">Configuration files</h1>
+<p>In order to facilitate working with the program, as well as storing processing and analysis settings, iint-gui uses configuration files.</p>
+<p>These are automatically created and stored whenever the program is</p>
+<h2 id="iint-gui-Namingconventions">Naming conventions</h2>
+<p>The central distinguishing elements in the data processing are the data input file and the selection of scans.</p>
+<p>Thus both elements serve as basis in the automatic naming scheme of output files.</p>
+<p>An input filename like &quot;MnCo15.spc&quot; with the scan selection &quot;699-740&quot; will create output files with names starting with &quot;MnCo15_S699E740&quot;.</p>
+<p>Extensions to this are the system time of processing and some declarative name. E.g.:</p>
+<p>  MnCo15_S699E740__20190110-17h27_scanControlPlots.pdf for the control plots containing the fits,</p>
+<p>  MnCo15_S699E740_20190117-16h22_polarizationAnalysis.pdf for the plots concerning the polarization analysis,</p>
+<p>  MnCo15_S699E740_20190117-16h22.stokes for the stokes parameters,</p>
+<p>  MnCo15_S699E740_20181205-16h57.icfg for a particular config file.</p>
+<h2 id="iint-gui-Hintaboutconfigurationfile">Hint about configuration file</h2>
+<p>In case the configuration is saved (e.g. by the shortcut &lt;Ctrl-S&gt; or by choosing the respective File menu item), there will always be a single file with the standard name.</p>
+<p>For example in the above case: &quot;MnCo15_S699E740.icfg&quot;.</p>
+<p>This will be overwritten the next time something is changed, but it is a good way to restart a new session from the last session of the program.</p>
+<p>But at saving time, there will always be a second config file written. This has the same base name, but has the system time added to the name.</p>
+<p>E.g.: MnCo15_S699E740_20181205-16h57.icfg</p>
+<p><br/></p>
+</body>
+</html>

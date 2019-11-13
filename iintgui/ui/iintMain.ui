@@ -6,7 +6,7 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>1082</width>
+    <width>1086</width>
     <height>781</height>
    </rect>
   </property>
@@ -43,7 +43,7 @@
            <x>0</x>
            <y>0</y>
            <width>568</width>
-           <height>719</height>
+           <height>710</height>
           </rect>
          </property>
          <property name="sizePolicy">
@@ -92,8 +92,8 @@
           <rect>
            <x>0</x>
            <y>0</y>
-           <width>476</width>
-           <height>719</height>
+           <width>478</width>
+           <height>710</height>
           </rect>
          </property>
         </widget>
@@ -108,8 +108,8 @@
     <rect>
      <x>0</x>
      <y>0</y>
-     <width>1082</width>
-     <height>19</height>
+     <width>1086</width>
+     <height>26</height>
     </rect>
    </property>
    <widget class="QMenu" name="menuFile">
@@ -138,6 +138,7 @@
     <property name="title">
      <string>&amp;Help</string>
     </property>
+    <addaction name="action_Help"/>
     <addaction name="action_About"/>
    </widget>
    <addaction name="menuFile"/>
@@ -223,6 +224,11 @@
   <action name="actionFIO_File_s">
    <property name="text">
     <string>FIO File(s)</string>
+   </property>
+  </action>
+  <action name="action_Help">
+   <property name="text">
+    <string>&amp;Help</string>
    </property>
   </action>
  </widget>

@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html>
+<p>The program will start up as a GUI:</p>
+<p><span class="confluence-embedded-file-wrapper confluence-embedded-manual-size"><img class="confluence-embedded-image" height="250" src="attachments/122985904/146119134.png" data-image-src="attachments/122985904/146119134.png" data-unresolved-comment-count="0" data-linked-resource-id="146119134" data-linked-resource-version="1" data-linked-resource-type="attachment" data-linked-resource-default-alias="startup.png" data-base-url="https://confluence.desy.de" data-linked-resource-content-type="image/png" data-linked-resource-container-id="122985904" data-linked-resource-container-version="16"></span></p>
+<p>The left hand side is dedicated for the steering of the processing steps, and displaying the current status of the processing.</p>
+<p>At the bottom of the left side, the log message window is present.</p>
+<p>The entire right hand side is for displaying the data and the graphical representation of the processing results, as available.</p>
+<p><br/></p>
+<p>In a working session, the GUI might then look something like:</p>
+<p><span class="confluence-embedded-file-wrapper confluence-embedded-manual-size"><img class="confluence-embedded-image" height="400" src="attachments/122985904/146118598.png" data-image-src="attachments/122985904/146118598.png" data-unresolved-comment-count="0" data-linked-resource-id="146118598" data-linked-resource-version="1" data-linked-resource-type="attachment" data-linked-resource-default-alias="iintgui-all.png" data-base-url="https://confluence.desy.de" data-linked-resource-content-type="image/png" data-linked-resource-container-id="122985904" data-linked-resource-container-version="16"></span></p>
+<h2 id="iint-gui-Thelogsection">The log section</h2>
+<p>The lowermost part of the left side is dedicated for message about the actions that are performed with the data.</p>
+<p>Most of the time it will just show what is being done.</p>
+<p>Sometimes warning may appear in red text, informing the user that something has not worked as expected.</p>
+<p>Most of the time a reason can be hinted at, why the action could not be performed successfully.</p>
+
+<h1 id="iint-gui-Theplottingsection">The plotting section</h1>
+<p>The right hand part of the GUI is dedicated to showing the data. It features several options to inspect the data more closely.</p>
+<p>If a scan (series) has been defined, and the observable declared, the &quot;Scan display&quot; is the main part.</p>
+<h2 id="iint-gui-Toppart">Top part</h2>
+<p>Above the plotting part, the Scan ID is shown, as read from the SPEC file.</p>
+<p>Also in the top part there is the possibility to browse through the scan series by clicking on the &quot;Prev&quot; and &quot;Next&quot; buttons.</p>
+<p>For display purposes only a scan can be removed from being displayed in the fit overview plots.</p>
+<p>For this click on the green &quot;Remove from display&quot; button.</p>
+<p>If the scan has already been excluded from display, the same button will appear as red and be named &quot;Add to display again&quot;.</p>
+<h2 id="iint-gui-Maindisplay">Main display</h2>
+<p>Here the data points are plotted.</p>
+<p>The raw observable (as defined in the observable section) will be displayed as black plus &quot;+&quot; signs.</p>
+<p>In case de-spiking was applied, the de-spiked data points will be shown as dark green &quot;x&quot;.</p>
+<p>Background will be shown as filled red diamonds, the background subtracted signal is then shown as filled blue circles.</p>
+<p>The temporary fit during the configuration is shown as a solid red line; the final fit result is shown as solid blue line.</p>
+<h2 id="iint-gui-Bottompart">Bottom part</h2>
+<p>A few things about the main display can be configured directly.</p>
+<p>To display the data in logarithmic ordinate, the check box &quot;logScale&quot; can be toggled.</p>
+<p>Since negative values or zero cannot be an argument to the logarithm, there is a lower cutoff of 0.01.</p>
+<p>To show the position of the mouse click on the main display, the x and y values are displayed.</p>
+<p>If the respective data is present, the check boxes can be toggled to display the raw, de-spiked, background, signal and fit data.</p>
+</body>
+</html>

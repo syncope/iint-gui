@@ -50,6 +50,7 @@ from . import loggerBox
 from . import resetDialog
 from . import showFileContents
 from . import showAboutIintGUI
+from . import showIintGUIHelp
 from . import iintMultiTrackedDataView
 from . import iintInspectAnalyze
 from . import selectResultOutput
@@ -78,6 +79,7 @@ class iintGUI(QtGui.QMainWindow):
         self.action_Spec_File.triggered.connect(self._showSpecFile)
         self.action_Fit_Results.triggered.connect(self._showFitResults)
         self.action_Results_File.triggered.connect(self._showResultsFile)
+        self.action_Help.triggered.connect(self._showHelp)
         self.action_About.triggered.connect(self._showIintGuiInfo)
 
         # the steering helper object
@@ -334,6 +336,9 @@ class iintGUI(QtGui.QMainWindow):
 
     def _showIintGuiInfo(self):
         self._widgetList.append(showAboutIintGUI.ShowAboutIintGUI())
+
+    def _showHelp(self):
+        self._widgetList.append(showIintGUIHelp.ShowIintGUIHelp())
 
     # LOG WINDOW DISPLAY::Messages
     def message(self, text):

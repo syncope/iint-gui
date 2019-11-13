@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html>
+<h2 id="iint-gui-Definingtheobservable">Defining the raw signal</h2>
+<p>In order to define the observable, the different elements from the expression have to be selected from the available data in the SPEC file.</p>
+<p>They are listed in the drop down selection boxes.</p><table border=0 cellspacing=0 cellpadding=0 width="90%" align="center" class="latexmath-mathblock"><tr>
+	<td nowrap width="30px"></td>
+	<td width="40%"></td>
+	<td nowrap><img class="latexmath" src="download/temp/latex4013526056587281578.png" style="width:246px; height:48px; vertical-align: 0"/></td>
+	<td width="60%"></td>
+</tr></table>
+<p>Initially the setting dialog is folded, click on the triangle to unfold.</p>
+<p><span class="confluence-embedded-file-wrapper confluence-embedded-manual-size"><img class="confluence-embedded-image" height="76" src="attachments/122985904/146118608.png" data-image-src="attachments/122985904/146118608.png" data-unresolved-comment-count="0" data-linked-resource-id="146118608" data-linked-resource-version="1" data-linked-resource-type="attachment" data-linked-resource-default-alias="sigdef_folded.png" data-base-url="https://confluence.desy.de" data-linked-resource-content-type="image/png" data-linked-resource-container-id="122985904" data-linked-resource-container-version="16"></span></p>
+<p>Unfolded, the widget with some settings might look like:</p>
+<p><span class="confluence-embedded-file-wrapper confluence-embedded-manual-size"><img class="confluence-embedded-image" height="250" src="attachments/122985904/146118610.png" data-image-src="attachments/122985904/146118610.png" data-unresolved-comment-count="0" data-linked-resource-id="146118610" data-linked-resource-version="1" data-linked-resource-type="attachment" data-linked-resource-default-alias="sigdef_unfolded.png" data-base-url="https://confluence.desy.de" data-linked-resource-content-type="image/png" data-linked-resource-container-id="122985904" data-linked-resource-container-version="16"></span></p>
+<p>As soon as a valid and complete selection for all needed input boxes is available, the selection will be plotted in the plot view window.</p>
+<p><span class="confluence-embedded-file-wrapper confluence-embedded-manual-size"><img class="confluence-embedded-image confluence-thumbnail" height="250" src="attachments/122985904/146118618.png" data-image-src="attachments/122985904/146118618.png" data-unresolved-comment-count="0" data-linked-resource-id="146118618" data-linked-resource-version="1" data-linked-resource-type="attachment" data-linked-resource-default-alias="simple_plot.png" data-base-url="https://confluence.desy.de" data-linked-resource-content-type="image/png" data-linked-resource-container-id="122985904" data-linked-resource-container-version="16"></span></p>
+<p>In addition an attenuation factor can be added by first activating it with the check box and then selecting an entry from the drop down list.</p>
+<p>Also a smoothing filter can be applied to de-spike the data by activating the check box.</p>
+<p><br/></p>
+<p>The &quot;raw&quot; data, without filtering is displayed as black plus &quot;+&quot; signs. If activated, the de-spiked data points are plotted as dark green &quot;x&quot;.</p>
+<p>In the display part of the gui, the display of the elements can be toggled by un/selecting the check boxes at the bottom.</p>
+<p><br/></p>
+<p>The buttons on the bottom of the widget are:</p>
+<h5 id="iint-gui-&quot;Selectdatatotrack&quot;">&quot;Select data to track&quot;</h5>
+<p>From the input file the column data (per point) or header data can be selected.</p>
+<p><span class="confluence-embedded-file-wrapper confluence-embedded-manual-size"><img class="confluence-embedded-image confluence-thumbnail" height="250" src="attachments/122985904/146119173.png" data-image-src="attachments/122985904/146119173.png" data-unresolved-comment-count="0" data-linked-resource-id="146119173" data-linked-resource-version="1" data-linked-resource-type="attachment" data-linked-resource-default-alias="data_to_track.png" data-base-url="https://confluence.desy.de" data-linked-resource-content-type="image/png" data-linked-resource-container-id="122985904" data-linked-resource-container-version="16"></span></p>
+<p>Either mark an element by clicking on it and use the &quot;&gt;&gt;&quot; or &quot;&lt;&lt;&quot; buttons to transfer them from &quot;untracked&quot; (left hand side) to &quot;tracked&quot; (right hand side) and vice versa.</p>
+<p>Optionally double-clicking an element will transfer it.</p>
+<p><br/></p>
+<p>The program then keeps track of the chosen elements for the following purposes.</p>
+<p>It enables storing these values (averaged for column data) in the output file.</p>
+<p>In addition the selected data elements can be plotted against each other by clicking the button &quot;2D plot of tracked data&quot; (see description below).</p>
+<p>And if subsequently a fit is performed, the parameter values will be displayed  in dependence of the values of the chosen tracked data.</p>
+<p>Note: if a fit has already been performed, it has to be redone to take effect; a message will also indicate this in the log window.</p>
+<h5 id="iint-gui-&quot;Plotscanprofiles&quot;">&quot;Plot scan profiles&quot;</h5>
+<p>Plots the scan idea versus the motor position (from the scan command); first the colour encoding for the z-values has to be chosen.</p>
+<p><span class="confluence-embedded-file-wrapper confluence-embedded-manual-size"><img class="confluence-embedded-image confluence-thumbnail" height="152" src="attachments/122985904/146119182.png" data-image-src="attachments/122985904/146119182.png" data-unresolved-comment-count="0" data-linked-resource-id="146119182" data-linked-resource-version="1" data-linked-resource-type="attachment" data-linked-resource-default-alias="zvalue.png" data-base-url="https://confluence.desy.de" data-linked-resource-content-type="image/png" data-linked-resource-container-id="122985904" data-linked-resource-container-version="16"></span></p>
+<p>The intensity would be a natural choice to gain an overview of the complete scan series.</p>
+<p>After accepting a setting, a pdf file will be created in the output directory and it will be shown automatically.</p>
+<p><span class="confluence-embedded-file-wrapper confluence-embedded-manual-size"><img class="confluence-embedded-image confluence-thumbnail" height="250" src="attachments/122985904/146119190.png" data-image-src="attachments/122985904/146119190.png" data-unresolved-comment-count="0" data-linked-resource-id="146119190" data-linked-resource-version="1" data-linked-resource-type="attachment" data-linked-resource-default-alias="scanprofile.png" data-base-url="https://confluence.desy.de" data-linked-resource-content-type="image/png" data-linked-resource-container-id="122985904" data-linked-resource-container-version="16"></span></p>
+<h5 id="iint-gui-&quot;2Dplotoftrackeddata&quot;">&quot;2D plot of tracked data&quot;</h5>
+<p>Creates a scatter plot of the pair of tracked data that can be chosen in a first step:</p>
+<p><span class="confluence-embedded-file-wrapper confluence-embedded-manual-size"><img class="confluence-embedded-image" height="164" src="attachments/122985904/146119192.png" data-image-src="attachments/122985904/146119192.png" data-unresolved-comment-count="0" data-linked-resource-id="146119192" data-linked-resource-version="1" data-linked-resource-type="attachment" data-linked-resource-default-alias="mapselect.png" data-base-url="https://confluence.desy.de" data-linked-resource-content-type="image/png" data-linked-resource-container-id="122985904" data-linked-resource-container-version="16"></span></p>
+<p>Accepting it by choosing &quot;Display&quot; will display it in a new tab in the data display part.</p>
+<h5 id="iint-gui-&quot;Overlay&quot;">&quot;Overlay&quot;</h5>
+<p>Different scans can be superimposed to compare them visually by creating an overlay.</p>
+<p>First select the list of scans that are to be displayed together.</p>
+<p><span class="confluence-embedded-file-wrapper confluence-embedded-manual-size"><img class="confluence-embedded-image confluence-thumbnail" height="250" src="attachments/122985904/146119208.png" data-image-src="attachments/122985904/146119208.png" data-unresolved-comment-count="0" data-linked-resource-id="146119208" data-linked-resource-version="1" data-linked-resource-type="attachment" data-linked-resource-default-alias="overlayselect.png" data-base-url="https://confluence.desy.de" data-linked-resource-content-type="image/png" data-linked-resource-container-id="122985904" data-linked-resource-container-version="16"></span></p>
+<p>Either mark the scan ids in the list on the left by mouse or e.g. choosing all by typing &lt;Ctrl-a&gt; and click on the '&gt;&gt;' button (de-selecting works the same in the other direction).</p>
+<p>Accepting the choice by clicking on &quot;Done&quot; will display the overlaid spectra in the display part.</p>
+<p><span class="confluence-embedded-file-wrapper confluence-embedded-manual-size"><img class="confluence-embedded-image confluence-thumbnail" height="250" src="attachments/122985904/146119230.png" data-image-src="attachments/122985904/146119230.png" data-unresolved-comment-count="0" data-linked-resource-id="146119230" data-linked-resource-version="1" data-linked-resource-type="attachment" data-linked-resource-default-alias="overlay.png" data-base-url="https://confluence.desy.de" data-linked-resource-content-type="image/png" data-linked-resource-container-id="122985904" data-linked-resource-container-version="16"></span></p>
+<p>The view can be switched to use logarithmic scale, and to display the different processed data (if available).</p>
+<p>To change the current selection of scan ids, there is a button &quot;Select Scans&quot; to return to the selection dialog.</p>
+</body>
+</html>
