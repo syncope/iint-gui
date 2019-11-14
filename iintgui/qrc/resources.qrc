@@ -1,0 +1,13 @@
+<!DOCTYPE RCC><RCC version="1.0">
+<qresource>
+<file>../help/background.html</file>
+<file>../help/config_files.html</file>
+<file>../help/gui_elements.html</file>
+<file>../help/index.html</file>
+<file>../help/inspection_analysis.html</file>
+<file>../help/intensity_definition.html</file>
+<file>../help/menu_items.html</file>
+<file>../help/reading_data_files.html</file>
+<file>../help/signal_fitting.html</file>
+</qresource>
+</RCC>
