@@ -1,3 +1,13 @@
+iintgui (0.15.0-1+deb9u5~fsec) stretch; urgency=low
+
+  * Completely tested and feature added release:
+        + new fit interface, free configuration
+        + configuration dialog greatly improved
+        + test fits possible on individual spectrum
+        + added start option "-c" to read in config file
+        !+ several bug fixes and complete testing framework in background
+ -- Christoph Rosemann <christoph.rosemann@desy.de>  Thu, 14 Nov 2019 16:32:00 +0100
+
 iintgui (0.12.0-1+deb9u5~fsec) stretch; urgency=low
 
   * Small bug fix: list of scans in overlay selection is now correctly
