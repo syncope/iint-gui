@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html>
+<h1 id="iint-gui-Signalfitting">Signal fitting</h1>
+<p>Basis for the fit is the data that is most processed; which can range between the unprocessed raw spectrum to the despiked, background subtracted signal spectrum.</p>
+<p>Two different modes of fitting are supported.</p>
+<h2>Mode 1: &quot;auto Gauss&quot;</h2>
+<p>By activating the check box next to the label &quot;auto Gauss&quot; a very common use case is activated.</p>
+<p>Here a gaussian curve will be fitted to the data; all initialization of the fit parameters is extracted from the data itself.</p>
+<p>This is particularly favourable if the fit ranges (e.g. motor positions) of the scan series are very different.</p>
+<p>By clicking on the &quot;Fit&quot; button, the fit will be run and displayed in the display part.</p>
+<p>Also the results for the fit parameters are shown in a new tab of the display part, giving a complete overview of the scan series.</p>
+<h2 id="iint-gui-Mode2:custommodel">Mode 2: custom model</h2>
+<p>In a second procedure the model to be fit can be set up.</p>
+<p>First select a function/model from the drop down list and add it to the current model by clicking on &quot;Add&quot;.</p>
+<p>Since the fit procedure needs start parameters, click on &quot;Configure&quot; to open the configuration dialog.</p>
+<p>Here the individual values for the model parameters can be chosen.</p>
+<p>For the current parameter values the curves will be superimposed to the data display, as well as the total sum.</p>
+<p>Once everything is approximately set up, the &quot;Test&quot; button can be pressed to check on the current spectrum how the fit will look like.</p>
+<p>To use the current configuration settings for fitting the scan series close the dialog with &quot;Done&quot;.</p>
+<p>The actual fit of the series is then executed by clicking on &quot;Fit&quot;.</p>
+<h3 id="iint-gui-Automaticcalculationoftrapezoidintegral">Automatic calculation of trapezoid integral</h3>
+<p>As an unseen side effect the trapezoidal sum is always calculated when performing the fit.</p>
+</body>
+</html>

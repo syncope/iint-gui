@@ -1,0 +1,29 @@
+execlist:
+- fioread
+- observabledef
+fioread:
+  filenames:
+  - tests/test_data/EuPtIn4_remeasured_00349.fio
+  - tests/test_data/EuPtIn4_remeasured_00356.fio
+  - tests/test_data/EuPtIn4_remeasured_00361.fio
+  - tests/test_data/EuPtIn4_remeasured_00367.fio
+  - tests/test_data/EuPtIn4_remeasured_00373.fio
+  - tests/test_data/EuPtIn4_remeasured_00379.fio
+  - tests/test_data/EuPtIn4_remeasured_00385.fio
+  - tests/test_data/EuPtIn4_remeasured_00391.fio
+  output: rawdata
+  type: fiofilereader
+observabledef:
+  detector_column: exp_c03
+  exposureTime_column: exp_t01
+  id: scannumber
+  input: rawdata
+  monitor_column: sumvfcs_counts
+  motor_column: del
+  output: intensity
+  type: iintdefinition
+specread:
+  filename: null
+  output: rawdata
+  scanlist: null
+  type: specfilereader

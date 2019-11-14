@@ -1,4 +1,5 @@
-# Copyright (C) 2017-19  Christoph Rosemann, DESY, Notkestr. 85, D-22607 Hamburg
+# Copyright (C) 2017-19  Christoph Rosemann
+#  DESY, Notkestr. 85, D-22607 Hamburg
 # email contact: christoph.rosemann@desy.de
 #
 # iintgui is an application for the ADAPT framework
@@ -19,11 +20,8 @@
 # Boston, MA  02110-1301, USA.
 
 
-import sys
-from PyQt4 import QtCore, QtGui, uic
+from PyQt4 import QtGui, uic
 import pyqtgraph as pg
-pg.setConfigOption('background', 'w')
-pg.setConfigOption('foreground', 'k')
 
 from . import iintGUIProcessingControl
 try:
@@ -34,7 +32,6 @@ except ImportError:
     print("[iintGUI]:: adapt is not available; please install or nothing will work.")
     pass
 from . import getUIFile
-
 from . import iintDataPlot
 from . import iintOverlayPlot
 from . import iintOverlaySelection
@@ -42,7 +39,8 @@ from . import fileInfo
 from . import outputDir
 from . import iintObservableDefinition
 from . import iintBackgroundHandling
-from . import iintSignalHandling
+from . import iintSignalFitting
+from . import iintFitConfiguration
 from . import iintTrackedDataChoice
 from . import trackedDataMap
 from . import iintTrackedDataMapDisplay
@@ -52,19 +50,23 @@ from . import loggerBox
 from . import resetDialog
 from . import showFileContents
 from . import showAboutIintGUI
+from . import showIintGUIHelp
 from . import iintMultiTrackedDataView
 from . import iintInspectAnalyze
-from . import iintMCADialog
 from . import selectResultOutput
-
 from . import collapsibleBox
+
+pg.setConfigOption('background', 'w')
+pg.setConfigOption('foreground', 'k')
 
 
 class iintGUI(QtGui.QMainWindow):
 
-    def __init__(self, parent=None):
+    def __init__(self, parent=None, configFile=None, testMode=False):
         super(iintGUI, self).__init__(parent)
         uic.loadUi(getUIFile.getUIFile("iintMain.ui"), self)
+
+        self._testMode = testMode
 
         self.actionNew.triggered.connect(self._askReset)
         self.action_Open_SPEC_file.triggered.connect(self.showSFRGUI)
@@ -77,6 +79,7 @@ class iintGUI(QtGui.QMainWindow):
         self.action_Spec_File.triggered.connect(self._showSpecFile)
         self.action_Fit_Results.triggered.connect(self._showFitResults)
         self.action_Results_File.triggered.connect(self._showResultsFile)
+        self.action_Help.triggered.connect(self._showHelp)
         self.action_About.triggered.connect(self._showIintGuiInfo)
 
         # the steering helper object
@@ -108,6 +111,8 @@ class iintGUI(QtGui.QMainWindow):
         self._resetQuestion.resetOK.connect(self._resetAll)
         self._fileInfo = fileInfo.FileInfo()
         self._outDir = outputDir.OutputDir("Unset")
+        self._outDir.warning.connect(self.warning)
+        self._outDir.warning.connect(print)
         self._sfrGUI = specfilereader.specfilereaderGUI()
         self._ffrGUI = fiofilereader.fiofilereaderGUI()
         self._obsDef = iintObservableDefinition.iintObservableDefinition()
@@ -119,11 +124,7 @@ class iintGUI(QtGui.QMainWindow):
         self._obsDef.doDespike.connect(self._control.useDespike)
         self._obsDef.showScanProfile.clicked.connect(self._openzvalchoice)
         self._obsDef.motorName.connect(self.setMotorName)
-        self._mcaplot = iintMCADialog.iintMCADialog(parent=self)
-        self._mcaplot.hide()
 
-        #~ self._obsDef.showMCA.hide()
-        #~ self._obsDef.showMCA.clicked.connect(self._mcaplot.show)
         self._obsDef.trackData.clicked.connect(self._dataToTrack)
         self._obsDef.overlayBtn.clicked.connect(self.doOverlay)
 
@@ -132,19 +133,18 @@ class iintGUI(QtGui.QMainWindow):
         self._bkgHandling = iintBackgroundHandling.iintBackgroundHandling(self._control.getBKGDicts())
         self._bkgHandling.bkgmodel.connect(self._control.setBkgModel)
 
-        self._signalHandling = iintSignalHandling.iintSignalHandling(self._control.getSIGDict())
-        self._signalHandling.passModels(self._control.getFitModels())
-        self._signalHandling.modelcfg.connect(self.openFitDialog)
-        self._signalHandling.guesspeak.connect(self._control.useGuessSignalFit)
-        self._signalHandling.removeIndex.connect(self._removeFitFromListByIndex)
-        self._signalHandling.performFitPushBtn.clicked.connect(self._prepareSignalFitting)
         self._fitList = []
+        self._fitWidgets = []
+
+        self._signalFitting = iintSignalFitting.iintSignalFitting(self._control.getFitModels())
+        self._signalFitting.models.connect(self.openFitConfigurationDialog)
+        self._signalFitting.autogauss.connect(self._control.useGuessSignalFit)
+        self._signalFitting.fitButton.clicked.connect(self._prepareSignalFitting)
 
         self._inspectAnalyze = iintInspectAnalyze.iintInspectAnalyze()
         self._inspectAnalyze.trackedColumnsPlot.clicked.connect(self._runTrackedControlPlots)
         self._inspectAnalyze.showScanFits.clicked.connect(self._runScanControlPlots)
         self._inspectAnalyze.polAnalysis.clicked.connect(self._runPolarizationAnalysis)
-        #~ self._inspectAnalyze.saveResults.clicked.connect(self._saveResultsFile)
         self._inspectAnalyze.saveResults.clicked.connect(self._saveResultsFiles)
 
         self._saveResultsDialog = selectResultOutput.SelectResultOutput()
@@ -161,7 +161,7 @@ class iintGUI(QtGui.QMainWindow):
         self.verticalLayout.addWidget(self._outDir)
         self.verticalLayout.addWidget(self._obsDefBox)
         self.verticalLayout.addWidget(self._bkgHandling)
-        self.verticalLayout.addWidget(self._signalHandling)
+        self.verticalLayout.addWidget(self._signalFitting)
         self.verticalLayout.addWidget(self._inspectAnalyze)
         self.verticalLayout.addWidget(self._loggingBox)
 
@@ -172,7 +172,6 @@ class iintGUI(QtGui.QMainWindow):
         self._obsDef.observableDicts.connect(self.runObservable)
         self._bkgHandling.bkgDicts.connect(self.runBkgProcessing)
         self._bkgHandling.noBKG.connect(self._noBackgroundToggle)
-        #~ self._bkgHandling.noBKG.connect(self._control.useBKG)
         self._simpleImageView.printButton.clicked.connect(self._printDisplayedData)
 
         self._initialGeometry = self.geometry()
@@ -182,10 +181,18 @@ class iintGUI(QtGui.QMainWindow):
         self._resultFileName = None
         self._outDir.newdirectory.connect(self._control.setOutputDirectory)
 
+        if configFile is not None:
+            try:
+                self.loadConfig(configFile)
+            except(FileNotFoundError):
+                self.warning("Failed to read the initial config file, file could not be found.")
+            except(adaptException.AdaptFileReadException):
+                self.warning("Failed to read the initial config file.\n" +
+                             "Check for a spelling error, an inconstency within or it doesn't exist.")
+
     def _unresize(self):
         # this is the place any resizing code could/should go
         # i can't seem to get it to work, though
-        #~ self.showNormal()
         pass
 
     def _resetInternals(self):
@@ -205,9 +212,8 @@ class iintGUI(QtGui.QMainWindow):
         self._obsDef.reset()
         self._bkgHandling.reset()
         self._bkgHandling.setParameterDicts(self._control.getBKGDicts())
-        self._signalHandling.reset()
-        self._signalHandling.setParameterDict(self._control.getSIGDict())
-        self._signalHandling.deactivateFitting()
+        self._signalFitting.reset()
+        self._signalFitting.deactivateFitting()
         self._control.resetAll()
         self._sfrGUI.reset()
         self._ffrGUI.reset()
@@ -233,9 +239,8 @@ class iintGUI(QtGui.QMainWindow):
         self._obsDef.reset()
         self._bkgHandling.reset()
         self._bkgHandling.setParameterDicts(self._control.getBKGDicts())
-        self._signalHandling.reset()
-        self._signalHandling.setParameterDict(self._control.getSIGDict())
-        self._signalHandling.deactivateFitting()
+        self._signalFitting.reset()
+        self._signalFitting.deactivateFitting()
         self._control.resetAll()
         self.resetTabs()
         self._inspectAnalyze.reset()
@@ -332,6 +337,9 @@ class iintGUI(QtGui.QMainWindow):
     def _showIintGuiInfo(self):
         self._widgetList.append(showAboutIintGUI.ShowAboutIintGUI())
 
+    def _showHelp(self):
+        self._widgetList.append(showIintGUIHelp.ShowIintGUIHelp())
+
     # LOG WINDOW DISPLAY::Messages
     def message(self, text):
         self._loggingBox.addText(text)
@@ -378,7 +386,10 @@ class iintGUI(QtGui.QMainWindow):
             prev = self._file
         except:
             prev = None
-        self._file = QtGui.QFileDialog.getOpenFileName(self, 'Choose iint config file', '.', "iint cfg files (*.icfg)")
+        if self._testMode:
+            pass
+        else:
+            self._file = QtGui.QFileDialog.getOpenFileName(self, 'Choose iint config file', '.', "iint cfg files (*.icfg)")
         if self._file != "":
             if prev is not None:
                 self._resetAll()
@@ -386,6 +397,21 @@ class iintGUI(QtGui.QMainWindow):
             handler = configurationHandler.ConfigurationHandler()
             self._procconf = handler.loadConfig(self._file)
             self._initializeFromConfig()
+
+    def loadConfig(self, cfgfile):
+        if cfgfile is not None:
+            try:
+                prev = self._file
+            except:
+                self._file = cfgfile
+                prev = None
+            if self._file != "":
+                if prev is not None:
+                    self._resetAll()
+                from adapt import configurationHandler
+                handler = configurationHandler.ConfigurationHandler()
+                self._procconf = handler.loadConfig(self._file)
+                self._initializeFromConfig()
 
     def _initializeFromConfig(self):
         # clear the memory!
@@ -405,7 +431,6 @@ class iintGUI(QtGui.QMainWindow):
             return
         if "observabledef" in runlist:
             self._obsDef.setParameterDicts(self._control.getOBSDict(), self._control.getDESDict())
-            #~ self.runObservable(self._control.getOBSDict(), self._control.getDESDict())
             self._obsDef.activateShowScanProfile()
         else:
             return
@@ -415,7 +440,7 @@ class iintGUI(QtGui.QMainWindow):
         else:
             return
         if "signalcurvefit" in runlist:
-            self._signalHandling.setParameterDict(self._control.getSIGDict())
+            self._signalFitting.setParameterDict(self._control.getSIGDict())
             self.runSignalProcessing(self._control.getSIGDict()['model'], reset=False)
         else:
             return
@@ -423,35 +448,41 @@ class iintGUI(QtGui.QMainWindow):
     def _updateDisplay(self):
         self.plotit()
         self._bkgHandling.activate()
-        self._signalHandling.activateConfiguration()
+        self._signalFitting.activateConfiguration()
         self._inspectAnalyze.activate()
 
     def runFileReader(self, reader=None):
-        if reader == "spec" or reader == None:
+        if reader == "spec" or reader is None:
             self._control.setReaderType("spec")
             filereaderdict = self._sfrGUI.getParameterDict()
             self._fileInfo.setNames(filereaderdict["filename"], filereaderdict["scanlist"])
             self._control.setSpecFile(filereaderdict["filename"], filereaderdict["scanlist"])
             self.message("Reading spec file: " + str(filereaderdict["filename"]))
-            sfr = self._control.createAndInitialize(filereaderdict)
+            try:
+                sfr = self._control.createAndInitialize(filereaderdict)
+            except(adaptException.AdaptFileReadException):
+                self.warning("Failed to read the spec file.  Please check the file in question.")
+                return
             self._control.createDataList(sfr.getData(), self._control.getRawDataName())
             self._control.setDefaultOutputDirectory(filereaderdict["filename"])
         elif reader == "fio":
             self._control.setReaderType("fio")
             filereaderdict = self._ffrGUI.getParameterDict()
-            #~ self._fileInfo.setNames(filereaderdict["filename"], filereaderdict["scanlist"])
-            self._control.setFioFile(filereaderdict["filenames"])
+            try:
+                self._control.setFioFile(filereaderdict["filenames"])
+            except:
+                self.warning("FIO file(s) cannot be read in, there is something malformed.")
+                return
             self.message("Reading fio file(s): " + str(filereaderdict["filenames"]))
-            ffr = self._control.createAndBulkExecute(filereaderdict)
+            try:
+                ffr = self._control.createAndBulkExecute(filereaderdict)
+            except(adaptException.AdaptFileReadException):
+                self.warning("Failed to read the FIO file(s). Please check the file in question.")
+                return
             self._control.createDataList(ffr.getData(), self._control.getRawDataName())
             self._control.setDefaultOutputDirectory(filereaderdict["filenames"][0])
             self._fileInfo.setNames(filereaderdict["filenames"][0] + ", ...", str(self._control.getScanlist()))
         self._outDir.setOutputDirectory(self._control.getOutputDirectory())
-        # check for MCA! 
-        #~ mcaDict = self._control.getMCA()
-        #~ if mcaDict != {}:
-            #~ self._obsDef.showMCA.show()
-            #~ self._mcaplot.passData(mcaDict)
         check = self._control.checkDataIntegrity()
         if check:
             self.warning("There are different motor names in the selection!\n Can't continue, please correct!")
@@ -475,7 +506,6 @@ class iintGUI(QtGui.QMainWindow):
             self._control.resetBKGdata()
             self._bkgHandling.setParameterDicts(self._control.getBKGDicts())
             self._control.resetSIGdata()
-            self._signalHandling.setParameterDict(self._control.getSIGDict())
             self._control.resetFITdata()
 
         self.message("Computing the intensity...")
@@ -494,29 +524,36 @@ class iintGUI(QtGui.QMainWindow):
             if(self._simpleImageView is not None):
                 self._simpleImageView.update("des")
         self._bkgHandling.activate()
-        self._signalHandling.activateConfiguration()
+        self._signalFitting.activateConfiguration()
         self.message(" done.\n")
 
     def doOverlay(self):
         try:
-            self._overlaySelection.show()
+            self._overlaySelection.passData(self._control.getScanlist())
+            if self._testMode:
+                pass
+            else:
+                self._overlaySelection.show()
         except AttributeError:
             self._overlaySelection = iintOverlaySelection.iintOverlaySelection(datalist=self._control.getScanlist())
             self._overlaySelection.passData(self._control.getScanlist())
-            self._overlaySelection.show()
-        self._overlaySelection.overlayscanlist.connect(self._showOverlay)        
+            if self._testMode:
+                pass
+            else:
+                self._overlaySelection.show()
+        self._overlaySelection.overlayscanlist.connect(self._showOverlay)
 
     def _showOverlay(self, selection):
         try:
             self._overlayView.passData(selection,
-                                           self._control.getDataList(),
-                                           self._control.getMotorName(),
-                                           self._control.getObservableName(),
-                                           self._control.getDespikedObservableName(),
-                                           self._control.getBackgroundName(),
-                                           self._control.getSignalName(),
-                                           self._control.getFittedSignalName(),
-                                           )
+                                       self._control.getDataList(),
+                                       self._control.getMotorName(),
+                                       self._control.getObservableName(),
+                                       self._control.getDespikedObservableName(),
+                                       self._control.getBackgroundName(),
+                                       self._control.getSignalName(),
+                                       self._control.getFittedSignalName(),
+                                       )
             self.imageTabs.setCurrentIndex(self.imageTabs.addTab(self._overlayView, "Overlay"))
             self.imageTabs.show()
             self._overlayView.plot()
@@ -555,11 +592,10 @@ class iintGUI(QtGui.QMainWindow):
             self.resetResultTabs(keepSpectra=True)
             self._inspectAnalyze.reset()
             self._control.resetSIGdata()
-            self._signalHandling.setParameterDict(self._control.getSIGDict())
             self._control.resetFITdata()
             self._control.resetBKGdata()
             self._bkgHandling.setParameterDicts(self._control.getBKGDicts())
-            self._signalHandling.deactivateFitting()
+            self._signalFitting.deactivateFitting()
         self.message("Fitting background ...")
 
         if selDict == {}:
@@ -583,7 +619,7 @@ class iintGUI(QtGui.QMainWindow):
         if(self._simpleImageView is not None):
             self._simpleImageView.update("bkg")
         self.message(" ... done.\n")
-        self._signalHandling.activateConfiguration()
+        self._signalFitting.activateFitting()
 
     def _noBackgroundToggle(self, nobkg):
         self._control.resetBKGdata()
@@ -595,11 +631,11 @@ class iintGUI(QtGui.QMainWindow):
         if nobkg is 1:
             if(self._simpleImageView is not None):
                 self._simpleImageView.update("nobkg")
-            self._signalHandling.activateFitting()
+            self._signalFitting.activateFitting()
             self._inspectAnalyze.deactivate()
             self._control.removeBKGparts()
         else:
-            self._signalHandling.deactivateFitting()
+            self._signalFitting.deactivateFitting()
             self._inspectAnalyze.deactivate()
             try:
                 self._simpleImageView.update("unplotfit")
@@ -623,40 +659,89 @@ class iintGUI(QtGui.QMainWindow):
         self._simpleImageView.show()
         self._simpleImageView.plot()
 
-    def openFitDialog(self, modelname, index):
-        self._fitWidget = self._control.getFitModel(modelname, self._simpleImageView.getCurrentSignal(), index=index)
-        self._fitWidget.updateFit.connect(self._updateCurrentImage)
-        self._fitWidget.guessingDone.connect(self._simpleImageView.removeGuess)
-        self._fitWidget.show()
-        self._fitWidget.update()
-        self._keepFitList(self._fitWidget)
+    def openFitConfigurationDialog(self, names):
+        del self._fitList[:]
+        del self._fitWidgets[:]
+        # first build the fit list !
+        self._fitList = self._control.createFitFunctions(names)
+        try:
+            self._configWidget.reset()
+        except AttributeError:
+            self._configWidget = iintFitConfiguration.iintFitConfiguration()
+        data = self._simpleImageView.getCurrentSignal()
+
+        # first check if the sum widget needs to be shown
+        if len(self._fitList) > 1:
+            self._configWidget.showSumPart()
+
+        for i in self._fitList:
+            # from the fits get the widget, keep it for reference and add it
+            tw = i.getWidget(data[0], data[1], name=str(self._fitList.index(i)))
+            self._fitWidgets.append(tw)
+            self._configWidget.addWidget(tw)
+            tw.updateFit.connect(self._updateCurrentImage)
+            tw.update()
+        # if the model is made up from more than one part
+        # create the sum model
+        # MISSING: connect the signals from the config widget
+        self._configWidget.testButton.clicked.connect(self.runSingleTestFit)
+        self._configWidget.doneButton.clicked.connect(self._simpleImageView.removeGuess)
+        self._configWidget.doneButton.clicked.connect(self._signalFitting.allowFitButton)
+        self._configWidget.cancelButton.clicked.connect(self._cleanUpFit)
+        self._configWidget.sumColourChanged.connect(self._updateCurrentImage)
+
+    def _cleanUpFit(self):
+        del self._fitList[:]
+        del self._fitWidgets[:]
+        self._simpleImageView.removeGuess()
+
+    def _updateCurrentImage(self):
+        # called by signal from fit config window
+        # do: collect all info and piece it together
+        tmpFits = []
+        for wi in self._fitWidgets:
+            tmpFits.append(wi.getCurrentFitData())
+        # now get the fake exchange object if needed:
+        if len(tmpFits) > 1:
+            tmpObject = self._control.getSumExchangeObject(tmpFits, self._configWidget.getSumColour())
+            tmpFits.append(tmpObject)
+        try:
+            # can fail if the model is constant; then the stupid signature is different. ignore!
+            self._simpleImageView.plotFit(tmpFits)
+        except:
+            pass
 
     def _prepareSignalFitting(self):
         fitDict = {}
-        for fit in self._fitList:
+        # the config parts are inside the widget part, not the actual fit
+        for fit in self._fitWidgets:
             fitDict.update(fit.getCurrentParameterDict())
         self.runSignalProcessing(fitDict, reset=True)
 
     def runSignalProcessing(self, fitDict, reset=True):
+        # run two steps here:
+        # first the trapezoid summation
         self.message("Signal processing: first trapezoidal integration ...")
         self._control.resetTRAPINTdata()
         self._control.createAndBulkExecute(self._control.getTrapIntDict())
         self.message(" ... done.")
+        # second run the actual fitting; separate function call
         self.runSignalFitting(fitDict, reset)
 
     def runSignalFitting(self, fitDict, reset):
+        # now run the signal fitting
         if reset:
             self._inspectAnalyze.reset()
         rundict = self._control.getSIGDict()
         self.message("Fitting the signal, this can take a while ...")
         # this is a bad idea; this is specific code and needs to be put into the control part!!
         if self._control.guessSignalFit():
-            rundict['model'] = { "m0_": { 'modeltype': "gaussianModel",
-                  'm0_center' : {'value':1.},
-                  'm0_amplitude': {'value': 2.},
-                  'm0_height': {'value': 22.},
-                  'm0_fwhm': {'value': 21.},
-                  'm0_sigma': {'value': 3.} }}
+            rundict['model'] = {"m0_": {'modeltype': "gaussianModel",
+                                        'm0_center': {'value': 1.},
+                                        'm0_amplitude': {'value': 2.},
+                                        'm0_height': {'value': 22.},
+                                        'm0_fwhm': {'value': 21.},
+                                        'm0_sigma': {'value': 3.}}}
         else:
             rundict['model'] = fitDict
         if self._control.createAndBulkExecute(rundict) == "stopped":
@@ -678,11 +763,28 @@ class iintGUI(QtGui.QMainWindow):
         self.imageTabs.setCurrentIndex(tmpindex)
 
         # critical here, something doesn't work any longer; take it out
-        #~ tdv.pickedTrackedDataPoint.connect(self._setFocusToSpectrum)
+        # tdv.pickedTrackedDataPoint.connect(self._setFocusToSpectrum)
         self.message(" ... done.\n")
         self._inspectAnalyze.activate()
         self._control.useSignalProcessing(True)
         self._showTracked()
+
+    def runSingleTestFit(self):
+        # single use function -- not the best way, but how to do it differently?
+        fitDict = {}
+        # the config parts are inside the widget part, not the actual fit
+        for fit in self._fitWidgets:
+            fitDict.update(fit.getCurrentParameterDict())
+        rundict = self._control.getTestFitDict()
+        self.message("Single test fit executing ....")
+        # get the fit parameters for running
+        rundict['model'] = fitDict
+        index = self._simpleImageView.getCurrentIndex()
+        self._control.createAndSingleExecute(rundict, index)
+        # now fit is done, create points for drawing
+        self._control.createAndSingleExecute(self._control.getSingleFitDict(), index)
+        self.message("... test fit finished, now displaying.")
+        self._simpleImageView.plotSingleFit(index, name=self._control.getSingleFitPointsName())
 
     def _printDisplayedData(self):
         dataDict = self._simpleImageView.getPrintData()
@@ -696,27 +798,25 @@ class iintGUI(QtGui.QMainWindow):
         fig_size[0] = 16
         fig_size[1] = 12
         plt.rcParams["figure.figsize"] = fig_size
-        plotlabels = []
-        plotlabelnames = []
         # the plotting commands
         try:
-            r = plt.plot(dataDict['motor'], dataDict['raw'], 'k+', label = "raw intensities") 
+            plt.plot(dataDict['motor'], dataDict['raw'], 'k+', label="raw intensities")
         except KeyError:
             pass
         try:
-            d = plt.plot(dataDict['motor'], dataDict['despike'], 'gx', label = "despiked intensities")
+            plt.plot(dataDict['motor'], dataDict['despike'], 'gx', label="despiked intensities")
         except KeyError:
             pass
         try:
-            b = plt.plot(dataDict['motor'], dataDict['bkg'], 'rd', label = "estimated bkg")
+            plt.plot(dataDict['motor'], dataDict['bkg'], 'rd', label="estimated bkg")
         except KeyError:
             pass
         try:
-            s = plt.plot(dataDict['motor'], dataDict['signal'], 'bo', label = "signal intensities")
+            plt.plot(dataDict['motor'], dataDict['signal'], 'bo', label="signal intensities")
         except KeyError:
             pass
         try:
-            f = plt.plot(dataDict['motor'], dataDict['fit'], 'b-', label = "fitted intensities")
+            plt.plot(dataDict['motor'], dataDict['fit'], 'b-', label="fitted intensities")
         except KeyError:
             pass
         plt.xlabel(self._simpleImageView.getAxisNames()[0])
@@ -774,7 +874,6 @@ class iintGUI(QtGui.QMainWindow):
     def _setFocusToSpectrum(self, title, name, xpos, ypos):
         # very special function; lots of assumptions
         import math
-        import numpy as np
         xvallist = self._trackedDataDict[title].getTrackedValues()
         yvallist = [i[0] for i in self._trackedDataDict[title].getFitParameterValue(name)]
         xindices = []
@@ -790,27 +889,6 @@ class iintGUI(QtGui.QMainWindow):
             if xindices[0] == yindices[0]:
                 self._simpleImageView.setCurrentIndex(xindices[0])
                 self.imageTabs.setCurrentIndex(self.imageTabs.indexOf(self._simpleImageView))
-
-    def _updateCurrentImage(self):
-        ydata = self._fitWidget.getCurrentFitData()
-        try:
-            # can fail if the model is constant; then the stupid signature is different. ignore!
-            self._simpleImageView.plotFit(ydata)
-        except:
-            pass
-
-    def _keepFitList(self, fitwidget):
-        # remove if index is already there
-        for fit in self._fitList:
-            if fitwidget.getIndex() == fit.getIndex():
-                self._fitList.remove(fit)
-        self._fitList.append(fitwidget)
-
-    def _removeFitFromListByIndex(self, index):
-        # update the list of fits by removing the entry
-        for fit in self._fitList:
-            if fit.getIndex() == index:
-                self._fitList.remove(fit)
 
     def _dataToTrack(self):
         rawScanData = self._control.getDataList()[0].getData(self._control.getRawDataName())
@@ -847,7 +925,7 @@ class iintGUI(QtGui.QMainWindow):
             tdv.pickedTrackedDataPoint.connect(self._setFocusToSpectrum)
 
     def _addMappedData(self, one, two):
-        mtdmd = iintTrackedDataMapDisplay.iintTrackedDataMapDisplay( \
+        mtdmd = iintTrackedDataMapDisplay.iintTrackedDataMapDisplay(
                             one, self._control.getRawTrackInformation(one),
                             two, self._control.getRawTrackInformation(two))
 
@@ -877,8 +955,8 @@ class iintGUI(QtGui.QMainWindow):
         filename = self._control.getResultBaseFilename()
         self.message("... processing the scan profile plots: " + str(filename + "_scanProfiles.pdf"))
         self._control.processScanProfiles(filename + "_scanProfiles.pdf")
-        self.message("... processing the plots of the tracked data: " + str(filename  + "_trackedColumnsPlots.pdf"))
-        self._control.processTrackedColumnsControlPlots(filename  + "_trackedColumnsPlots.pdf")
+        self.message("... processing the plots of the tracked data: " + str(filename + "_trackedColumnsPlots.pdf"))
+        self._control.processTrackedColumnsControlPlots(filename + "_trackedColumnsPlots.pdf")
         self.message("...and finally the control plots of the scans: " + str(filename + "_scanControlPlots.pdf"))
         self._control.processScanControlPlots(filename + "_scanControlPlots.pdf")
         self.message(" ... done.\n")

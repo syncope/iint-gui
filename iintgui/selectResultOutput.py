@@ -30,7 +30,7 @@ class SelectResultOutput(QtGui.QDialog):
         uic.loadUi(getUIFile.getUIFile("selectResultOutput.ui"), self)
         self.cancel.clicked.connect(self.close)
         self.ok.clicked.connect(self._returnOK)
-        self.filename.setToolTip("The proposed file name; type here to change it.")
+        self.filename.setToolTip("The proposed file name beginning; type here to change it.\nNo string here is allowed, but discouraged.")
         self.ok.setToolTip("Click here to accept the file name.")
         self.cancel.setToolTip("Click here to cancel the save procedure.")
 

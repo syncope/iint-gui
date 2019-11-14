@@ -48,6 +48,32 @@ execlist:
 - bkgfit
 - calcbkgpoints
 - bkgsubtract
+- trapint
+- signalcurvefit
+- finalize
+finalize:
+  fitresult: signalcurvefitresult
+  motor: pth
+  observable: signalIntensity
+  outfilename: tests/test_data/MnCo15_S699E740_20190502-16h28.iint
+  specdataname: rawdata
+  trackedData:
+  - scannumber
+  - signalcurvefitresult
+  - trapezoidIntegral
+  - trapezoidIntegral_stderr
+  - lks340_outputchannela
+  - lks340_outputchannelb
+  - peta
+  - pr1chi
+  - pr2chi
+  - ptth
+  trapintname: trapezoidIntegral
+  type: iintfinalization
+fioread:
+  filenames: null
+  output: rawdata
+  type: fiofilereader
 observabledef:
   detector_column: exp_c01
   exposureTime_column: exp_t01
@@ -57,8 +83,34 @@ observabledef:
   motor_column: pth
   output: intensity
   type: iintdefinition
+signalcurvefit:
+  error: None
+  model:
+    m0_:
+      m0_amplitude:
+        value: 2.0
+      m0_center:
+        value: 1.0
+      m0_fwhm:
+        value: 21.0
+      m0_height:
+        value: 22.0
+      m0_sigma:
+        value: 3.0
+      modeltype: gaussianModel
+  result: signalcurvefitresult
+  type: curvefitting
+  useguessing: 1
+  usepreviousresult: 0
+  xdata: pth
+  ydata: signalIntensity
 specread:
-  filename: /home/rosem/iintgui/test/test_data/MnCo15.spc
+  filename: tests/test_data/MnCo15.spc
   output: default
   scanlist: 699-740
   type: specfilereader
+trapint:
+  motor: pth
+  observable: signalIntensity
+  output: trapezoidIntegral
+  type: trapezoidintegration

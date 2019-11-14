@@ -18,7 +18,7 @@
 # Foundation, Inc., 51 Franklin Street, Fifth Floor,
 # Boston, MA  02110-1301, USA.
 
-from PyQt4 import QtCore, QtGui, uic
+from PyQt4 import QtGui, uic
 from . import getUIFile
 
 
@@ -31,8 +31,14 @@ class LoggerBox(QtGui.QWidget):
 
     def addText(self, text):
         self.messageWindow.append(text)
+        self._jumptoend()
 
     def addRedText(self, text):
         self.messageWindow.setTextColor(QtGui.QColor(255, 0, 0))
         self.messageWindow.append(text)
         self.messageWindow.setTextColor(QtGui.QColor(0, 0, 0))
+        self._jumptoend()
+
+    def _jumptoend(self):
+        maxval = (self.messageWindow.verticalScrollBar()).maximum()
+        (self.messageWindow.verticalScrollBar()).setValue(maxval)

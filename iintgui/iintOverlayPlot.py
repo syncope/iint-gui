@@ -18,7 +18,7 @@
 # Foundation, Inc., 51 Franklin Street, Fifth Floor,
 # Boston, MA  02110-1301, USA.
 
-from PyQt4 import QtCore, QtGui, uic
+from PyQt4 import QtGui, uic
 import numpy as np
 from . import getUIFile
 
@@ -31,7 +31,6 @@ class iintOverlayPlot(QtGui.QDialog):
         self.logScale.stateChanged.connect(self._toggleLOG)
         self.logScale.stateChanged.connect(self.plot)
         self.viewPart.scene().sigMouseClicked.connect(self.mouse_click)
-        #~ self.scanSelectBtn.clicked.connect(print)
         self.rawradio.clicked.connect(self.plot)
         self.desradio.clicked.connect(self.plot)
         self.bkgradio.clicked.connect(self.plot)
@@ -122,7 +121,7 @@ class iintOverlayPlot(QtGui.QDialog):
                 spen = 'k'
             elif self.desradio.isChecked():
                 ydata = datum.getData(self._despObservableName)
-                spen = (0,0,80)
+                spen = (0, 0, 80)
             elif self.bkgradio.isChecked():
                 ydata = datum.getData(self._backgroundPointsName)
                 spen = 'r'

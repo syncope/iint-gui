@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html>
+<h1 id="iint-gui-Definingtheobservable">Defining the raw signal</h1>
+<p>Initially the setting dialog is folded, click on the triangle to unfold.</p>
+<p>In order to calculate the intensity, the different elements have to be selected from the available data.</p>
+<p>The expression contains mandatory entries for the x-axis, detector, monitor and time.</p>
+<p>All available choices are listed in the drop down selection boxes.</p>
+<p>As soon as a valid and complete selection for all needed input boxes is available, the selection will be plotted in the plot view window.</p>
+<h3>Optional choices</h3>
+<p>In addition an attenuation factor can be added by first activating it with the check box and then selecting an entry from the drop down list.</p>
+<p>Also a smoothing filter can be applied to de-spike the data by activating the check box.</p>
+<h3>Display</h3>
+<p>The &quot;raw&quot; data, without filtering is displayed as black plus &quot;+&quot; signs. If activated, the de-spiked data points are plotted as dark green &quot;x&quot;.</p>
+<p>In the display part of the gui, the display of the elements can be toggled by un/selecting the check boxes at the bottom.</p>
+<h3>Additional configuration</h3>
+<p>The buttons on the bottom of the widget are:</p>
+<h5 id="iint-gui-&quot;Selectdatatotrack&quot;">&quot;Select data to track&quot;</h5>
+<p>Click to open a selection dialog.</p>
+<p>From the input file the column data (per point) or header data can be selected.</p>
+<p>Either mark an element by clicking on it and use the &quot;&gt;&gt;&quot; or &quot;&lt;&lt;&quot; buttons to transfer them from &quot;untracked&quot; (left hand side) to &quot;tracked&quot; (right hand side) and vice versa.</p>
+<p>Optionally double-clicking an element will transfer it from one side to the other.</p>
+<p>The program then keeps track of the chosen elements for the following purposes.</p>
+<p>It enables storing these values (averaged for column data) in the output file.</p>
+<p>In addition the selected data elements can be plotted against each other by clicking the button &quot;2D plot of tracked data&quot; (see description below).</p>
+<p>And if subsequently a fit is performed, the parameter values will be displayed  in dependence of the values of the chosen tracked data.</p>
+<p>Note: if a fit has already been performed, it has to be redone to take effect; a message will also indicate this in the log window.</p>
+<h5 id="iint-gui-&quot;Plotscanprofiles&quot;">&quot;Plot scan profiles&quot;</h5>
+<p>Plots the scan idea versus the motor position (from the scan command); first the colour encoding for the z-values has to be chosen.</p>
+<p>The intensity is a natural choice to obtain an overview of all intensities in the complete scan series.</p>
+<p>After accepting a setting, a pdf file will be created in the output directory and it will be shown automatically.</p>
+<h5 id="iint-gui-&quot;2Dplotoftrackeddata&quot;">&quot;2D plot of tracked data&quot;</h5>
+<p>Creates a scatter plot of the pair of tracked data that can be chosen in a first step.</p>
+<p>First it opens a selection dialog; accept the current choice in this by choosing &quot;Display&quot; will display it in a new tab in the data display part.</p>
+<h5 id="iint-gui-&quot;Overlay&quot;">&quot;Overlay&quot;</h5>
+<p>Different scans can be superimposed to compare them visually by creating an overlay.</p>
+<p>First select the list of scans that are to be displayed together.</p>
+<p>Either mark the scan ids in the list on the left by mouse or e.g. choosing all by typing &lt;Ctrl-a&gt; and click on the '&gt;&gt;' button (de-selecting works the same in the other direction).</p>
+<p>Accepting the choice by clicking on &quot;Done&quot; will display the overlaid spectra in a new tab in the display part of the GUI.</p>
+<p>The view can be switched to use logarithmic scale, and to display the different processed data (if available).</p>
+<p>To change the current selection of scan ids, there is a button &quot;Select Scans&quot; to return to the selection dialog.</p>
+</body>
+</html>

@@ -1,84 +1,87 @@
 bkgfit:
   error: None
   model:
-    constbkg_:
-      modeltype: constantModel
+    hyperbolicbkg_:
+      modeltype: shiftedhyperbolaModel
   result: bkgfitresult
   type: curvefitting
+  useguessing: 0
   usepreviousresult: 0
   xdata: bkgX
   ydata: bkgY
 bkgselect:
-  endpointnumber: 3
+  endpointnumber: 6
   input:
-  - despikedIntensity
-  - pth
+  - intensity
+  - del
   output:
   - bkgY
   - bkgX
   selectors:
   - selectfromstart
   - selectfromend
-  startpointnumber: 3
+  sliceend: null
+  slicestart: null
+  slicestride: null
+  startpointnumber: 6
   type: subsequenceselection
 bkgsubtract:
   background: bkgPoints
-  input: despikedIntensity
+  input: intensity
   output: signalIntensity
   type: backgroundsubtraction
 calcbkgpoints:
   fitresult: bkgfitresult
   output: bkgPoints
   type: gendatafromfunction
-  xdata: pth
-despike:
-  input: intensity
-  method: p09despiking
-  output: despikedIntensity
-  type: filter1d
+  xdata: del
 execlist:
 - specread
 - observabledef
-- despike
 - bkgselect
 - bkgfit
 - calcbkgpoints
 - bkgsubtract
 - trapint
 - signalcurvefit
+fioread:
+  filenames: null
+  output: rawdata
+  type: fiofilereader
 observabledef:
   detector_column: exp_c01
-  exposureTime_column: exp_t01
+  exposureTime_column: dt
   id: scannumber
   input: rawdata
-  monitor_column: sumvfcs_counts
-  motor_column: pth
+  monitor_column: exp_vfc02
+  motor_column: del
   output: intensity
   type: iintdefinition
-specread:
-  filename: /home/rosem/iintgui/test/test_data/MnCo15.spc
-  output: rawdata
-  outputdata: default
-  scanlist: 699-740
-  type: specfilereader
 signalcurvefit:
   error: None
   model:
     m0_:
       amplitude:
-        value: 3779.6196444326156
+        min: 0.0
+        value: 1.6273030758904454
       center:
-        value: 45.3956
+        value: 71.64
       modeltype: gaussianModel
       sigma:
-        value: 0.08
+        value: 0.3
   result: signalcurvefitresult
   type: curvefitting
+  useguessing: 0
   usepreviousresult: 1
-  xdata: pth
+  xdata: del
   ydata: signalIntensity
+specread:
+  filename: tests/test_data/rucl3_az.spc
+  output: default
+  scanlist: 1179-1258
+  type: specfilereader
 trapint:
-  motor: pth
+  motor: del
   observable: signalIntensity
   output: trapezoidIntegral
   type: trapezoidintegration

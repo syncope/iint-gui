@@ -18,7 +18,7 @@
 # Foundation, Inc., 51 Franklin Street, Fifth Floor,
 # Boston, MA  02110-1301, USA.
 
-from PyQt4 import QtCore, QtGui, uic
+from PyQt4 import QtCore
 import pyqtgraph as pg
 import numpy as np
 

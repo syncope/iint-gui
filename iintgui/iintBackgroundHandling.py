@@ -25,7 +25,7 @@ from . import getUIFile
 class iintBackgroundHandling(QtGui.QWidget):
     bkgDicts = QtCore.pyqtSignal(dict, dict, dict, dict)
     bkgmodel = QtCore.pyqtSignal(str)
-    noBKG= QtCore.pyqtSignal(int)
+    noBKG = QtCore.pyqtSignal(int)
 
     def __init__(self, pDicts, parent=None):
         super(iintBackgroundHandling, self).__init__(parent)
@@ -43,18 +43,14 @@ class iintBackgroundHandling(QtGui.QWidget):
         self.linearBkg.clicked.connect(self._setModel)
         self.hyperbolicBkg.clicked.connect(self._setModel)
         # there used to be a button to fit the background
-        #~ self.fitBkg.clicked.connect(self.emittem)
         self._noBKG = True
         self.groupBox.clicked.connect(self._clicktoggle)
-        #~ self.useBkg.stateChanged.connect(self._toggle)
         self.setParameterDicts(pDicts)
-        #~ self.fitBkg.setDisabled(True)
         self.groupBox.setToolTip("If data is available, check this box to enable the\nsetting and execution of background calculation.")
         self.linearBkg.setToolTip("Active to chose a linear background model.")
         self.constBkg.setToolTip("Activate to select a constant background model.")
         self.bkgStartPointsSB.setToolTip("Select the number of points at the low end\nof the motor positions to be included in the background estimation.")
         self.bkgEndPointsSB.setToolTip("Select the number of points at the upper end\nof the motor positions to be included in the background estimation.")
-        #~ self.fitBkg.setToolTip("Perform the background fitting procedure.")
 
     def reset(self):
         self._selectParDict = {}
@@ -63,7 +59,6 @@ class iintBackgroundHandling(QtGui.QWidget):
         self._subtractParDict = {}
         self.bkgStartPointsSB.setValue(3)
         self.bkgEndPointsSB.setValue(3)
-        #~ self.fitBkg.setDisabled(True)
         self.bkgEndPointsSB.setDisabled(True)
         self.bkgStartPointsSB.setDisabled(True)
         self.linearBkg.setDisabled(True)
@@ -79,7 +74,6 @@ class iintBackgroundHandling(QtGui.QWidget):
         self.constBkg.setDisabled(False)
         self.hyperbolicBkg.setDisabled(False)
         self.groupBox.setDisabled(False)
-        #~ self.fitBkg.setDisabled(False)
         # if it is already active, then do the magic
         self._clicktoggle(self.groupBox.isChecked())
 
@@ -125,7 +119,6 @@ class iintBackgroundHandling(QtGui.QWidget):
         self._calcParDict = dicts[2]
         self._subtractParDict = dicts[3]
         # previous check if bkg is enabled
-        #~ if dicts[0] != {} and dicts[1] != {} and dicts[2] != {} and dicts[3] != {}:
         # now only activate when done from config!
         if active:
             self.groupBox.setChecked(True)

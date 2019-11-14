@@ -151,7 +151,6 @@ class iintTrackedDataChoice(QtGui.QWidget):
         self._trackedDataColumns.append(self._untrackedDataColumns.pop(index))
         self.listSelectedColumns.addItem(self.listAllColumns.takeItem(self.listAllColumns.row(item)))
         self.listAllColumns.clearSelection()
-        #~ if self.listAllColumns.__len__() == 0:
         self.addToListColumns.setDisabled(True)
 
     def _moveToSelectedHeaders(self, item):
@@ -159,7 +158,6 @@ class iintTrackedDataChoice(QtGui.QWidget):
         self._trackedDataHeaders.append(self._untrackedDataHeaders.pop(index))
         self.listSelectedHeaders.addItem(self.listAllHeaders.takeItem(self.listAllHeaders.row(item)))
         self.listAllHeaders.clearSelection()
-        #~ if self.listAllHeaders.__len__() == 0:
         self.addToListHeaders.setDisabled(True)
 
     def _moveToUnselectedColumns(self, item):
@@ -167,7 +165,6 @@ class iintTrackedDataChoice(QtGui.QWidget):
         self._untrackedDataColumns.append(self._trackedDataColumns.pop(index))
         self.listAllColumns.addItem(self.listSelectedColumns.takeItem(self.listSelectedColumns.row(item)))
         self.listSelectedColumns.clearSelection()
-        #~ if self.listSelectedColumns.__len__() == 0:
         self.removeFromListColumns.setDisabled(True)
 
     def _moveToUnselectedHeaders(self, item):
@@ -175,7 +172,6 @@ class iintTrackedDataChoice(QtGui.QWidget):
         self._untrackedDataHeaders.append(self._trackedDataHeaders.pop(index))
         self.listAllHeaders.addItem(self.listSelectedHeaders.takeItem(self.listSelectedHeaders.row(item)))
         self.listSelectedHeaders.clearSelection()
-        #~ if self.listSelectedHeaders.__len__() == 0:
         self.removeFromListHeaders.setDisabled(True)
 
     def _addToListColumns(self):

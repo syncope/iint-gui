@@ -21,6 +21,7 @@
 from PyQt4 import QtCore, QtGui, uic
 import numpy as np
 from . import getUIFile
+import pyqtgraph as pg
 
 
 class iintDataPlot(QtGui.QDialog):
@@ -52,12 +53,13 @@ class iintDataPlot(QtGui.QDialog):
         self._setBLB2Add()
         self._blacklist = []
         self._currentIndex = 0
+        self._tmpFit = []
         self.currentIndex.emit(self._currentIndex)
         self._showraw = True
         self._showdespike = False
         self._showbkg = False
         self._showbkgsubtracted = False
-        self._tmpFit = None
+        self._tmpFit = []
         self._logScale = False
         self._showsigfit = False
         self.setGeometry(640, 1, 840, 840)
@@ -89,6 +91,7 @@ class iintDataPlot(QtGui.QDialog):
         self.showFIT.setDisabled(True)
         self.viewPart.autoRange()
         self._currentIndex = 0
+        del self._tmpFit[:]
         self._showraw = True
         self._showdespike = False
         self._showbkg = False
@@ -179,13 +182,13 @@ class iintDataPlot(QtGui.QDialog):
         if (self._logScale):
             ydata = np.log10(np.clip(ydata, 10e-3, np.inf))
         self.viewPart.clear()
-        if(self._showraw): # raw data has black "plus signs"
+        if(self._showraw):  # raw data has black "plus signs"
             self._theDrawItem = self.viewPart.plot(xdata, ydata, pen=None, symbolPen='k', symbolBrush='k', symbol='+')
-        if(self._showdespike): # despiked data: green "x"
+        if(self._showdespike):  # despiked data: green "x"
             despikeData = datum.getData(self._despObservableName)
             if (self._logScale):
                 despikeData = np.log10(np.clip(despikeData, 10e-3, np.inf))
-            self.viewPart.plot(xdata, despikeData, pen=None, symbolPen=(0,0,80), symbolBrush='g', symbol='x')
+            self.viewPart.plot(xdata, despikeData, pen=None, symbolPen=(0, 0, 80), symbolBrush='g', symbol='x')
         if(self._showbkg):
             bkg = datum.getData(self._backgroundPointsName)
             if (self._logScale):
@@ -220,26 +223,23 @@ class iintDataPlot(QtGui.QDialog):
         rawdata = datum.getData(self._observableName)
         if (self._logScale):
             rawdata = np.log10(np.clip(rawdata, 10e-3, np.inf))
-        if(self._showraw): # raw data has black "plus signs"
+        if(self._showraw):  # raw data has black "plus signs"
             printDict['raw'] = rawdata
-        if(self._showdespike): # despiked data: green "x"
+        if(self._showdespike):  # despiked data: green "x"
             despikeData = datum.getData(self._despObservableName)
             if (self._logScale):
                 despikeData = np.log10(np.clip(despikeData, 10e-3, np.inf))
             printDict['despike'] = despikeData
-            #~ self.viewPart.plot(xdata, despikeData, pen=None, symbolPen=(0,0,80), symbolBrush='g', symbol='x')
         if(self._showbkg):
             bkg = datum.getData(self._backgroundPointsName)
             if (self._logScale):
                 bkg = np.log10(np.clip(bkg, 10e-3, np.inf))
             printDict['bkg'] = bkg
-            #~ self.viewPart.plot(xdata, bkg, pen=None, symbolPen='r', symbolBrush='r', symbol='d')
         if(self._showbkgsubtracted):
             signal = datum.getData(self._signalName)
             if (self._logScale):
                 signal = np.log10(np.clip(signal, 10e-3, np.inf))
             printDict['signal'] = signal
-            #~ self.viewPart.plot(xdata, signal, pen=None, symbolPen='b', symbolBrush='b', symbol='o')
         if(self._showsigfit):
             fitdata = datum.getData(self._fittedSignalName)
             if (self._logScale):
@@ -251,20 +251,46 @@ class iintDataPlot(QtGui.QDialog):
         return self._xaxisname, self._yaxisname
 
     def plotFit(self, ydata):
+        # special function to plot the current fit guess
+        # called with a container of fit data, including a name and a colour
+
+        # get independent data first for the current element
         datum = self._dataList[self._currentIndex]
         xdata = datum.getData(self._motorName)
         if self._tmpFit is not None:
-            self._tmpFit.clear()
+            for tf in self._tmpFit:
+                tf.clear()
         self.viewPart.disableAutoRange()
+
+        for singleFit in ydata:
+            if (self._logScale):
+                singleFit.setData(np.log10(np.clip(singleFit.data(), 10e-3, np.inf)))
+            self._tmpFit.append(self.viewPart.plot(xdata, singleFit.data(), pen=singleFit.colour()))
+
+    def plotSingleFit(self, index, name):
+        datum = self._dataList[index]
+        xdata = datum.getData(self._motorName)
+        ydata = datum.getData(name)
+        self.viewPart.autoRange()
         if (self._logScale):
             ydata = np.log10(np.clip(ydata, 10e-3, np.inf))
-        self._tmpFit = self.viewPart.plot(xdata, ydata, pen='r')
+        try:
+            self._testFit.clear()
+        except:
+            pass
+        self._testFit = self.viewPart.plot(xdata, ydata, pen=pg.mkPen('b', width=4, style=QtCore.Qt.DashLine))
 
     def removeGuess(self):
         try:
-            self._tmpFit.clear()
+            if self._tmpFit is not None:
+                for tf in self._tmpFit:
+                    tf.clear()
         except AttributeError:
             # it may happen that the fit object is a NoneType
+            pass
+        try:
+            self._testFit.clear()
+        except AttributeError:
             pass
         self.viewPart.enableAutoRange()
 

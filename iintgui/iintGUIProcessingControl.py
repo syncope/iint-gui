@@ -49,6 +49,7 @@ except ImportError:
     pass
 
 
+from PyQt4 import QtGui
 import numpy as np
 import datetime
 
@@ -77,7 +78,9 @@ class IintGUIProcessingControl():
         self._backgroundIntegralName = "bkgIntegral"
         self._signalName = "signalIntensity"
         self._fittedSignalName = "signalcurvefitresult"
+        self._testfitName = "testfitresult"
         self._fitSignalPointsName = "signalFitPoints"
+        self._singleFitPointsName = "singleFitPoints"
         self._trapintName = "trapezoidIntegral"
         self._processNames = ["specread",
                               "fioread",
@@ -89,7 +92,9 @@ class IintGUIProcessingControl():
                               "bkgsubtract",
                               "bkgintegration",
                               "signalcurvefit",
+                              "testfit",
                               "calcfitpoints",
+                              "calcsinglefitpoints",
                               "trapint",
                               "finalize",
                               "polana",
@@ -122,7 +127,9 @@ class IintGUIProcessingControl():
         self._backgroundIntegralName = "bkgIntegral"
         self._signalName = "signalIntensity"
         self._fittedSignalName = "signalcurvefitresult"
+        self._testfitName = "testfitresult"
         self._fitSignalPointsName = "signalFitPoints"
+        self._singleFitPointsName = "singleFitPoints"
         self._trapintName = "trapezoidIntegral"
         self._setupProcessParameters()
         self._setupDefaultNames()
@@ -190,7 +197,9 @@ class IintGUIProcessingControl():
         self._processParameters["calcbkgpoints"] = gendatafromfunction.gendatafromfunction().getProcessDictionary()
         self._processParameters["bkgsubtract"] = backgroundsubtraction.backgroundsubtraction().getProcessDictionary()
         self._processParameters["signalcurvefit"] = curvefitting.curvefitting().getProcessDictionary()
+        self._processParameters["testfit"] = curvefitting.curvefitting().getProcessDictionary()
         self._processParameters["calcfitpoints"] = gendatafromfunction.gendatafromfunction().getProcessDictionary()
+        self._processParameters["calcsinglefitpoints"] = gendatafromfunction.gendatafromfunction().getProcessDictionary()
         self._processParameters["trapint"] = trapezoidintegration.trapezoidintegration().getProcessDictionary()
         self._processParameters["finalize"] = iintfinalization.iintfinalization().getProcessDictionary()
         self._processParameters["polana"] = iintpolarization.iintpolarization().getProcessDictionary()
@@ -251,13 +260,25 @@ class IintGUIProcessingControl():
         self._processParameters["signalcurvefit"]["ydata"] = self._signalName
         self._processParameters["signalcurvefit"]["error"] = "None"
         self._processParameters["signalcurvefit"]["usepreviousresult"] = 0
-        self._processParameters["signalcurvefit"]["useguessing"] = 1
+        self._processParameters["signalcurvefit"]["useguessing"] = 0
         self._processParameters["signalcurvefit"]["result"] = self._fittedSignalName
         self._processParameters["signalcurvefit"]["model"] = {"m0_": {"modeltype": "gaussianModel"}}
+        # test fit
+        self._processParameters["testfit"]["xdata"] = self._motorName
+        self._processParameters["testfit"]["ydata"] = self._signalName
+        self._processParameters["testfit"]["error"] = "None"
+        self._processParameters["testfit"]["usepreviousresult"] = 0
+        self._processParameters["testfit"]["useguessing"] = 0
+        self._processParameters["testfit"]["result"] = self._testfitName
+        self._processParameters["testfit"]["model"] = {"m0_": {"modeltype": "gaussianModel"}}
         # calc fitted signal points
         self._processParameters["calcfitpoints"]["fitresult"] = self._fittedSignalName
         self._processParameters["calcfitpoints"]["xdata"] = self._motorName
         self._processParameters["calcfitpoints"]["output"] = self._fitSignalPointsName
+        # calc single fit points
+        self._processParameters["calcsinglefitpoints"]["fitresult"] = self._testfitName
+        self._processParameters["calcsinglefitpoints"]["xdata"] = self._motorName
+        self._processParameters["calcsinglefitpoints"]["output"] = self._singleFitPointsName
         # trapezoidal integration
         self._processParameters["trapint"]["motor"] = self._motorName
         self._processParameters["trapint"]["observable"] = self._signalName
@@ -275,7 +296,7 @@ class IintGUIProcessingControl():
         self._processParameters["inspection"]["fitresult"] = self._fittedSignalName
         self._processParameters["inspection"]["trapintname"] = self._trapintName
         self._processParameters["inspection"]["trackedData"] = []
-        # mca plots 
+        # mca plots
         self._processParameters["mcaplot"]["input"] = self._rawName
         self._processParameters["mcaplot"]["outfilename"] = ""
         # finalization: saving files
@@ -300,7 +321,9 @@ class IintGUIProcessingControl():
         self._processParameters["bkgintegral"]["xdata"] = self._motorName
         self._processParameters["calcbkgpoints"]["xdata"] = self._motorName
         self._processParameters["signalcurvefit"]["xdata"] = self._motorName
+        self._processParameters["testfit"]["xdata"] = self._motorName
         self._processParameters["calcfitpoints"]["xdata"] = self._motorName
+        self._processParameters["calcsinglefitpoints"]["xdata"] = self._motorName
         self._processParameters["trapint"]["motor"] = self._motorName
         self._processParameters["inspection"]["motor"] = self._motorName
         self._processParameters["finalize"]["motor"] = self._motorName
@@ -311,12 +334,14 @@ class IintGUIProcessingControl():
         if self._nodespike and self._nobkg:
             self._processParameters["trapint"]["observable"] = self._observableName
             self._processParameters["signalcurvefit"]["ydata"] = self._observableName
+            self._processParameters["testfit"]["ydata"] = self._observableName
             self._processParameters["inspection"]["observable"] = self._observableName
             self._processParameters["finalize"]["observable"] = self._observableName
             self._processParameters["scanplot"]["observable"] = self._observableName
         if not self._nodespike and self._nobkg:
             self._processParameters["trapint"]["observable"] = self._despObservableName
             self._processParameters["signalcurvefit"]["ydata"] = self._despObservableName
+            self._processParameters["testfit"]["ydata"] = self._despObservableName
             self._processParameters["inspection"]["observable"] = self._despObservableName
             self._processParameters["finalize"]["observable"] = self._despObservableName
             self._processParameters["scanplot"]["observable"] = self._despObservableName
@@ -325,6 +350,7 @@ class IintGUIProcessingControl():
             self._processParameters["bkgsubtract"]["input"] = self._observableName
             self._processParameters["trapint"]["observable"] = self._signalName
             self._processParameters["signalcurvefit"]["ydata"] = self._signalName
+            self._processParameters["testfit"]["ydata"] = self._signalName
             self._processParameters["inspection"]["observable"] = self._signalName
             self._processParameters["finalize"]["observable"] = self._signalName
             self._processParameters["scanplot"]["observable"] = self._signalName
@@ -333,6 +359,7 @@ class IintGUIProcessingControl():
             self._processParameters["bkgsubtract"]["input"] = self._despObservableName
             self._processParameters["trapint"]["observable"] = self._signalName
             self._processParameters["signalcurvefit"]["ydata"] = self._signalName
+            self._processParameters["testfit"]["ydata"] = self._signalName
             self._processParameters["inspection"]["observable"] = self._signalName
             self._processParameters["finalize"]["observable"] = self._signalName
             self._processParameters["scanplot"]["observable"] = self._signalName
@@ -349,8 +376,14 @@ class IintGUIProcessingControl():
     def getSignalName(self):
         return self._signalName
 
+    def getSingleFitName(self):
+        return self._testfitName
+
     def getFittedSignalName(self):
         return self._fitSignalPointsName
+
+    def getSingleFitPointsName(self):
+        return self._singleFitPointsName
 
     def getTrapezoidIntegralName(self):
         return self._trapintName
@@ -375,17 +408,6 @@ class IintGUIProcessingControl():
             pass
         # and now create the scan list!
         self._createScanList()
-
-    #~ def checkForMCA(self):
-        #~ # search through the list of data and retrieve the indices 
-        #~ mca = {}
-        #~ for datum in self._dataList:
-            #~ try:
-                #~ datum.getData("MCA")
-                #~ mca[datum.getData(self.getRawDataName()).getScanNumber()] = self._dataList.index(datum)
-            #~ except:
-                #~ pass
-        #~ return mca
 
     def getMCA(self):
         return self._mcaDict
@@ -421,6 +443,17 @@ class IintGUIProcessingControl():
             return "stopped"
         return proc
 
+    def createAndSingleExecute(self, pDict, index):
+        if pDict is None:
+            return
+        proc = self._procBuilder.createProcessFromDictionary(pDict)
+        proc.initialize()
+        try:
+            proc.executeWithOverwrite(self._dataList[index])
+        except adaptException.AdaptProcessingStoppedException:
+            return "stopped"
+        return proc
+
     def processAll(self, pDict):
         if pDict is None:
             return
@@ -447,6 +480,7 @@ class IintGUIProcessingControl():
             datum.clearCurrent(self._backgroundIntegralName)
             datum.clearCurrent(self._fittedSignalName)
             datum.clearCurrent(self._fitSignalPointsName)
+            datum.clearCurrent(self._singleFitPointsName)
         # if there was some bkg information present/processed
         # now it's the time to remove all traces:
         try:
@@ -507,15 +541,12 @@ class IintGUIProcessingControl():
         # cleaning up, improper handling of save value -- how to really fix?
         if self._processParameters["observabledef"]["attenuationFactor_column"] is None:
             del self._processParameters["observabledef"]["attenuationFactor_column"]
-        # why is this?? -- comment it out and see what happens (may 02, 2019)
-        #~ if "finalize" in execOrder:
-            #~ self._cleanUpTrackedData()
         return execOrder
 
     def saveConfig(self, filename):
         if self._readerType == "spec":
             execlist = ["specread", "observabledef"]
-        elif  self._readerType == "fio":
+        elif self._readerType == "fio":
             execlist = ["fioread", "observabledef"]
         else:
             return
@@ -670,13 +701,11 @@ class IintGUIProcessingControl():
     def setSpecFile(self, name, scanlist):
         self._processParameters["specread"]["filename"] = name
         self._processParameters["specread"]["scanlist"] = scanlist
-        #~ self._scanlist = self._expandList(scanlist)
         self._setOutfileName("spec")
 
     def setFioFile(self, names):
         self._processParameters["fioread"]["filenames"] = names
         self._setOutfileName("fio")
-        #~ self._createScanList()
 
     def getScanlist(self):
         return self._scanlist
@@ -708,10 +737,10 @@ class IintGUIProcessingControl():
                 try:
                     tmp = elem.split('-')
                     if stride:
-                        for n in range(tmp[0],(tmp[1]+1), stride):
+                        for n in range(tmp[0], (tmp[1]+1), stride):
                             retlist.append(n)
                     else:
-                        for n in range(int(tmp[0]),int(tmp[1])+1):
+                        for n in range(int(tmp[0]), int(tmp[1])+1):
                             retlist.append(n)
                 except:
                     pass
@@ -743,6 +772,12 @@ class IintGUIProcessingControl():
         except KeyError:
             return {}
 
+    def getTestFitDict(self):
+        try:
+            return self._processParameters["testfit"]
+        except KeyError:
+            return {}
+
     def getPOLANADict(self):
         try:
             name, suff = self.proposeSaveFileName()
@@ -765,23 +800,31 @@ class IintGUIProcessingControl():
     def getFitModels(self):
         return curvefitting.curvefitting().getFitModels()
 
-    def getFitModel(self, modelname, data, index):
-        # needs different approach // or extension: keep the widgets
-        self._signalfitter = self._fitmodels[modelname]()
-        return self._signalfitter.getWidget(data[0], data[1], index=index)
+    def createFitFunctions(self, names):
+        return [self._fitmodels[name]() for name in names]
+
+    # i can't help it, this breaks about every design rule; but i can't think of a better way currently
+    def getSumExchangeObject(self, tmpobjects, colour):
+        self._ffexo = None
+        for tmp in tmpobjects:
+            try:
+                self._ffexo.addData(tmp.data())
+            except:
+                self._ffexo = fakeFitExchangeObject(data=tmp.data(), colour=colour)
+        return self._ffexo
 
     def getSignalFitDict(self):
         return self._processParameters["calcfitpoints"]
 
-    def getTrapIntDict(self):
-        return self._processParameters["trapint"]
+    def getSingleFitDict(self):
+        return self._processParameters["calcsinglefitpoints"]
 
     def getFinalizingDict(self):
         try:
             if 'scannumber' not in self._processParameters["finalize"]["trackedData"]:
                 self._processParameters["finalize"]["trackedData"] = \
                     ['scannumber', self._fittedSignalName, self._trapintName, self._trapintName+"_stderr"] + \
-                     self._processParameters["finalize"]["trackedData"]
+                    self._processParameters["finalize"]["trackedData"]
         except TypeError:
             self._processParameters["finalize"]["trackedData"] = \
                 ['scannumber', self._fittedSignalName, self._trapintName, self._trapintName+"_stderr"]
@@ -854,7 +897,7 @@ class IintGUIProcessingControl():
         '''Collect the tracked data given by name.
            Returns the name, value and error of the tracked parameter,
            plus a dictionary of the fitted parameters including their error.'''
-        value, error = [], []
+        value = []
         for datum in self._dataList:
             try:
                 array = datum.getData(self._rawName).getArray(name)
@@ -953,3 +996,30 @@ class trackedInformation():
 
     def getFitParameterValue(self, name):
         return self.values[name]
+
+
+class fakeFitExchangeObject():
+    # until I come up with a better idea, this is the way to create the
+    # "sum" display part from an object
+
+    def __init__(self, data=None, colour=QtGui.QColor('black')):
+        self._data = np.copy(data)
+        self._colour = colour
+
+    def data(self):
+        return self._data
+
+    def colour(self):
+        return self._colour
+
+    def addData(self, data):
+        self._data += data
+
+    def setData(self, data):
+        self._data = data
+
+    def setColour(self, colour):
+        self._colour = colour
+
+    def dump(self):
+        print("[FakeFitExchangeObject] colour " + str(self._colour) + "\ndata:  " + str(self._data))

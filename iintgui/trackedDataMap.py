@@ -31,16 +31,25 @@ class TrackedDataMap(QtGui.QDialog):
         self._names = []
         self.done.clicked.connect(self.hide)
         self.display.clicked.connect(self.emitNames)
+        self.done.setDisabled(True)
+        self.display.setDisabled(True)
+        self._buttonlist = [self.done, self.display]
 
     def reset(self):
         self._names.clear()
+        self.done.setDisabled(True)
+        self.display.setDisabled(True)
 
     def passNames(self, someDict):
         self.reset()
+        # works only in v>=3.5  "unpacking generalization"
         self._names = [*someDict]
         self.firstSelection.clear()
         self.secondSelection.clear()
         self._updateBoxes()
+        if self._names is not None:
+            self.done.setDisabled(False)
+            self.display.setDisabled(False)
 
     def _updateBoxes(self):
         self.firstSelection.addItems(self._names)
@@ -49,5 +58,8 @@ class TrackedDataMap(QtGui.QDialog):
     def emitNames(self):
         first = self.firstSelection.currentIndex()
         second = self.secondSelection.currentIndex()
-        self.trackeddatatomap.emit(self.firstSelection.itemText(first), 
+        self.trackeddatatomap.emit(self.firstSelection.itemText(first),
                                    self.secondSelection.itemText(second))
+
+    def getStatus(self):
+        return [i.isEnabled() for i in self._buttonlist]

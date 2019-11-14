@@ -11,7 +11,7 @@ observabledef:
   output: intensity
   type: iintdefinition
 specread:
-  filename: /home/rosem/iintgui/test/test_data/MnCo15.spc
+  filename: tests/test_data/MnCo15.spc
   output: default
   scanlist: 699-740
   type: specfilereader
