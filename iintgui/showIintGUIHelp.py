@@ -27,6 +27,11 @@ class ShowIintGUIHelp(QtGui.QDialog):
     def __init__(self, parent=None):
         super(ShowIintGUIHelp, self).__init__(parent)
         uic.loadUi(getUIFile.getUIFile("help.ui"), self)
+        self.home.setIcon(QtGui.QIcon.fromTheme("go-home"))
+        self.home.clicked.connect(self.goHome)
         self.textBrowser.setSearchPaths(["iintgui/help"])
         self.textBrowser.setSource(QtCore.QUrl("index.html"))
         self.show()
+
+    def goHome(self):
+        self.textBrowser.setSource(QtCore.QUrl("index.html"))

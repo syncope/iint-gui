@@ -1,26 +1,19 @@
 <!DOCTYPE html>
 <html>
-<h2 id="iint-gui-Readingdata">Reading data</h2>
-<p>To select the input spec file, chose from the File menu: &quot;Open SPEC file&quot;.</p>
-<p>A dialog will open: <span class="confluence-embedded-file-wrapper confluence-embedded-manual-size"><img class="confluence-embedded-image" height="188" src="attachments/122985904/122985905.png" data-image-src="attachments/122985904/122985905.png" data-unresolved-comment-count="0" data-linked-resource-id="122985905" data-linked-resource-version="1" data-linked-resource-type="attachment" data-linked-resource-default-alias="file_selection.png" data-base-url="https://confluence.desy.de" data-linked-resource-content-type="image/png" data-linked-resource-container-id="122985904" data-linked-resource-container-version="16"></span></p>
+<h1 id="iint-gui-Readingdata">Reading data</h1>
+<h2>SPEC file input</h2>
+<p>To select the input spec file, chose from the File menu: &quot;Open SPEC file&quot;, which opens a file dialog.</p>
 <p>Click on &quot;Choose file&quot; to open a file dialog and select a file.</p>
 <p>In the &quot;selection&quot; field enter a scan or a scan series. The syntax is similar to a print dialog. Chose individual scans by typing the scan number. A list of scans can be entered by entering the numbers with comma separation, or providing a range with a hyphen.</p>
 <p>It is also possible to chose a stride in a scan series by appending a double colon &quot;:&quot; followed by the stride.</p>
 <p>Examples:</p>
-<p> series: &quot;699,700, 701, 702, 703, 704&quot; or &quot;699-704&quot;</p>
-<p> with stride: &quot;699-740:2&quot;</p>
-<p> several series: &quot;699-704, 705-710, 711-740&quot;</p>
+<p>series: &quot;699,700, 701, 702, 703, 704&quot; or &quot;699-704&quot;</p>
+<p>with stride: &quot;699-740:2&quot;</p>
+<p>several series: &quot;699-704, 705-710, 711-740&quot;</p>
 <p>The selected choice will be displayed in the main window as an entry at the top. In addition the scan type and the motor(s) used in the scan will be displayed.</p>
 <p>Note: the selection can only be used if all scans in this selection are of the same type, using the same motor(s)! E.g. a dscan or a scan.</p>
-<p><br/></p>
+<h2>Alternative: FIO file input</h2>
 <p>An alternative to reading spec files is using FIO files by selecting &quot;Open FIO file(s)&quot; in the File menu.</p>
 <p>The dialog is similar, but since it is based on one scan per file, a list of files needs to be selected.</p>
-<p><span class="confluence-embedded-file-wrapper confluence-embedded-manual-size"><img class="confluence-embedded-image" height="250" src="attachments/122985904/146118601.png" data-image-src="attachments/122985904/146118601.png" data-unresolved-comment-count="0" data-linked-resource-id="146118601" data-linked-resource-version="1" data-linked-resource-type="attachment" data-linked-resource-default-alias="fio_file_selection.png" data-base-url="https://confluence.desy.de" data-linked-resource-content-type="image/png" data-linked-resource-container-id="122985904" data-linked-resource-container-version="16"></span></p>
-<h2 id="iint-gui-Selectinganoutputdirectory">Selecting an output directory</h2>
-<p>The current output directory is shown in the second line of the main window.</p>
-<p><span class="confluence-embedded-file-wrapper confluence-embedded-manual-size"><img class="confluence-embedded-image" height="29" src="attachments/122985904/146119153.png" data-image-src="attachments/122985904/146119153.png" data-unresolved-comment-count="0" data-linked-resource-id="146119153" data-linked-resource-version="1" data-linked-resource-type="attachment" data-linked-resource-default-alias="select_output.png" data-base-url="https://confluence.desy.de" data-linked-resource-content-type="image/png" data-linked-resource-container-id="122985904" data-linked-resource-container-version="16"></span></p>
-<p>iint-gui automatically creates a configuration file, as well as several other files on demand; all of which will be stored at that given location.</p>
-<p>By default the output directory is the home directory of the user that started the program.</p>
-<p>To change the directory, click the &quot;Select&quot; button and chose a directory in the appearing dialog.</p>
 </body>
 </html>

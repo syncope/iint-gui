@@ -1,6 +1,7 @@
 include LICENSE
 include COPYRIGHT
 include iintgui/ui/__init__.py
-recursive-include iintgui/ui *.ui 
+recursive-include iintgui/ui *.ui
+recursive-include iintgui/help *.html
 include iintgui/bin/iint-gui
 

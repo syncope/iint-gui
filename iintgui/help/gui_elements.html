@@ -1,20 +1,26 @@
 <!DOCTYPE html>
 <html>
-<p>The program will start up as a GUI:</p>
-<p><span class="confluence-embedded-file-wrapper confluence-embedded-manual-size"><img class="confluence-embedded-image" height="250" src="attachments/122985904/146119134.png" data-image-src="attachments/122985904/146119134.png" data-unresolved-comment-count="0" data-linked-resource-id="146119134" data-linked-resource-version="1" data-linked-resource-type="attachment" data-linked-resource-default-alias="startup.png" data-base-url="https://confluence.desy.de" data-linked-resource-content-type="image/png" data-linked-resource-container-id="122985904" data-linked-resource-container-version="16"></span></p>
+<h1>GUI Elements</h1>
+<p>The main window is horizontally split into two parts.</p>
 <p>The left hand side is dedicated for the steering of the processing steps, and displaying the current status of the processing.</p>
 <p>At the bottom of the left side, the log message window is present.</p>
 <p>The entire right hand side is for displaying the data and the graphical representation of the processing results, as available.</p>
-<p><br/></p>
-<p>In a working session, the GUI might then look something like:</p>
-<p><span class="confluence-embedded-file-wrapper confluence-embedded-manual-size"><img class="confluence-embedded-image" height="400" src="attachments/122985904/146118598.png" data-image-src="attachments/122985904/146118598.png" data-unresolved-comment-count="0" data-linked-resource-id="146118598" data-linked-resource-version="1" data-linked-resource-type="attachment" data-linked-resource-default-alias="iintgui-all.png" data-base-url="https://confluence.desy.de" data-linked-resource-content-type="image/png" data-linked-resource-container-id="122985904" data-linked-resource-container-version="16"></span></p>
-<h2 id="iint-gui-Thelogsection">The log section</h2>
+<h2>The left hand side: steering </h2>
+<p>From top to bottom, the steps for processing are given in order.</p>
+<p>At the very top information is shown about the current data file and the output directory.</p>
+<h3 id="iint-gui-Selectinganoutputdirectory">Selecting an output directory</h3>
+<p>The current output directory is shown in the second line of the main window.</p>
+<p>iint-gui automatically creates a configuration file, as well as several other files on demand; all of which will be stored at that given location.</p>
+<p>By default the output directory is the home directory of the user that started the program.</p>
+<p>To change the directory, click the &quot;Select&quot; button and chose a directory in the appearing dialog.</p>
+
+<h3 id="iint-gui-Thelogsection">The log section</h3>
 <p>The lowermost part of the left side is dedicated for message about the actions that are performed with the data.</p>
 <p>Most of the time it will just show what is being done.</p>
 <p>Sometimes warning may appear in red text, informing the user that something has not worked as expected.</p>
 <p>Most of the time a reason can be hinted at, why the action could not be performed successfully.</p>
 
-<h1 id="iint-gui-Theplottingsection">The plotting section</h1>
+<h2 id="iint-gui-Theplottingsection">Right hand side: plot display</h2>
 <p>The right hand part of the GUI is dedicated to showing the data. It features several options to inspect the data more closely.</p>
 <p>If a scan (series) has been defined, and the observable declared, the &quot;Scan display&quot; is the main part.</p>
 <h2 id="iint-gui-Toppart">Top part</h2>
