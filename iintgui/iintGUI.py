@@ -755,19 +755,14 @@ class iintGUI(QtGui.QMainWindow):
         if(self._simpleImageView is not None):
             self._simpleImageView.update("plotfit")
 
-        trackinfo = self._control.getDefaultTrackInformation()
-        tdv = iintMultiTrackedDataView.iintMultiTrackedDataView(trackinfo)
-        self._trackedDataDict[trackinfo.getName()] = trackinfo
-        tmpindex = self.imageTabs.addTab(tdv, ("Fit vs." + trackinfo.getName()))
-        self._resultTabIndices.append(tmpindex)
-        self.imageTabs.setCurrentIndex(tmpindex)
+        # first show the tracked stuff, since it removes all other tabs
+        self._doPostFitActions()
 
         # critical here, something doesn't work any longer; take it out
         # tdv.pickedTrackedDataPoint.connect(self._setFocusToSpectrum)
         self.message(" ... done.\n")
         self._inspectAnalyze.activate()
         self._control.useSignalProcessing(True)
-        self._showTracked()
 
     def runSingleTestFit(self):
         # single use function -- not the best way, but how to do it differently?
@@ -891,25 +886,35 @@ class iintGUI(QtGui.QMainWindow):
                 self.imageTabs.setCurrentIndex(self.imageTabs.indexOf(self._simpleImageView))
 
     def _dataToTrack(self):
-        rawScanData = self._control.getDataList()[0].getData(self._control.getRawDataName())
+        self._currentTrackedData = set(self._control.getTrackedData())
         try:
             self._trackedDataChoice.show()
         except AttributeError:
+            rawScanData = self._control.getDataList()[0].getData(self._control.getRawDataName())
             self._trackedDataChoice = iintTrackedDataChoice.iintTrackedDataChoice(rawScanData, self._control.getTrackedData())
             self._trackedDataMap = trackedDataMap.TrackedDataMap()
             self._trackedDataMap.trackeddatatomap.connect(self._addMappedData)
             self._trackedDataChoice.trackedData.connect(self._control.setTrackedData)
             self._trackedDataChoice.trackedData.connect(self._checkTrackMapActivation)
+            self._trackedDataChoice.trackedData.connect(self._checkChangesInTrackedData)
             self._obsDef.maptracks.clicked.connect(self._trackedDataMap.show)
+
+    def _checkChangesInTrackedData(self, newone):
+        if( self._currentTrackedData != set(newone)):
+            try:
+                self._doPostFitActions()
+            except(KeyError):
+                pass
 
     def _checkTrackMapActivation(self, outlist):
         if len(outlist) > 0:
             self._obsDef.activateMapTrack()
             self._trackedDataMap.passNames(self._control.getTrackedData())
+            #~ self.message("\nNote: to incorporate the tracked data in the results, the fit has to be redone.")
         else:
             self._obsDef.deactivateMapTrack()
 
-    def _showTracked(self):
+    def _doPostFitActions(self):
         # prepare the tabs and dict of tracked data for re-display
         self._trackedDataDict.clear()
         for index in range(self.imageTabs.__len__(), 1, -1):
@@ -919,10 +924,17 @@ class iintGUI(QtGui.QMainWindow):
             trackinfo = self._control.getTrackInformation(name)
             tdv = iintMultiTrackedDataView.iintMultiTrackedDataView(trackinfo, self._blacklist)
             self._trackedDataDict[trackinfo.getName()] = trackinfo
-            tmpindex = self.imageTabs.addTab(tdv, trackinfo.getName())
+            tmpindex = self.imageTabs.addTab(tdv, "Fit vs. " + str(trackinfo.getName()))
             self._resultTabIndices.append(tmpindex)
             self.imageTabs.setCurrentIndex(tmpindex)
             tdv.pickedTrackedDataPoint.connect(self._setFocusToSpectrum)
+
+        trackinfo = self._control.getDefaultTrackInformation()
+        tdv = iintMultiTrackedDataView.iintMultiTrackedDataView(trackinfo)
+        self._trackedDataDict[trackinfo.getName()] = trackinfo
+        tmpindex = self.imageTabs.addTab(tdv, ("Fit vs." + trackinfo.getName()))
+        self._resultTabIndices.append(tmpindex)
+        self.imageTabs.setCurrentIndex(tmpindex)
 
     def _addMappedData(self, one, two):
         mtdmd = iintTrackedDataMapDisplay.iintTrackedDataMapDisplay(
