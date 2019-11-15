@@ -228,7 +228,10 @@
   </action>
   <action name="action_Help">
    <property name="text">
-    <string>&amp;Help</string>
+    <string>iint-gui</string>
+   </property>
+   <property name="shortcut">
+    <string>F1</string>
    </property>
   </action>
  </widget>
