@@ -917,8 +917,10 @@ class iintGUI(QtGui.QMainWindow):
     def _doPostFitActions(self):
         # prepare the tabs and dict of tracked data for re-display
         self._trackedDataDict.clear()
-        for index in range(self.imageTabs.__len__(), 1, -1):
-            self.imageTabs.removeTab(index)
+        # remove older "Fit vs. xxx" tabs
+        for index in range(self.imageTabs.__len__(), 0, -1):
+            if (self.imageTabs.tabText(index)).startswith("Fit vs."):
+                self.imageTabs.removeTab(index)
         namelist = self._control.getTrackedData()
         for name in namelist:
             trackinfo = self._control.getTrackInformation(name)
@@ -932,7 +934,7 @@ class iintGUI(QtGui.QMainWindow):
         trackinfo = self._control.getDefaultTrackInformation()
         tdv = iintMultiTrackedDataView.iintMultiTrackedDataView(trackinfo)
         self._trackedDataDict[trackinfo.getName()] = trackinfo
-        tmpindex = self.imageTabs.addTab(tdv, ("Fit vs." + trackinfo.getName()))
+        tmpindex = self.imageTabs.addTab(tdv, ("Fit vs. " + trackinfo.getName()))
         self._resultTabIndices.append(tmpindex)
         self.imageTabs.setCurrentIndex(tmpindex)
 
