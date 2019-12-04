@@ -42,7 +42,6 @@ try:
     from adapt.processes import iintpolarization
     from adapt.processes import iintcontrolplots
     from adapt.processes import iintscanprofileplot
-    from adapt.processes import iintmcaplot
     from adapt.processes import iintscanplot
 except ImportError:
     print("[iintGUIProcessingControl]:: adapt is not available, nothing can be instantiated.")
@@ -205,7 +204,6 @@ class IintGUIProcessingControl():
         self._processParameters["polana"] = iintpolarization.iintpolarization().getProcessDictionary()
         self._processParameters["inspection"] = iintcontrolplots.iintcontrolplots().getProcessDictionary()
         self._processParameters["scanprofileplot"] = iintscanprofileplot.iintscanprofileplot().getProcessDictionary()
-        self._processParameters["mcaplot"] = iintmcaplot.iintmcaplot().getProcessDictionary()
         self._processParameters["scanplot"] = iintscanplot.iintscanplot().getProcessDictionary()
 
         self._fitmodels = curvefitting.curvefitting().getFitModels()
@@ -296,9 +294,6 @@ class IintGUIProcessingControl():
         self._processParameters["inspection"]["fitresult"] = self._fittedSignalName
         self._processParameters["inspection"]["trapintname"] = self._trapintName
         self._processParameters["inspection"]["trackedData"] = []
-        # mca plots
-        self._processParameters["mcaplot"]["input"] = self._rawName
-        self._processParameters["mcaplot"]["outfilename"] = ""
         # finalization: saving files
         self._processParameters["scanplot"]["specdataname"] = self._rawName
         self._processParameters["scanplot"]["fitresult"] = self._fittedSignalName
