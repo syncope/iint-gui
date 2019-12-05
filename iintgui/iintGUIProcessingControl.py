@@ -106,7 +106,8 @@ class IintGUIProcessingControl():
         self._setupProcessParameters()
         self._setupDefaultNames()
         self._outputDirectory = None
-        self._trackedData = []
+        self._trackedHeaderData = []
+        self._trackedColumnData = []
         self._readerType = ""
 
     def resetAll(self):
@@ -116,7 +117,8 @@ class IintGUIProcessingControl():
         self._dataList.clear()
         self._mcaDict.clear()
         del self._processList[:]
-        self._trackedData.clear()
+        self._trackedHeaderData.clear()
+        self._trackedColumnData.clear()
         self._processList.clear()
         self._motorName = ""
         self._rawName = "rawdata"
@@ -300,7 +302,8 @@ class IintGUIProcessingControl():
         self._processParameters["scanplot"]["trapintname"] = self._trapintName
 
     def _cleanUpTrackedData(self):
-        self._trackedData.clear()
+        self._trackedHeaderData.clear()
+        self._trackedColumnData.clear()
 
     def getRawDataName(self):
         return self._rawName
@@ -815,30 +818,38 @@ class IintGUIProcessingControl():
         return self._processParameters["calcsinglefitpoints"]
 
     def getFinalizingDict(self):
+        # first manually add the scannumber and trapint data to the tracked header data
         try:
-            if 'scannumber' not in self._processParameters["finalize"]["trackedData"]:
-                self._processParameters["finalize"]["trackedData"] = \
-                    ['scannumber', self._fittedSignalName, self._trapintName, self._trapintName+"_stderr"] + \
-                    self._processParameters["finalize"]["trackedData"]
+            if 'scannumber' not in self._processParameters["finalize"]["headerlist"]:
+                self._processParameters["finalize"]["headerlist"] = \
+                    ['scannumber', self._trapintName, self._trapintName+"_stderr"] + \
+                    self._processParameters["finalize"]["headerlist"]
         except TypeError:
             self._processParameters["finalize"]["trackedData"] = \
-                ['scannumber', self._fittedSignalName, self._trapintName, self._trapintName+"_stderr"]
+                ['scannumber', self._trapintName, self._trapintName+"_stderr"]
         return self._processParameters["finalize"]
 
-    def setTrackedData(self, namelist=[]):
-        if namelist is []:
-            return
+    def setTrackedData(self, headerlist=[], columnlist=[]):
+        if headerlist is []:
+            if columnlist is []:
+                return
         self._cleanUpTrackedData()
-        self._trackedData = namelist
+        self._trackedHeaderData = headerlist
+        self._trackedColumnData = columnlist
         # hard lesson learned: shared lists are the same!
-        self._processParameters["inspection"]["trackedData"] = namelist.copy()
-        self._processParameters["finalize"]["trackedData"] = namelist.copy()
+        self._processParameters["inspection"]["trackedColumns"] = columnlist.copy()
+        self._processParameters["finalize"]["trackedHeaders"] = headerlist.copy()
+        self._processParameters["finalize"]["trackedColumns"] = columnlist.copy()
 
-    def getTrackedData(self):
-        return self._trackedData
+    def getTrackedHeaderData(self):
+        return self._trackedHeaderData
+
+    def getTrackedColumnData(self):
+        return self._trackedColumnData
 
     def resetTrackedData(self):
-        self._trackedData.clear()
+        self._trackedHeaderData.clear()
+        self._trackedColumnData.clear()
 
     def useBKG(self, value):
         self._nobkg = not value
