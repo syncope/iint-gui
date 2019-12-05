@@ -296,7 +296,7 @@ class IintGUIProcessingControl():
         self._processParameters["inspection"]["specdataname"] = self._rawName
         self._processParameters["inspection"]["fitresult"] = self._fittedSignalName
         self._processParameters["inspection"]["trapintname"] = self._trapintName
-        self._processParameters["inspection"]["trackedData"] = []
+        self._processParameters["inspection"]["trackedColumns"] = []
         # finalization: saving files
         self._processParameters["scanplot"]["specdataname"] = self._rawName
         self._processParameters["scanplot"]["fitresult"] = self._fittedSignalName
@@ -464,10 +464,6 @@ class IintGUIProcessingControl():
     def performBKGIntegration(self):
         self.createAndBulkExecute(self._processParameters["bkgintegral"])
         if self._backgroundIntegralName not in self._processParameters["finalize"]["trackedHeaders"]:
-            #~ try:
-                #~ self._processParameters["inspection"]["trackedHeaders"].append(self._backgroundIntegralName)
-            #~ except AttributeError:
-                #~ self._processParameters["inspection"]["trackedHeaders"] = [self._backgroundIntegralName]
             try:
                 self._processParameters["finalize"]["trackedHeaders"].append(self._backgroundIntegralName)
             except AttributeError:
@@ -813,15 +809,14 @@ class IintGUIProcessingControl():
         return self._processParameters["calcsinglefitpoints"]
 
     def getFinalizingDict(self):
-        # first manually add the scannumber and trapint data to the tracked header data
-        try:
-            if 'scannumber' not in self._processParameters["finalize"]["trackedHeaders"]:
-                self._processParameters["finalize"]["trackedHeaders"] = \
-                    ['scannumber', self._trapintName, self._trapintName+"_stderr"] + \
-                    self._processParameters["finalize"]["trackedHeaders"]
-        except TypeError:
-            self._processParameters["finalize"]["trackedHeaders"] = \
-                ['scannumber', self._trapintName, self._trapintName+"_stderr"]
+        # build the finalizing dict manually 
+        # add the scannumber and trapint data to the tracked header data
+        self._processParameters["finalize"]["trackedHeaders"] = ['scannumber']
+        self._processParameters["finalize"]["trackedHeaders"] += self._trackedHeaderData
+        self._processParameters["finalize"]["trackedHeaders"] +=  [self._trapintName, self._trapintName+"_stderr"]
+        if not self._nobkg:
+            self._processParameters["finalize"]["trackedHeaders"].append(self._backgroundIntegralName)
+        self._processParameters["finalize"]["trackedColumns"] = self._trackedColumnData
         return self._processParameters["finalize"]
 
     def setTrackedData(self, headerlist=[], columnlist=[]):
@@ -829,12 +824,10 @@ class IintGUIProcessingControl():
             if columnlist is []:
                 return
         self._cleanUpTrackedData()
+        # hard lesson learned: shared lists are the same!
         self._trackedHeaderData = headerlist.copy()
         self._trackedColumnData = columnlist.copy()
-        # hard lesson learned: shared lists are the same!
         self._processParameters["inspection"]["trackedColumns"] = columnlist.copy()
-        self._processParameters["finalize"]["trackedHeaders"] = headerlist.copy()
-        self._processParameters["finalize"]["trackedColumns"] = columnlist.copy()
 
     def getTrackedHeaderData(self):
         return self._trackedHeaderData
