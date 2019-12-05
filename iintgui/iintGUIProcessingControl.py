@@ -463,11 +463,6 @@ class IintGUIProcessingControl():
 
     def performBKGIntegration(self):
         self.createAndBulkExecute(self._processParameters["bkgintegral"])
-        if self._backgroundIntegralName not in self._processParameters["finalize"]["trackedHeaders"]:
-            try:
-                self._processParameters["finalize"]["trackedHeaders"].append(self._backgroundIntegralName)
-            except AttributeError:
-                self._processParameters["finalize"]["trackedHeaders"] = [self._backgroundIntegralName]
 
     def removeBKGparts(self):
         for datum in self._dataList:
