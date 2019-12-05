@@ -23,10 +23,9 @@ from . import getUIFile
 
 
 class iintTrackedDataChoice(QtGui.QWidget):
-    trackedHeaderData = QtCore.pyqtSignal(list)
-    trackedColumnData = QtCore.pyqtSignal(list)
+    trackedData = QtCore.pyqtSignal(list,list)
 
-    def __init__(self, dataelement=None, namelist=None, parent=None):
+    def __init__(self, dataelement=None, headerlist=None, columnlist=None, parent=None):
         super(iintTrackedDataChoice, self).__init__(parent)
         uic.loadUi(getUIFile.getUIFile("chooseTrackedData.ui"), self)
         self._data = dataelement
@@ -34,7 +33,7 @@ class iintTrackedDataChoice(QtGui.QWidget):
         self._initialNamesHeaders = []
         for elem in list(self._data.getCustomKeys()):
             self._initialNamesHeaders.append(elem)
-        self._fillLists(namelist)
+        self._fillLists(headerlist, columnlist)
         self.okButton.clicked.connect(self._emitTrackedData)
         self.cancelButton.clicked.connect(self.close)
         self.addToListColumns.setDisabled(True)
@@ -69,22 +68,25 @@ class iintTrackedDataChoice(QtGui.QWidget):
         evnt.ignore()
         self.hide()
 
-    def _fillLists(self, namelist):
+    def _fillLists(self, headerlist, columnlist):
         self._untrackedDataColumns = sorted(self._initialNamesColumns[:])
         self._untrackedDataHeaders = sorted(self._initialNamesHeaders[:])
         self._trackedDataColumns = []
         self._trackedDataHeaders = []
-        if namelist is not None:
-            for elem in namelist:
+        if headerlist is not None:
+            for header in headerlist:
                 try:
-                    self._untrackedDataColumns.remove(elem)
-                    self._trackedDataColumns.append(elem)
+                    self._untrackedDataHeaders.remove(header)
+                    self._trackedDataHeaders.append(header)
                 except ValueError:
-                    try:
-                        self._untrackedDataHeaders.remove(elem)
-                        self._trackedDataHeaders.append(elem)
-                    except ValueError:
-                        pass
+                    pass
+        if columnlist is not None:
+            for column in columnlist:
+                try:
+                    self._untrackedDataColumns.remove(column)
+                    self._trackedDataColumns.append(column)
+                except ValueError:
+                    pass
         self.listSelectedColumns.addItems(sorted(self._trackedDataColumns))
         self.listSelectedHeaders.addItems(sorted(self._trackedDataHeaders))
         self.listAllColumns.addItems(self._untrackedDataColumns)
@@ -192,6 +194,5 @@ class iintTrackedDataChoice(QtGui.QWidget):
             self.listSelectedHeaders.takeItem(self.listSelectedHeaders.row(elem))
 
     def _emitTrackedData(self):
-        self.trackedHeaderData.emit(self._trackedDataHeaders)
-        self.trackedColumnData.emit(self._trackedDataColumns)
+        self.trackedData.emit(self._trackedDataHeaders, self._trackedDataColumns)
         self.hide()

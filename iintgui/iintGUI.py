@@ -886,33 +886,37 @@ class iintGUI(QtGui.QMainWindow):
                 self.imageTabs.setCurrentIndex(self.imageTabs.indexOf(self._simpleImageView))
 
     def _dataToTrack(self):
-        self._currentTrackedData = set(self._control.getTrackedData())
+        self._currentTrackedHeaderData = set(self._control.getTrackedHeaderData())
+        self._currentTrackedColumnData = set(self._control.getTrackedColumnData())
         try:
             self._trackedDataChoice.show()
         except AttributeError:
             rawScanData = self._control.getDataList()[0].getData(self._control.getRawDataName())
-            self._trackedDataChoice = iintTrackedDataChoice.iintTrackedDataChoice(rawScanData, self._control.getTrackedData())
-            self._trackedDataMap = trackedDataMap.TrackedDataMap()
-            self._trackedDataMap.trackeddatatomap.connect(self._addMappedData)
+            self._trackedDataChoice = iintTrackedDataChoice.iintTrackedDataChoice(rawScanData, self._control.getTrackedHeaderData(), self._control.getTrackedColumnData())
+
             self._trackedDataChoice.trackedData.connect(self._control.setTrackedData)
             self._trackedDataChoice.trackedData.connect(self._checkTrackMapActivation)
             self._trackedDataChoice.trackedData.connect(self._checkChangesInTrackedData)
+
+            self._trackedDataMap = trackedDataMap.TrackedDataMap()
+            self._trackedDataMap.trackeddatatomap.connect(self._addMappedData)
+
             self._obsDef.maptracks.clicked.connect(self._trackedDataMap.show)
 
-    def _checkChangesInTrackedData(self, newone):
-        if( self._currentTrackedData != set(newone)):
+    def _checkTrackMapActivation(self, hlist, clist):
+        if len(hlist + clist) > 0:
+            self._obsDef.activateMapTrack()
+            # !!! FIXME
+            # self._trackedDataMap.passNames(self._control.getTrackedHeaderData(), self._control.getTrackedColumnData())
+        else:
+            self._obsDef.deactivateMapTrack()
+
+    def _checkChangesInTrackedData(self, hlist, clist):
+        if( self._currentTrackedHeaderData != set(hlist) or self._currentTrackedColumnData != set(clist)):
             try:
                 self._doPostFitActions()
             except(KeyError):
                 pass
-
-    def _checkTrackMapActivation(self, outlist):
-        if len(outlist) > 0:
-            self._obsDef.activateMapTrack()
-            self._trackedDataMap.passNames(self._control.getTrackedData())
-            #~ self.message("\nNote: to incorporate the tracked data in the results, the fit has to be redone.")
-        else:
-            self._obsDef.deactivateMapTrack()
 
     def _doPostFitActions(self):
         # prepare the tabs and dict of tracked data for re-display
@@ -921,9 +925,20 @@ class iintGUI(QtGui.QMainWindow):
         for index in range(self.imageTabs.__len__(), 0, -1):
             if (self.imageTabs.tabText(index)).startswith("Fit vs."):
                 self.imageTabs.removeTab(index)
-        namelist = self._control.getTrackedData()
-        for name in namelist:
-            trackinfo = self._control.getTrackInformation(name)
+
+        # first iterate over header data
+        for name in self._control.getTrackedHeaderData():
+            trackinfo = self._control.getTrackInformation(name, header=True)
+            tdv = iintMultiTrackedDataView.iintMultiTrackedDataView(trackinfo, self._blacklist)
+            self._trackedDataDict[trackinfo.getName()] = trackinfo
+            tmpindex = self.imageTabs.addTab(tdv, "Fit vs. " + str(trackinfo.getName()))
+            self._resultTabIndices.append(tmpindex)
+            self.imageTabs.setCurrentIndex(tmpindex)
+            tdv.pickedTrackedDataPoint.connect(self._setFocusToSpectrum)
+
+        # then iterate over columns, this is not elegant
+        for name in self._control.getTrackedColumnData():
+            trackinfo = self._control.getTrackInformation(name, header=False)
             tdv = iintMultiTrackedDataView.iintMultiTrackedDataView(trackinfo, self._blacklist)
             self._trackedDataDict[trackinfo.getName()] = trackinfo
             tmpindex = self.imageTabs.addTab(tdv, "Fit vs. " + str(trackinfo.getName()))
