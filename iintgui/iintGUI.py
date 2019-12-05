@@ -906,8 +906,7 @@ class iintGUI(QtGui.QMainWindow):
     def _checkTrackMapActivation(self, hlist, clist):
         if len(hlist + clist) > 0:
             self._obsDef.activateMapTrack()
-            # !!! FIXME
-            # self._trackedDataMap.passNames(self._control.getTrackedHeaderData(), self._control.getTrackedColumnData())
+            self._trackedDataMap.passNames(self._control.getTrackedHeaderData(), self._control.getTrackedColumnData())
         else:
             self._obsDef.deactivateMapTrack()
 

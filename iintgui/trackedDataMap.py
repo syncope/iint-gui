@@ -40,10 +40,10 @@ class TrackedDataMap(QtGui.QDialog):
         self.done.setDisabled(True)
         self.display.setDisabled(True)
 
-    def passNames(self, someDict):
+    def passNames(self, headerList, columnList):
+        # !!!! FIXME !!!!!
         self.reset()
-        # works only in v>=3.5  "unpacking generalization"
-        self._names = [*someDict]
+        self._names = list(set(headerList.copy() + columnList.copy()))
         self.firstSelection.clear()
         self.secondSelection.clear()
         self._updateBoxes()
