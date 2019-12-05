@@ -23,7 +23,8 @@ from . import getUIFile
 
 
 class iintTrackedDataChoice(QtGui.QWidget):
-    trackedData = QtCore.pyqtSignal(list, list)
+    trackedHeaderData = QtCore.pyqtSignal(list)
+    trackedColumnData = QtCore.pyqtSignal(list)
 
     def __init__(self, dataelement=None, namelist=None, parent=None):
         super(iintTrackedDataChoice, self).__init__(parent)
@@ -191,5 +192,6 @@ class iintTrackedDataChoice(QtGui.QWidget):
             self.listSelectedHeaders.takeItem(self.listSelectedHeaders.row(elem))
 
     def _emitTrackedData(self):
-        self.trackedData.emit(self._trackedDataHeaders, self._trackedDataColumns)
+        self.trackedHeaderData.emit(self._trackedDataHeaders)
+        self.trackedColumnData.emit(self._trackedDataColumns)
         self.hide()
