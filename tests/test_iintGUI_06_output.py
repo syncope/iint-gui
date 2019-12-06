@@ -62,7 +62,10 @@ class TestIintGUI06Output(unittest.TestCase):
             self.assertTrue(np.any(k))
 
     def tearDown(self):
-        pass
+        for f in self.mnconames:
+            if os.path.isfile(f):
+                os.remove(f)
+        
 
 
 if __name__ == '__main__':
