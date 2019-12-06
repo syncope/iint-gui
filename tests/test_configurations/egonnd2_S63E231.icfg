@@ -1,0 +1,118 @@
+bkgfit:
+  error: None
+  model:
+    lin_:
+      modeltype: linearModel
+  result: bkgfitresult
+  type: curvefitting
+  useguessing: 0
+  usepreviousresult: 0
+  xdata: bkgX
+  ydata: bkgY
+bkgselect:
+  endpointnumber: 3
+  input:
+  - despikedIntensity
+  - th
+  output:
+  - bkgY
+  - bkgX
+  selectors:
+  - selectfromstart
+  - selectfromend
+  sliceend: null
+  slicestart: null
+  slicestride: null
+  startpointnumber: 3
+  type: subsequenceselection
+bkgsubtract:
+  background: bkgPoints
+  input: despikedIntensity
+  output: signalIntensity
+  type: backgroundsubtraction
+calcbkgpoints:
+  fitresult: bkgfitresult
+  output: bkgPoints
+  type: gendatafromfunction
+  xdata: th
+despike:
+  input: intensity
+  method: p09despiking
+  output: despikedIntensity
+  type: filter1d
+execlist:
+- specread
+- observabledef
+- despike
+- bkgselect
+- bkgfit
+- calcbkgpoints
+- bkgsubtract
+- trapint
+- signalcurvefit
+- finalize
+finalize:
+  fitresult: signalcurvefitresult
+  motor: th
+  observable: signalIntensity
+  outfilename: tests/test_data/egonnd2_S63E231_20191205-20h20.iint
+  specdataname: rawdata
+  trackedColumns:
+  - h_position
+  - k_position
+  - l_position
+  trackedHeaders:
+  - scannumber
+  - chi
+  - mu
+  - phi
+  - ga
+  - del
+  - th
+  - trapezoidIntegral
+  - trapezoidIntegral_stderr
+  type: iintfinalization
+fioread:
+  filenames: null
+  output: rawdata
+  type: fiofilereader
+observabledef:
+  detector_column: exp_c03
+  exposureTime_column: exp_t01
+  id: scannumber
+  input: rawdata
+  monitor_column: sumvfcs_counts
+  motor_column: th
+  output: intensity
+  type: iintdefinition
+signalcurvefit:
+  error: None
+  model:
+    m0_:
+      m0_amplitude:
+        value: 2.0
+      m0_center:
+        value: 1.0
+      m0_fwhm:
+        value: 21.0
+      m0_height:
+        value: 22.0
+      m0_sigma:
+        value: 3.0
+      modeltype: gaussianModel
+  result: signalcurvefitresult
+  type: curvefitting
+  useguessing: 1
+  usepreviousresult: 0
+  xdata: th
+  ydata: signalIntensity
+specread:
+  filename: tests/test_data/egonnd2.spc
+  output: rawdata
+  scanlist: 83, 63, 89, 95, 109, 103, 142, 219, 189, 211, 135, 231, 159, 169
+  type: specfilereader
+trapint:
+  motor: th
+  observable: signalIntensity
+  output: trapezoidIntegral
+  type: trapezoidintegration

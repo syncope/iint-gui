@@ -19,7 +19,7 @@
 # Foundation, Inc., 51 Franklin Street, Fifth Floor,
 # Boston, MA  02110-1301, USA.
 
-'''This are the tesst for iintGUI config files.'''
+'''This are the tests for iintGUI config files.'''
 
 
 import unittest

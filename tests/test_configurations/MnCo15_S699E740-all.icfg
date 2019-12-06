@@ -55,19 +55,19 @@ finalize:
   fitresult: signalcurvefitresult
   motor: pth
   observable: signalIntensity
-  outfilename: tests/test_data/MnCo15_S699E740_20190502-16h28.iint
+  outfilename: testout.iint
   specdataname: rawdata
-  trackedData:
+  trackedHeaders:
   - scannumber
-  - signalcurvefitresult
   - trapezoidIntegral
   - trapezoidIntegral_stderr
-  - lks340_outputchannela
-  - lks340_outputchannelb
   - peta
   - pr1chi
   - pr2chi
   - ptth
+  trackedColumns:
+  - lks340_outputchannela
+  - lks340_outputchannelb
   trapintname: trapezoidIntegral
   type: iintfinalization
 fioread:
@@ -106,7 +106,7 @@ signalcurvefit:
   ydata: signalIntensity
 specread:
   filename: tests/test_data/MnCo15.spc
-  output: default
+  output: rawdata
   scanlist: 699-740
   type: specfilereader
 trapint:

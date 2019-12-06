@@ -30,14 +30,15 @@ class TrackedDataMapTest(unittest.TestCase):
     def setUp(self):
         '''Create TrackedDataMap'''
         self.tdm = trackedDataMap.TrackedDataMap()
-        self._testdict = {'a': 1, 'b': 2, 'c': 3}
+        self._testlist = ['1','2','3','4','5']
+        self._testlist2 = ['6','7','8']
 
     def test_initial(self):
         for st in self.tdm.getStatus():
             self.assertFalse(st)
 
     def test_namesetting(self):
-        self.tdm.passNames(self._testdict)
+        self.tdm.passNames(self._testlist, self._testlist2)
         for st in self.tdm.getStatus():
             self.assertTrue(st)
 

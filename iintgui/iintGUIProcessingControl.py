@@ -42,7 +42,6 @@ try:
     from adapt.processes import iintpolarization
     from adapt.processes import iintcontrolplots
     from adapt.processes import iintscanprofileplot
-    from adapt.processes import iintmcaplot
     from adapt.processes import iintscanplot
 except ImportError:
     print("[iintGUIProcessingControl]:: adapt is not available, nothing can be instantiated.")
@@ -107,7 +106,8 @@ class IintGUIProcessingControl():
         self._setupProcessParameters()
         self._setupDefaultNames()
         self._outputDirectory = None
-        self._trackedData = []
+        self._trackedHeaderData = []
+        self._trackedColumnData = []
         self._readerType = ""
 
     def resetAll(self):
@@ -117,7 +117,8 @@ class IintGUIProcessingControl():
         self._dataList.clear()
         self._mcaDict.clear()
         del self._processList[:]
-        self._trackedData.clear()
+        self._trackedHeaderData.clear()
+        self._trackedColumnData.clear()
         self._processList.clear()
         self._motorName = ""
         self._rawName = "rawdata"
@@ -205,7 +206,6 @@ class IintGUIProcessingControl():
         self._processParameters["polana"] = iintpolarization.iintpolarization().getProcessDictionary()
         self._processParameters["inspection"] = iintcontrolplots.iintcontrolplots().getProcessDictionary()
         self._processParameters["scanprofileplot"] = iintscanprofileplot.iintscanprofileplot().getProcessDictionary()
-        self._processParameters["mcaplot"] = iintmcaplot.iintmcaplot().getProcessDictionary()
         self._processParameters["scanplot"] = iintscanplot.iintscanplot().getProcessDictionary()
 
         self._fitmodels = curvefitting.curvefitting().getFitModels()
@@ -286,7 +286,8 @@ class IintGUIProcessingControl():
         # finalization: saving files
         self._processParameters["finalize"]["specdataname"] = self._rawName
         self._processParameters["finalize"]["fitresult"] = self._fittedSignalName
-        self._processParameters["finalize"]["trackedData"] = []
+        self._processParameters["finalize"]["trackedHeaders"] = []
+        self._processParameters["finalize"]["trackedColumns"] = []
         # polarization analysis
         self._processParameters["polana"]["specdataname"] = self._rawName
         self._processParameters["polana"]["fitresult"] = self._fittedSignalName
@@ -295,17 +296,15 @@ class IintGUIProcessingControl():
         self._processParameters["inspection"]["specdataname"] = self._rawName
         self._processParameters["inspection"]["fitresult"] = self._fittedSignalName
         self._processParameters["inspection"]["trapintname"] = self._trapintName
-        self._processParameters["inspection"]["trackedData"] = []
-        # mca plots
-        self._processParameters["mcaplot"]["input"] = self._rawName
-        self._processParameters["mcaplot"]["outfilename"] = ""
+        self._processParameters["inspection"]["trackedColumns"] = []
         # finalization: saving files
         self._processParameters["scanplot"]["specdataname"] = self._rawName
         self._processParameters["scanplot"]["fitresult"] = self._fittedSignalName
         self._processParameters["scanplot"]["trapintname"] = self._trapintName
 
     def _cleanUpTrackedData(self):
-        self._trackedData.clear()
+        self._trackedHeaderData.clear()
+        self._trackedColumnData.clear()
 
     def getRawDataName(self):
         return self._rawName
@@ -464,15 +463,6 @@ class IintGUIProcessingControl():
 
     def performBKGIntegration(self):
         self.createAndBulkExecute(self._processParameters["bkgintegral"])
-        if self._backgroundIntegralName not in self._processParameters["finalize"]["trackedData"]:
-            try:
-                self._processParameters["inspection"]["trackedData"].append(self._backgroundIntegralName)
-            except AttributeError:
-                self._processParameters["inspection"]["trackedData"] = [self._backgroundIntegralName]
-            try:
-                self._processParameters["finalize"]["trackedData"].append(self._backgroundIntegralName)
-            except AttributeError:
-                self._processParameters["finalize"]["trackedData"] = [self._backgroundIntegralName]
 
     def removeBKGparts(self):
         for datum in self._dataList:
@@ -485,13 +475,7 @@ class IintGUIProcessingControl():
         # now it's the time to remove all traces:
         try:
             while(1):
-                self._processParameters["inspection"]["trackedData"].remove(self._backgroundIntegralName)
-        except ValueError:
-            # all values removed
-            pass
-        try:
-            while(1):
-                self._processParameters["finalize"]["trackedData"].remove(self._backgroundIntegralName)
+                self._processParameters["finalize"]["trackedHeaders"].remove(self._backgroundIntegralName)
         except ValueError:
             # all values removed
             pass
@@ -820,30 +804,35 @@ class IintGUIProcessingControl():
         return self._processParameters["calcsinglefitpoints"]
 
     def getFinalizingDict(self):
-        try:
-            if 'scannumber' not in self._processParameters["finalize"]["trackedData"]:
-                self._processParameters["finalize"]["trackedData"] = \
-                    ['scannumber', self._fittedSignalName, self._trapintName, self._trapintName+"_stderr"] + \
-                    self._processParameters["finalize"]["trackedData"]
-        except TypeError:
-            self._processParameters["finalize"]["trackedData"] = \
-                ['scannumber', self._fittedSignalName, self._trapintName, self._trapintName+"_stderr"]
+        # build the finalizing dict manually 
+        # add the scannumber and trapint data to the tracked header data
+        self._processParameters["finalize"]["trackedHeaders"] = ['scannumber']
+        self._processParameters["finalize"]["trackedHeaders"] += self._trackedHeaderData
+        self._processParameters["finalize"]["trackedHeaders"] +=  [self._trapintName, self._trapintName+"_stderr"]
+        if not self._nobkg:
+            self._processParameters["finalize"]["trackedHeaders"].append(self._backgroundIntegralName)
+        self._processParameters["finalize"]["trackedColumns"] = self._trackedColumnData
         return self._processParameters["finalize"]
 
-    def setTrackedData(self, namelist=[]):
-        if namelist is []:
-            return
+    def setTrackedData(self, headerlist=[], columnlist=[]):
+        if headerlist is []:
+            if columnlist is []:
+                return
         self._cleanUpTrackedData()
-        self._trackedData = namelist
         # hard lesson learned: shared lists are the same!
-        self._processParameters["inspection"]["trackedData"] = namelist.copy()
-        self._processParameters["finalize"]["trackedData"] = namelist.copy()
+        self._trackedHeaderData = headerlist.copy()
+        self._trackedColumnData = columnlist.copy()
+        self._processParameters["inspection"]["trackedColumns"] = columnlist.copy()
 
-    def getTrackedData(self):
-        return self._trackedData
+    def getTrackedHeaderData(self):
+        return self._trackedHeaderData
+
+    def getTrackedColumnData(self):
+        return self._trackedColumnData
 
     def resetTrackedData(self):
-        self._trackedData.clear()
+        self._trackedHeaderData.clear()
+        self._trackedColumnData.clear()
 
     def useBKG(self, value):
         self._nobkg = not value
@@ -859,13 +848,14 @@ class IintGUIProcessingControl():
     def useFinalizing(self, value):
         self._nofinalizing = not value
 
-    def getTrackInformation(self, name):
+    def getTrackInformation(self, name, header=False):
         '''Collect the tracked data given by name.
            Returns the name, value and error of the tracked parameter,
            plus a dictionary of the fitted parameters including their error.'''
 
         value, error = [], []
         infoholder = {}
+        # fill the array element by element from the datalist
         for datum in self._dataList:
             fitresult = datum.getData(self._fittedSignalName)
             params = fitresult.params
@@ -880,11 +870,15 @@ class IintGUIProcessingControl():
                 except KeyError:
                     infoholder[params[param].name] = []
                     infoholder[params[param].name].append((params[param].value, params[param].stderr))
-            try:
-                array = datum.getData(self._rawName).getArray(name)
-                value.append(np.mean(array))
-                error.append(np.std(array))
-            except KeyError:
+            if not header:
+                try:
+                    array = datum.getData(self._rawName).getArray(name)
+                    value.append(np.mean(array))
+                    error.append(np.std(array))
+                except:
+                    print("Can't retrieve the information of " + str(name))
+                    return  
+            if header:
                 try:
                     value.append(datum.getData(self._rawName).getCustomVar(name))
                     error.append(0.)
@@ -895,8 +889,7 @@ class IintGUIProcessingControl():
 
     def getRawTrackInformation(self, name):
         '''Collect the tracked data given by name.
-           Returns the name, value and error of the tracked parameter,
-           plus a dictionary of the fitted parameters including their error.'''
+           Returns the name and value of the tracked parameter.'''
         value = []
         for datum in self._dataList:
             try:
@@ -968,6 +961,7 @@ class IintGUIProcessingControl():
 
 
 class trackedInformation():
+    '''Exchange data object for plotting tracked data vs. fitted parameters.'''
 
     def __init__(self, name, value, error, info):
         self.name = name
