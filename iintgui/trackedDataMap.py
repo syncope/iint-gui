@@ -41,7 +41,6 @@ class TrackedDataMap(QtGui.QDialog):
         self.display.setDisabled(True)
 
     def passNames(self, headerList, columnList):
-        # !!!! FIXME !!!!!
         self.reset()
         self._names = list(set(headerList.copy() + columnList.copy()))
         self.firstSelection.clear()
