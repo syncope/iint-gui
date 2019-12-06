@@ -48,6 +48,14 @@ class TestIintGUI06Output(unittest.TestCase):
                           "testing_MNCO-all_scanProfiles.pdf",
                           "testing_MNCO-all_trackedColumnsPlots.pdf"]
 
+        egonn = "test_configurations/egonnd2_S63E231.icfg"
+        self.egonnfile =  os.path.join(dir_path, egonn)
+        self.egonnames = ["testing_egonn.iint",
+                          "testing_egonn_scanControlPlots.pdf",
+                          "testing_egonn_scanProfiles.pdf",
+                          "testing_egonn_trackedColumnsPlots.pdf"]
+        
+
     def test_mncooutput(self):
         # test case for command line argument
         self.ui._file = self.mncoallfile
@@ -61,11 +69,21 @@ class TestIintGUI06Output(unittest.TestCase):
         for k in darr:
             self.assertTrue(np.any(k))
 
+    def test_egonn(self):
+        self.ui._file = self.egonnfile
+        self.ui.chooseAndLoadConfig()
+        self.ui._control.setResultFilename("testing_egonn")
+        self.ui.runOutputSaving()
+        for f in self.egonnames:
+            self.assertTrue(os.path.isfile(f))
+
     def tearDown(self):
         for f in self.mnconames:
             if os.path.isfile(f):
                 os.remove(f)
-        
+        for f in self.egonnames:
+            if os.path.isfile(f):
+                os.remove(f)
 
 
 if __name__ == '__main__':
