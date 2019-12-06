@@ -38,6 +38,7 @@ from . import test_iintGUI_02_signaldefinitions
 from . import test_iintGUI_03_backgrounddefinitions
 from . import test_iintGUI_04_fitting
 from . import test_iintGUI_05_configurations
+from . import test_iintGUI_06_output
 
 # initialize the test suite
 loader = unittest.TestLoader()
@@ -57,6 +58,7 @@ suite.addTests(loader.loadTestsFromModule(test_iintGUI_02_signaldefinitions))
 suite.addTests(loader.loadTestsFromModule(test_iintGUI_03_backgrounddefinitions))
 suite.addTests(loader.loadTestsFromModule(test_iintGUI_04_fitting))
 suite.addTests(loader.loadTestsFromModule(test_iintGUI_05_configurations))
+suite.addTests(loader.loadTestsFromModule(test_iintGUI_06_output))
 
 
 def run(verbosity=3):
