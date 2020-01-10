@@ -487,6 +487,8 @@ class iintGUI(QtGui.QMainWindow):
         if check:
             self.warning("There are different motor names in the selection!\n Can't continue, please correct!")
             return
+        # do the range checking for background "normalization" 
+        rangecheck = self._control.checkScanRanges()
         # pass info to the observable definition part
         self._obsDef.passInfo(self._control.getRawDataObject(), self._control.getMotorName())
         self.message("... done.\n")
