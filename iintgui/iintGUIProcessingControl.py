@@ -426,17 +426,17 @@ class IintGUIProcessingControl():
         for datum in self._dataList:
             scandata = datum.getData(self.getRawDataName())
             ranges = scandata.getRanges()
-            for pair in ranges.items():
+            for rangeitem in ranges.items():
                 try:
-                    tmpdict[pair[0]].append(pair[1])
+                    tmpdict[rangeitem[0]].append(rangeitem[1])
                 except KeyError:
-                    tmpdict[pair[0]] = [pair[1]]
-        for scans in tmpdict.items():
-            scans[1] = list(set(scans[1]))
-            if( len(scans[1]) > 1 ):
-                print("different scan ranges in " + str(scans[0]))
-                for r in scans[1]:
-                    print(" range: " + str(abs(r[1] - r[0])))
+                    tmpdict[rangeitem[0]] = [rangeitem[1]]
+        for scanitem in tmpdict.items():
+            testlist = list(set(scanitem[1]))
+            if( len(testlist) > 1 ):
+                print("different scan ranges in " + str(scanitem[0]))
+            else:
+                print(" coherent scans " )
 
     def getRawDataObject(self):
         return self.getDataList()[0].getData(self.getRawDataName())
