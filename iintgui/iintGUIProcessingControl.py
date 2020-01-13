@@ -435,8 +435,12 @@ class IintGUIProcessingControl():
             testlist = list(set(scanitem[1]))
             if( len(testlist) > 1 ):
                 print("different scan ranges in " + str(scanitem[0]))
+                print(" ranges are: " + str(scanitem[1]))
+                ranger = np.asarray(scanitem[1])
+                print("minimal range: " + str(ranger.min()))
             else:
                 print(" coherent scans " )
+        
 
     def getRawDataObject(self):
         return self.getDataList()[0].getData(self.getRawDataName())
