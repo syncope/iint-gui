@@ -584,6 +584,8 @@ class IintGUIProcessingControl():
             processDict["bkgfit"] = ds[1]
             processDict["calcbkgpoints"] = ds[2]
             processDict["bkgsubtract"] = ds[3]
+            execlist.append("bkgintegral")
+            processDict["bkgIntegral"] = self.getBKGIntegralDict()
         if not self._nosignalprocessing:
             execlist.append("trapint")
             processDict["trapint"] = self.getTrapIntDict()
@@ -776,6 +778,14 @@ class IintGUIProcessingControl():
                     self._processParameters["bkgsubtract"])
         except KeyError:
             return ({}, {}, {}, {})
+
+    def getBKGIntegralDict(self):
+        try:
+            if len(self._rangeDict) > 0:
+                self._processParameters["bkgintegral"]["selectrange"] = self._rangeDict[self._motorName]
+            return self._processParameters["bkgintegral"]
+        except KeyError:
+            return {}
 
     def getSIGDict(self):
         try:
