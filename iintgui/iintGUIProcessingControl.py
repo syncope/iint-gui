@@ -89,7 +89,7 @@ class IintGUIProcessingControl():
                               "bkgfit",
                               "calcbkgpoints",
                               "bkgsubtract",
-                              "bkgintegration",
+                              "bkgintegral",
                               "signalcurvefit",
                               "testfit",
                               "calcfitpoints",
@@ -548,7 +548,13 @@ class IintGUIProcessingControl():
         # set motor name proper from the config !
         if self._processParameters["observabledef"]["motor_column"] is not None:
             self.setMotorName(self._processParameters["observabledef"]["motor_column"])
-
+        # set tracked stuff, if present in config
+        hl, cl = self._processParameters["observabledef"]["trackedHeaders"], self._processParameters["observabledef"]["trackedColumns"]
+        if hl is None:
+            hl = []
+        if cl is None:
+            cl = []
+        self.setTrackedData(headerlist=hl, columnlist=cl)
         # cleaning up, improper handling of save value -- how to really fix?
         if self._processParameters["observabledef"]["attenuationFactor_column"] is None:
             del self._processParameters["observabledef"]["attenuationFactor_column"]
@@ -571,6 +577,10 @@ class IintGUIProcessingControl():
         except KeyError:
             # key is not present -- don't worry
             pass
+        if self._trackedHeaderData is not []:
+            processDict["observabledef"]["trackedHeaders"] = self._trackedHeaderData
+        if self._trackedColumnData is not []:
+            processDict["observabledef"]["trackedColumns"] = self._trackedColumnData
         if not self._nodespike:
             execlist.append("despike")
             processDict["despike"] = self.getDESDict()
@@ -585,7 +595,7 @@ class IintGUIProcessingControl():
             processDict["calcbkgpoints"] = ds[2]
             processDict["bkgsubtract"] = ds[3]
             execlist.append("bkgintegral")
-            processDict["bkgIntegral"] = self.getBKGIntegralDict()
+            processDict["bkgintegral"] = self.getBKGIntegralDict()
         if not self._nosignalprocessing:
             execlist.append("trapint")
             processDict["trapint"] = self.getTrapIntDict()
