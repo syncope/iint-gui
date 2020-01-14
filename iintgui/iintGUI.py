@@ -20,7 +20,7 @@
 # Boston, MA  02110-1301, USA.
 
 
-from PyQt4 import QtGui, uic
+from PyQt4 import QtCore, QtGui, uic
 import pyqtgraph as pg
 
 from . import iintGUIProcessingControl
@@ -490,9 +490,14 @@ class iintGUI(QtGui.QMainWindow):
         # do the range checking for background equalization
         ranges = self._control.checkScanRanges()
         if len(ranges) > 0:
-            self.warning("Take notice: the scan commands differ in range. Explicitly: " + str(ranges))
-            self.warning("The background integral is calculated only within the shared range along the chosen motor.")
-            
+            text = '''Take notice: the individual scan commands within the chosen scan series differ in range.
+                      Explicitly:'''  + str(ranges) + \
+                    '''\nPlease acknowledge, that the background integral is calculated only within the shared range along the chosen motor.'''
+            self.warning(text)
+            from . import backgroundIntegralDialog
+            d = backgroundIntegralDialog.BackgroundIntegralDialog(text)
+            bla = d.exec_()
+
         # pass info to the observable definition part
         self._obsDef.passInfo(self._control.getRawDataObject(), self._control.getMotorName())
         self.message("... done.\n")
