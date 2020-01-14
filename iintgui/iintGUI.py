@@ -612,10 +612,13 @@ class iintGUI(QtGui.QMainWindow):
             return
         try:
             self._control.createAndBulkExecute(fitDict)
-            self._control.performBKGIntegration()
         except ValueError:
             self.warning("Can't fit the background; e.g. maybe there are nan values.")
             return
+        try:
+            self._control.performBKGIntegration()
+        except:
+            self.warning("Background integration failed.")
         self._control.createAndBulkExecute(calcDict)
         self._control.createAndBulkExecute(subtractDict)
         if(self._simpleImageView is not None):
