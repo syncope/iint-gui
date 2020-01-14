@@ -487,8 +487,12 @@ class iintGUI(QtGui.QMainWindow):
         if check:
             self.warning("There are different motor names in the selection!\n Can't continue, please correct!")
             return
-        # do the range checking for background "normalization" 
-        rangecheck = self._control.checkScanRanges()
+        # do the range checking for background equalization
+        ranges = self._control.checkScanRanges()
+        if len(ranges) > 0:
+            self.warning("Take notice: the scan commands differ in range. Explicitly: " + str(ranges))
+            self.warning("The background integral is calculated only within the shared range along the chosen motor.")
+            
         # pass info to the observable definition part
         self._obsDef.passInfo(self._control.getRawDataObject(), self._control.getMotorName())
         self.message("... done.\n")

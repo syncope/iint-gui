@@ -421,7 +421,6 @@ class IintGUIProcessingControl():
         return error
 
     def checkScanRanges(self):
-        print("checking the scan ranges")
         tmpdict = {}
         self._rangeDict = {}
         for datum in self._dataList:
@@ -437,10 +436,10 @@ class IintGUIProcessingControl():
             if( len(testlist) > 1 ):
                 ranger = np.asarray(scanitem[1])
                 newrange = ranger.min()
-                self._rangeDict[scanitem[0]] = newrange
+                self._rangeDict[scanitem[0]] = float(newrange)
             else:
                 pass
-        print(" ranger: " + str(self._rangeDict))
+        return self._rangeDict
 
     def getRawDataObject(self):
         return self.getDataList()[0].getData(self.getRawDataName())
@@ -454,20 +453,14 @@ class IintGUIProcessingControl():
         return proc
 
     def createAndBulkExecute(self, pDict):
-        print("[cabe]:: started with " + str(pDict))
         if pDict is None:
-            print("[cabe]::why??")
             return
         proc = self._procBuilder.createProcessFromDictionary(pDict)
         proc.initialize()
-        print("[cabe]::initialized")
         try:
-            print("[cabe]::trying...")
             proc.loopExecuteWithOverwrite(self._dataList, emitProgress=True)
         except adaptException.AdaptProcessingStoppedException:
-            print("[cabe]:: stopped!")
             return "stopped"
-        print("[cabe]::returning")
         return proc
 
     def createAndSingleExecute(self, pDict, index):
@@ -490,17 +483,12 @@ class IintGUIProcessingControl():
         proc.finalize(data=None)
 
     def performBKGIntegration(self):
-        print("[pBI]::start")
         # bkg integral, ranged case:
         try:
-            print("[pBI]::trying")
             if len(self._rangeDict) > 0:
-                self._processParameters["bkgintegral"]["range"] = self._rangeDict[self._motorName]
-                print("[pBI]:: pp of bkgint: " + str(self._processParameters["bkgintegral"]))
+                self._processParameters["bkgintegral"]["selectrange"] = self._rangeDict[self._motorName]
         except AttributeError:
-            print("[pBI]:: and failing")
             pass
-        print("[pBI]:: .. doing something")
         self.createAndBulkExecute(self._processParameters["bkgintegral"])
 
     def removeBKGparts(self):
