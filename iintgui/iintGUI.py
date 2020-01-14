@@ -492,7 +492,7 @@ class iintGUI(QtGui.QMainWindow):
         if len(ranges) > 0:
             text = '''Take notice: the individual scan commands within the chosen scan series differ in range.
                       Explicitly:'''  + str(ranges) + \
-                    '''\nPlease acknowledge, that the background integral is calculated only within the shared range along the chosen motor.'''
+                    '''\nPlease confirm, that the background integral is calculated only within the shared range along the chosen motor.'''
             self.warning(text)
             from . import backgroundIntegralDialog
             d = backgroundIntegralDialog.BackgroundIntegralDialog(text)

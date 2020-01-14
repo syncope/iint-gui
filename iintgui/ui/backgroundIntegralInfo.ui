@@ -6,12 +6,12 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>128</width>
+    <width>105</width>
     <height>68</height>
    </rect>
   </property>
   <property name="windowTitle">
-   <string>Acknowledge</string>
+   <string>iint-gui: Acknowledge background integral range change</string>
   </property>
   <layout class="QGridLayout" name="gridLayout">
    <item row="0" column="0">
@@ -41,7 +41,7 @@
        <item>
         <widget class="QPushButton" name="ack">
          <property name="text">
-          <string>Acknowledged</string>
+          <string>OK</string>
          </property>
         </widget>
        </item>
