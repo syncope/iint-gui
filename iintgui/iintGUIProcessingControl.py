@@ -89,7 +89,7 @@ class IintGUIProcessingControl():
                               "bkgfit",
                               "calcbkgpoints",
                               "bkgsubtract",
-                              "bkgintegration",
+                              "bkgintegral",
                               "signalcurvefit",
                               "testfit",
                               "calcfitpoints",
@@ -243,7 +243,7 @@ class IintGUIProcessingControl():
         self._processParameters["bkgfit"]["result"] = "bkgfitresult"
         self._processParameters["bkgfit"]["usepreviousresult"] = 0
         self._processParameters["bkgfit"]["model"] = {"lin_": {"modeltype": "linearModel"}}
-        # bkg integral
+        # bkg integral, standard case
         self._processParameters["bkgintegral"]["fitresult"] = "bkgfitresult"
         self._processParameters["bkgintegral"]["xdata"] = self._motorName
         self._processParameters["bkgintegral"]["output"] = self._backgroundIntegralName
@@ -420,6 +420,27 @@ class IintGUIProcessingControl():
                 break
         return error
 
+    def checkScanRanges(self):
+        tmpdict = {}
+        self._rangeDict = {}
+        for datum in self._dataList:
+            scandata = datum.getData(self.getRawDataName())
+            ranges = scandata.getRanges()
+            for rangeitem in ranges.items():
+                try:
+                    tmpdict[rangeitem[0]].append(rangeitem[1])
+                except KeyError:
+                    tmpdict[rangeitem[0]] = [rangeitem[1]]
+        for scanitem in tmpdict.items():
+            testlist = list(set(scanitem[1]))
+            if( len(testlist) > 1 ):
+                ranger = np.asarray(scanitem[1])
+                newrange = ranger.min()
+                self._rangeDict[scanitem[0]] = float(newrange)
+            else:
+                pass
+        return self._rangeDict
+
     def getRawDataObject(self):
         return self.getDataList()[0].getData(self.getRawDataName())
 
@@ -462,6 +483,12 @@ class IintGUIProcessingControl():
         proc.finalize(data=None)
 
     def performBKGIntegration(self):
+        # bkg integral, ranged case:
+        try:
+            if len(self._rangeDict) > 0:
+                self._processParameters["bkgintegral"]["selectrange"] = self._rangeDict[self._motorName]
+        except AttributeError:
+            pass
         self.createAndBulkExecute(self._processParameters["bkgintegral"])
 
     def removeBKGparts(self):
@@ -521,7 +548,13 @@ class IintGUIProcessingControl():
         # set motor name proper from the config !
         if self._processParameters["observabledef"]["motor_column"] is not None:
             self.setMotorName(self._processParameters["observabledef"]["motor_column"])
-
+        # set tracked stuff, if present in config
+        hl, cl = self._processParameters["observabledef"]["trackedHeaders"], self._processParameters["observabledef"]["trackedColumns"]
+        if hl is None:
+            hl = []
+        if cl is None:
+            cl = []
+        self.setTrackedData(headerlist=hl, columnlist=cl)
         # cleaning up, improper handling of save value -- how to really fix?
         if self._processParameters["observabledef"]["attenuationFactor_column"] is None:
             del self._processParameters["observabledef"]["attenuationFactor_column"]
@@ -544,6 +577,10 @@ class IintGUIProcessingControl():
         except KeyError:
             # key is not present -- don't worry
             pass
+        if self._trackedHeaderData is not []:
+            processDict["observabledef"]["trackedHeaders"] = self._trackedHeaderData
+        if self._trackedColumnData is not []:
+            processDict["observabledef"]["trackedColumns"] = self._trackedColumnData
         if not self._nodespike:
             execlist.append("despike")
             processDict["despike"] = self.getDESDict()
@@ -557,6 +594,8 @@ class IintGUIProcessingControl():
             processDict["bkgfit"] = ds[1]
             processDict["calcbkgpoints"] = ds[2]
             processDict["bkgsubtract"] = ds[3]
+            execlist.append("bkgintegral")
+            processDict["bkgintegral"] = self.getBKGIntegralDict()
         if not self._nosignalprocessing:
             execlist.append("trapint")
             processDict["trapint"] = self.getTrapIntDict()
@@ -749,6 +788,14 @@ class IintGUIProcessingControl():
                     self._processParameters["bkgsubtract"])
         except KeyError:
             return ({}, {}, {}, {})
+
+    def getBKGIntegralDict(self):
+        try:
+            if len(self._rangeDict) > 0:
+                self._processParameters["bkgintegral"]["selectrange"] = self._rangeDict[self._motorName]
+            return self._processParameters["bkgintegral"]
+        except KeyError:
+            return {}
 
     def getSIGDict(self):
         try:

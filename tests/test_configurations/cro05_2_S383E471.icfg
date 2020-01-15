@@ -1,0 +1,21 @@
+execlist:
+- specread
+- observabledef
+fioread:
+  filenames: null
+  output: rawdata
+  type: fiofilereader
+observabledef:
+  detector_column: exp_c01
+  exposureTime_column: exp_t01
+  id: scannumber
+  input: rawdata
+  monitor_column: sumvfcs_counts
+  motor_column: e6cctrl_h
+  output: intensity
+  type: iintdefinition
+specread:
+  filename: /home/rosem/iintgui/tests/test_data/cro05_2.spc
+  output: rawdata
+  scanlist: 383-471
+  type: specfilereader

@@ -1,0 +1,21 @@
+execlist:
+- specread
+- observabledef
+fioread:
+  filenames: null
+  output: rawdata
+  type: fiofilereader
+observabledef:
+  detector_column: exp_c03
+  exposureTime_column: exp_t01
+  id: scannumber
+  input: rawdata
+  monitor_column: sumvfcs_counts
+  motor_column: del
+  output: intensity
+  type: iintdefinition
+specread:
+  filename: /home/rosem/iintgui/tests/test_data/EuPtIn4_remeasured_clean.spc
+  output: rawdata
+  scanlist: 461, 469, 475, 482, 488, 494, 503, 509, 515, 522
+  type: specfilereader

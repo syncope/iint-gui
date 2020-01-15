@@ -20,7 +20,7 @@
 # Boston, MA  02110-1301, USA.
 
 
-from PyQt4 import QtGui, uic
+from PyQt4 import QtCore, QtGui, uic
 import pyqtgraph as pg
 
 from . import iintGUIProcessingControl
@@ -487,6 +487,17 @@ class iintGUI(QtGui.QMainWindow):
         if check:
             self.warning("There are different motor names in the selection!\n Can't continue, please correct!")
             return
+        # do the range checking for background equalization
+        ranges = self._control.checkScanRanges()
+        if len(ranges) > 0:
+            text = '''Take notice: the individual scan commands within the chosen scan series differ in range.
+                      Explicitly:'''  + str(ranges) + \
+                    '''\nPlease confirm, that the background integral is calculated only within the shared range along the chosen motor.'''
+            self.warning(text)
+            from . import backgroundIntegralDialog
+            d = backgroundIntegralDialog.BackgroundIntegralDialog(text)
+            bla = d.exec_()
+
         # pass info to the observable definition part
         self._obsDef.passInfo(self._control.getRawDataObject(), self._control.getMotorName())
         self.message("... done.\n")
@@ -610,10 +621,13 @@ class iintGUI(QtGui.QMainWindow):
             return
         try:
             self._control.createAndBulkExecute(fitDict)
-            self._control.performBKGIntegration()
         except ValueError:
             self.warning("Can't fit the background; e.g. maybe there are nan values.")
             return
+        try:
+            self._control.performBKGIntegration()
+        except:
+            self.warning("Background integration failed.")
         self._control.createAndBulkExecute(calcDict)
         self._control.createAndBulkExecute(subtractDict)
         if(self._simpleImageView is not None):

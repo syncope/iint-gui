@@ -1,4 +1,4 @@
-# Copyright (C) 2018-9  Christoph Rosemann, DESY, Notkestr. 85, D-22607 Hamburg
+# Copyright (C) 2020  Christoph Rosemann, DESY, Notkestr. 85, D-22607 Hamburg
 # email contact: christoph.rosemann@desy.de
 #
 # iintgui is an application for the ADAPT framework
@@ -18,6 +18,16 @@
 # Foundation, Inc., 51 Franklin Street, Fifth Floor,
 # Boston, MA  02110-1301, USA.
 
-__version__ = "0.16.0"
+from PyQt4 import QtGui, uic
+from . import getUIFile
 
-from . import iintGUI
+
+class BackgroundIntegralDialog(QtGui.QDialog):
+
+    def __init__(self, text, parent=None):
+        super(BackgroundIntegralDialog, self).__init__(parent)
+        uic.loadUi(getUIFile.getUIFile("backgroundIntegralInfo.ui"), self)
+        self.displaytext.setText(text)
+        self.ack.clicked.connect(self.close)
+        self.ack.setToolTip("Click to close the dialog.")
+
