@@ -1,6 +1,13 @@
+iintgui (0.15.2-1+deb9u5~fsec) stretch; urgency=low
+
+  * Bug fix release; distinguish between header and column tracked data.
+
+ -- Christoph Rosemann <christoph.rosemann@desy.de>  Fri, 6 Dec 2019 13:30:00 +0100
+
 iintgui (0.15.1-1+deb9u5~fsec) stretch; urgency=low
 
   * Final touches for distributed version
+
  -- Christoph Rosemann <christoph.rosemann@desy.de>  Mon, 18 Nov 2019 14:54:00 +0100
 
 iintgui (0.15.0-1+deb9u5~fsec) stretch; urgency=low
