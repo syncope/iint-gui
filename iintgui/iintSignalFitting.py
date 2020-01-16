@@ -96,6 +96,8 @@ class iintSignalFitting(QtGui.QWidget):
         self.resetButton.setDisabled(False)
         self.autoGaussBox.setDisabled(False)
         self.activateConfiguration()
+        if self.autoGaussBox.isChecked():
+            self.fitButton.setDisabled(False)
 
     def deactivateFitting(self):
         self.currentModelList.setDisabled(True)
