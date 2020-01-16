@@ -29,7 +29,12 @@ EuPtIn4_remeasured_clean.spc 349, 356, 361, 367, 373, 379, 385, 391
   monitor_column: sumvfcs_counts
   exposureTime_column: exp_t01
 
-
+# test file/scan series for different scan ranges
+EuPtIn4_remeasured_clean.spc  461, 469, 475, 482, 488, 494, 503, 509, 515, 522
+  motor_column: del
+  detector_column: exp_c03
+  monitor_column: sumvfcs_counts
+  exposureTime_column: exp_t01
 
 # other files:
 # only test file with incorrect (?) MCA data from KROMO
