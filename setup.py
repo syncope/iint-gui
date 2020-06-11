@@ -11,7 +11,7 @@ with open(os.path.join('.', 'README.rst'), encoding='utf-8') as f:
 
 name = 'iint-gui'
 version = '0'
-release = '0.16.0'
+release = '0.16.4'
 
 TOOL = "iintgui"
 QRCDIR = os.path.join(TOOL, "qrc")
