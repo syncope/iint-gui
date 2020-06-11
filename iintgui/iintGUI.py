@@ -29,7 +29,12 @@ try:
     from adapt.processes import fiofilereader
     from adapt import adaptException
 except ImportError:
-    print("[iintGUI]:: adapt is not available; please install or nothing will work.")
+    print("[iintGUI]:: adapt is not available; please install for functionality.")
+    pass
+try:
+    from psio import psioException
+except ImportError:
+    print("[iintGUI]:: psio is not available, file reading is not available.")
     pass
 from . import getUIFile
 from . import iintDataPlot
@@ -483,12 +488,19 @@ class iintGUI(QtGui.QMainWindow):
             self._control.setDefaultOutputDirectory(filereaderdict["filenames"][0])
             self._fileInfo.setNames(filereaderdict["filenames"][0] + ", ...", str(self._control.getScanlist()))
         self._outDir.setOutputDirectory(self._control.getOutputDirectory())
-        check = self._control.checkDataIntegrity()
+        try:
+            check = self._control.checkDataIntegrity()
+        except psioException.PSIOUnknownScanTypeException:
+            self.warning("The scan type is unknown!\n No default motor can be determined.")
         if check:
             self.warning("There are different motor names in the selection!\n Can't continue, please correct!")
             return
         # do the range checking for background equalization
-        ranges = self._control.checkScanRanges()
+        try:
+            ranges = self._control.checkScanRanges()
+        except psioException.PSIOUnknownScanTypeException:
+            self.warning("Checking for different scan ranges is also not possible for the background integral is also not possible because of the unknown scan type.")
+
         if len(ranges) > 0:
             text = '''Take notice: the individual scan commands within the chosen scan series differ in range.
                       Explicitly:'''  + str(ranges) + \

@@ -46,7 +46,11 @@ try:
 except ImportError:
     print("[iintGUIProcessingControl]:: adapt is not available, nothing can be instantiated.")
     pass
-
+try:
+    from psio import psioException
+except ImportError:
+    print("[iintGUIProcessingControl]:: psio is not available, file reading is not available.")
+    pass
 
 from PyQt4 import QtGui
 import numpy as np
@@ -405,6 +409,8 @@ class IintGUIProcessingControl():
             self.setMotorName(self._dataList[0].getData(self.getRawDataName()).getMotorName())
         except IndexError:
             pass
+        except psioException.PSIOUnknownScanTypeException:
+            self.setMotorName(None)
         # and now create the scan list!
         self._createScanList()
 
