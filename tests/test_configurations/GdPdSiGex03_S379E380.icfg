@@ -1,0 +1,23 @@
+execlist:
+- specread
+- observabledef
+fioread:
+  filenames: null
+  output: rawdata
+  type: fiofilereader
+observabledef:
+  detector_column: exp_c03
+  exposureTime_column: exp_t01
+  id: scannumber
+  input: rawdata
+  monitor_column: sumvfcs_counts
+  motor_column: l_position
+  output: intensity
+  trackedColumns: []
+  trackedHeaders: []
+  type: iintdefinition
+specread:
+  filename: /home/rosem/iintgui/tests/test_data/GdPdSiGex03.spc
+  output: default
+  scanlist: 379-380
+  type: specfilereader
